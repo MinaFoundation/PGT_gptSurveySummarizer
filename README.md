@@ -28,25 +28,31 @@ Data format of a survey form
 
 Data format of a survey summary
 ```
-- title: text
+- title: text,
 - topics: [
             {
-              topicName: text
-              description: text
+              topicName: text,
+              description: text,
               subtopics: [
                 {
-                  subtopicName: text
-                  subtopicDescription: text
+                  subtopicName: text,
+                  subtopicDescription: text,
                   comments: [ 
                     {
-                      submitter: text
+                      submitter: text,
                       answers: List[text]
                     }
                   ]
                 }
               ]
             }
-          ]
+          ],
+- commentsNotYetCategorized: [
+  {
+    submitter: text,
+    answers: List[text]
+  }
+]
 ```
 
 What the discord bot response to `/gptsurvey summary [surveyname]` could look like:
