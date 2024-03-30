@@ -1,18 +1,20 @@
 # gptSurveySummarizer
 
-This would be:
+Product Requirements:
+  - Users can make new surveys, which each have a list of questions
+  - Users can answer surveys by providing answers to the list of questions
+  - Users can see what surveys they can answer
+  - Users can see the survey summary
+  - Users can see which comments have not been added to the survey summary yet
 
-A UI build on shadcn
-  - composed of surveys each on a different page
-  - users can login with your discord
-  - users can make a survey, which is a list of questions
-  - users logged in with discord can answer the survey
-  - the survey is updated periodically to take into account the latest answers
+Discord bot commands
+  - /gptsurvey new [surveyName]
+  - /gptsurvey summary [surveyname]
+  - /gptsurvey respond [surveyname]
 
 Backend Architecture
-  - a nodejs server that is statically serving the shadcn ui
-  - a nodejs server that receives survey answers from the ui
+  - a nodejs module that runs the discord bot code
   - a redis server that holds survey data
-  - a nodejs server that monitors the redis server and updates the gpt computed survey data
+  - a nodejs module that monitors the redis server and updates the gpt computed survey data
 
 The gpt computed survey data would be a similar process as talk to the city, just with comments instead of claims
