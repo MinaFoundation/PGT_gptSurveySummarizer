@@ -11,6 +11,7 @@ Discord bot commands
   - /gptsurvey new [surveyName]
   - /gptsurvey summary [surveyname]
   - /gptsurvey respond [surveyname]
+  - /gptsurvey list
 
 Backend Architecture
   - a nodejs module that runs the discord bot code
