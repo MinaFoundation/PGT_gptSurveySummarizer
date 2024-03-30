@@ -73,3 +73,7 @@ What the discord bot response to `/gptsurvey summary [surveyname]` could look li
 #### [topic2Name]
 ...
 
+#### Comments not yet categorized
+These comments will be categorized when the survey summary is recomputed in [x] minutes
+[Thread with all the comments not yet included in the survey summary]
+
