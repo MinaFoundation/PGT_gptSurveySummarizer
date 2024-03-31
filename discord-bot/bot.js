@@ -9,7 +9,7 @@ const openai = require('openai');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 const redisClient = createClient({ url: process.env.REDIS_URL });
-redisClient.connect();
+redisClient.connect(); // TODO maybe put this in an async function and block til ready
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -51,6 +51,8 @@ client.on('interactionCreate', async interaction => {
         case 'createsurvey':
             await redisClient.sAdd('surveys', surveyName);
             await interaction.reply(`Survey ${surveyName} created.`);
+            const initialSummaryJSON = JSON.stringify({});
+            await redisClient.set('survey:${surveyName}:summary', initialSummaryJSON);
             break;
         case 'listsurveys':
             const surveys = await redisClient.sMembers('surveys');
@@ -58,14 +60,16 @@ client.on('interactionCreate', async interaction => {
             break;
         case 'respond':
             const response = options.getString('response');
+            // TODO make this a map with the discord name so users can update their previous responses
             await redisClient.rPush(`survey:${surveyName}:responses`, response);
             await interaction.reply(`Response to ${surveyName} recorded.`);
+            // TODO write a "last edit time" to redis, so that if the summarizer is down it can still look at it
+            await redisClient.publish('survey-refresh', surveyName);
             break;
         case 'summary':
-            const responses = await redisClient.lRange(`survey:${surveyName}:responses`, 0, -1);
-            // Placeholder for OpenAI integration - replace with actual API call
-            const summary = responses.join(' '); // Simplification: Summarize responses
-            await interaction.reply(`Summary for ${surveyName}: ${summary}`);
+            const summaryJSON = await redisClient.get('survey:${surveyName}:summary');
+            // TODO format this
+            await interaction.reply(`Summary for ${surveyName}: ${summaryJSON}`);
             break;
     }
 });
