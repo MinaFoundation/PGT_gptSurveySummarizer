@@ -61,6 +61,7 @@ client.on('interactionCreate', async interaction => {
             // TODO make this a map with the discord name so users can update their previous responses
             await redisClient.rPush(`survey:${surveyName}:responses`, response);
             await interaction.reply(`Response to ${surveyName} recorded.`);
+            // TODO write a "last edit time" to redis, so that if the summarizer is down it can still look at it
             await redisClient.publish('survey-refresh', surveyName);
             break;
         case 'summary':
