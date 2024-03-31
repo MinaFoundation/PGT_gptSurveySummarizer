@@ -51,6 +51,8 @@ client.on('interactionCreate', async interaction => {
         case 'createsurvey':
             await redisClient.sAdd('surveys', surveyName);
             await interaction.reply(`Survey ${surveyName} created.`);
+            const initialSummaryJSON = JSON.stringify({});
+            await redisClient.set('survey:${surveyName}:summary', initialSummaryJSON);
             break;
         case 'listsurveys':
             const surveys = await redisClient.sMembers('surveys');
@@ -65,7 +67,6 @@ client.on('interactionCreate', async interaction => {
             await redisClient.publish('survey-refresh', surveyName);
             break;
         case 'summary':
-            // TODO make this work even before the first survey refresh
             const summaryJSON = await redisClient.get('survey:${surveyName}:summary');
             // TODO format this
             await interaction.reply(`Summary for ${surveyName}: ${summaryJSON}`);
