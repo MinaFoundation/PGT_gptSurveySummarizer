@@ -107,75 +107,111 @@ process.on('unhandledRejection', error => {
       // ------------------------------------------------
       } else if (subcommand == 'respond') {
         const surveyName = options.getString('survey');
+        if (!(await redisClient.sIsMember('surveys', surveyName))) {
+          await interaction.reply({ content: 'There is no survey with that name' });
+        } else {
 
-        const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
+          const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
 
-        const modal = new ModalBuilder()
-          .setCustomId('respondModal-' + surveyName)
-          .setTitle('Respond to Survey');
+          const modal = new ModalBuilder()
+            .setCustomId('respondModal-' + surveyName)
+            .setTitle('Respond to Survey');
 
-        const responseInput = new TextInputBuilder()
-          .setCustomId('responseInput')
-          .setLabel(`${surveyName} | ${surveyDescription}`)
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true);
+          const responseInput = new TextInputBuilder()
+            .setCustomId('responseInput')
+            .setLabel(`${surveyName} | ${surveyDescription}`)
+            .setStyle(TextInputStyle.Paragraph)
+            .setRequired(true);
 
-        const actionRow = new ActionRowBuilder().addComponents(responseInput);
-        modal.addComponents(actionRow);
+          const actionRow = new ActionRowBuilder().addComponents(responseInput);
+          modal.addComponents(actionRow);
 
-        await interaction.showModal(modal);
+          await interaction.showModal(modal);
+        }
 
       // ------------------------------------------------
       } else if (subcommand == 'view') {
         const surveyName = options.getString('survey');
-        const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
-        const description = await redisClient.get(`survey:${surveyName}:description`);
-        const creator = await redisClient.get(`survey:${surveyName}:username`);
-        const responses = await redisClient.hGetAll(`survey:${surveyName}:responses`);
-        const summary = JSON.parse(summaryJSON);
 
-        const summarizedResponses = []
+        if (!(await redisClient.sIsMember('surveys', surveyName))) {
+          await interaction.reply({ content: 'There is no survey with that name' });
+        } else {
+          const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
+          const description = await redisClient.get(`survey:${surveyName}:description`);
+          const creator = await redisClient.get(`survey:${surveyName}:username`);
+          const responses = await redisClient.hGetAll(`survey:${surveyName}:responses`);
+          const summary = JSON.parse(summaryJSON);
 
-        await interaction.reply('Please see the following for the latest survey summary:');
+          const summarizedResponses = []
 
-        const channel = client.channels.cache.get(interaction.channelId)
+          await interaction.reply('Please see the following for the latest survey summary:');
 
-        const totalResponseCount = Object.entries(responses).length;
+          const channel = client.channels.cache.get(interaction.channelId)
 
-        const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
+          const totalResponseCount = Object.entries(responses).length;
 
-        let msg = `# Survey: ${surveyName}\n`
-        msg += `${description}\n`
-        msg += `created by ${creator}\n`
-        msg += `----------------------\n`
-        await channel.send(msg);
-        msg = ``;
-        for (const topic of summary.taxonomy) {
-          msg += `## Topic: ${topic.topicName}\n`
-          msg += `${topic.topicShortDescription}\n`
-          const topicResponseCount = 
-            topic.subtopics
-            .map((s) => s.responses == null ? 0 : s.responses.length)
-            .reduce((ps, v) => ps + v, 0);
+          const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
 
-          const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
-          msg += `Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
-          for (const subtopic of topic.subtopics) {
-            msg += `### Subtopic: ${subtopic.subtopicName}\n`
-            msg += `${subtopic.subtopicShortDescription}\n`
+          let msg = `# Survey: ${surveyName}\n`
+          msg += `${description}\n`
+          msg += `created by ${creator}\n`
+          msg += `----------------------\n`
+          await channel.send(msg);
+          msg = ``;
+          for (const topic of summary.taxonomy) {
+            msg += `## Topic: ${topic.topicName}\n`
+            msg += `${topic.topicShortDescription}\n`
+            const topicResponseCount = 
+              topic.subtopics
+              .map((s) => s.responses == null ? 0 : s.responses.length)
+              .reduce((ps, v) => ps + v, 0);
 
-            const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
+            const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
+            msg += `Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
+            for (const subtopic of topic.subtopics) {
+              msg += `### Subtopic: ${subtopic.subtopicName}\n`
+              msg += `${subtopic.subtopicShortDescription}\n`
 
-            const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
-            msg += `Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
-            const subtopicMessage = await channel.send(msg);
+              const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
+
+              const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
+              msg += `Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
+              const subtopicMessage = await channel.send(msg);
+              msg = ``;
+              if (subtopic.responses != null && subtopic.responses.length > 0) {
+                const thread = await subtopicMessage.startThread({
+                  name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
+                  autoArchiveDuration: 60,
+                  reason: 'Thread for responses'
+                });
+                for (const response of subtopic.responses) {
+                  const latestResponse = responses[response.username];
+                  if (latestResponse == response.response) {
+                    await thread.send(response.username + ' said "' + response.response + '"');
+                  } else {
+                    await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+                  }
+                  summarizedResponses.push(response);
+                }
+                await thread.setLocked(true);
+              }
+            }
+          }
+          if (summary.unmatchedResponses.length > 0) {
+            msg += `------------------\n`;
+            msg += `### Unmatched Responses\n`;
+            const unmatchedResponseCount = summary.unmatchedResponses.length;
+            const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
+            msg += `Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
+
+            const unmatchedMessage = await channel.send(msg);
             msg = ``;
-            if (subtopic.responses != null && subtopic.responses.length > 0) {
-              const thread = await subtopicMessage.startThread({
-                name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
-                autoArchiveDuration: 60,
-                reason: 'Thread for responses'
-              });
+            const thread = await unmatchedMessage.startThread({
+              name: `Unmatched responses`,
+              autoArchiveDuration: 60,
+              reason: 'Thread for responses'
+            });
+            for (const response of summary.unmatchedResponses) {
               for (const response of subtopic.responses) {
                 const latestResponse = responses[response.username];
                 if (latestResponse == response.response) {
@@ -185,73 +221,46 @@ process.on('unhandledRejection', error => {
                 }
                 summarizedResponses.push(response);
               }
-              await thread.setLocked(true);
             }
           }
-        }
-        if (summary.unmatchedResponses.length > 0) {
+
+          const unsummarizedResponses = [];
+
+          for (let [username, response] of Object.entries(responses)) {
+            const responseIncluded = summarizedResponses.some(
+              (sr) => sr.username == username && sr.response == response);
+            if (!responseIncluded) {
+              unsummarizedResponses.push({ username, response });
+            }
+          }
+
           msg += `------------------\n`;
-          msg += `### Unmatched Responses\n`;
-          const unmatchedResponseCount = summary.unmatchedResponses.length;
-          const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
-          msg += `Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
 
-          const unmatchedMessage = await channel.send(msg);
-          msg = ``;
-          const thread = await unmatchedMessage.startThread({
-            name: `Unmatched responses`,
-            autoArchiveDuration: 60,
-            reason: 'Thread for responses'
-          });
-          for (const response of summary.unmatchedResponses) {
-            for (const response of subtopic.responses) {
-              const latestResponse = responses[response.username];
-              if (latestResponse == response.response) {
-                await thread.send(response.username + ' said "' + response.response + '"');
-              } else {
-                await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
-              }
-              summarizedResponses.push(response);
+          if (unsummarizedResponses.length > 0) {
+            msg += `### Responses Not Yet Categorized\n`
+            const unsummarizedResponseCount = unsummarizedResponses.length;
+            const unsummarizedResponsePercent = toPercent(unsummarizedResponseCount / totalResponseCount);
+            msg += `Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
+            const secondsTilNextUpdate = Math.ceil((Date.now() % (summarizeFrequency*1000))/1000)
+            const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
+            msg += `${minutesTilNextUpdate} minutes until the next summary update.\n`;
+            const unsummarizedMessage = await channel.send(msg);
+            msg = ``;
+            const thread = await unsummarizedMessage.startThread({
+              name: `Responses not yet categorized`,
+              autoArchiveDuration: 60,
+              reason: 'Thread for responses'
+            });
+            for (const response of unsummarizedResponses) {
+              await thread.send(response.username + ' said "' + response.response + '"');
             }
+          } else {
+            msg += `All responses have been included in the current survey summary\n`;
           }
-        }
-
-        const unsummarizedResponses = [];
-
-        for (let [username, response] of Object.entries(responses)) {
-          const responseIncluded = summarizedResponses.some(
-            (sr) => sr.username == username && sr.response == response);
-          if (!responseIncluded) {
-            unsummarizedResponses.push({ username, response });
+          
+          if (msg.length > 0) {
+            await channel.send(msg);
           }
-        }
-
-        msg += `------------------\n`;
-
-        if (unsummarizedResponses.length > 0) {
-          msg += `### Responses Not Yet Categorized\n`
-          const unsummarizedResponseCount = unsummarizedResponses.length;
-          const unsummarizedResponsePercent = toPercent(unsummarizedResponseCount / totalResponseCount);
-          msg += `Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
-          const secondsTilNextUpdate = Math.ceil((Date.now() % (summarizeFrequency*1000))/1000)
-          const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
-          msg += `${minutesTilNextUpdate} minutes until the next summary update.\n`;
-          const unsummarizedMessage = await channel.send(msg);
-          msg = ``;
-          const thread = await unsummarizedMessage.startThread({
-            name: `Responses not yet categorized`,
-            autoArchiveDuration: 60,
-            reason: 'Thread for responses'
-          });
-          for (const response of unsummarizedResponses) {
-            await thread.send(response.username + ' said "' + response.response + '"');
-          }
-        } else {
-          msg += `All responses have been included in the current survey summary\n`;
-        }
-        
-        if (msg.length > 0) {
-          await channel.send(msg);
         }
 
       // ------------------------------------------------
