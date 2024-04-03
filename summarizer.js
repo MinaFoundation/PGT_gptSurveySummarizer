@@ -8,7 +8,7 @@ subscribeRedisClient.on('error', err => console.log('Redis Client Error', err));
 const redisClient = createClient({ url: process.env.REDIS_URL });
 redisClient.on('error', err => console.log('Redis Client Error', err));
 
-const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY;
+const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
 // ==========================================================================================
 

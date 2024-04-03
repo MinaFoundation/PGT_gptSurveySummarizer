@@ -8,6 +8,8 @@ import { ActionRowBuilder, ModalBuilder, StringSelectMenuBuilder, StringSelectMe
 import { createClient } from 'redis';
 import openai from 'openai';
 
+const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
+
 (async() => {
 
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -32,7 +34,8 @@ import openai from 'openai';
           option.setName('survey')
             .setDescription('survey name')
             .setAutocomplete(true)
-            .setRequired(true))
+            .setRequired(true)) // TODO do not allow the user to proceed until a matching option has
+                                //      been selected (I've seen that in other discord bots I think)
     )
     .addSubcommand(sc => 
       sc
@@ -42,7 +45,8 @@ import openai from 'openai';
           option.setName('survey')
             .setDescription('survey name')
             .setAutocomplete(true)
-            .setRequired(true))
+            .setRequired(true)) // TODO do not allow the user to proceed until a matching option has
+                                //      been selected (I've seen that in other discord bots I think)
     )
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -61,8 +65,9 @@ import openai from 'openai';
   client.on('interactionCreate', async interaction => {
     const { user } = interaction;
 
-    // TODO check that these are unique
-    // TODO check that users can't change this, if so consider using ids in maps
+    // TODO check that for discord, usernames are
+    // TODO check that for discord, users can't change this.
+    //      If they aren't unique, maps should probably use ids to avoid users making multiple comments. 
     const username = user.username; 
 
     // ------------------------------------------------
@@ -127,34 +132,53 @@ import openai from 'openai';
 
         const summarizedResponses = []
 
-        await interaction.reply('Please see the following latest survey summary:');
+        await interaction.reply('Please see the following for the latest survey summary:');
 
         const channel = client.channels.cache.get(interaction.channelId)
 
-        let msg = `# ${surveyName}\n`
+        const totalResponseCount = Object.entries(responses).length;
+
+        const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
+
+        let msg = `# Survey: ${surveyName}\n`
         msg += `${description}\n`
         msg += `created by ${creator}\n`
         msg += `----------------------\n`
         await channel.send(msg);
         msg = ``;
         for (const topic of summary.taxonomy) {
-          msg += `## ${topic.topicName}\n`
+          msg += `## Topic: ${topic.topicName}\n`
           msg += `${topic.topicShortDescription}\n`
-          // TODO post # of responses and % out of total responses
+          const topicResponseCount = 
+            topic.subtopics
+            .map((s) => s.responses == null ? 0 : s.responses.length)
+            .reduce((ps, v) => ps + v, 0);
+
+          const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
+          msg += `Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
           for (const subtopic of topic.subtopics) {
-            msg += `## ${subtopic.subtopicName}\n`
+            msg += `### Subtopic: ${subtopic.subtopicName}\n`
             msg += `${subtopic.subtopicShortDescription}\n`
-            // TODO post # of responses and % out of topic
+
+            const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
+
+            const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
+            msg += `Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
             const subtopicMessage = await channel.send(msg);
             msg = ``;
-            if (subtopic.responses.length > 0) {
+            if (subtopic.responses != null && subtopic.responses.length > 0) {
               const thread = await subtopicMessage.startThread({
-                name: `${subtopic.subtopicName} responses`,
+                name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
                 autoArchiveDuration: 60,
                 reason: 'Thread for responses'
               });
               for (const response of subtopic.responses) {
-                await thread.send(response.username + ' said "' + response.response + '"');
+                const latestResponse = responses[response.username];
+                if (latestResponse == response.response) {
+                  await thread.send(response.username + ' said "' + response.response + '"');
+                } else {
+                  await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+                }
                 summarizedResponses.push(response);
               }
               await thread.setLocked(true);
@@ -162,7 +186,12 @@ import openai from 'openai';
           }
         }
         if (summary.unmatchedResponses.length > 0) {
-          msg += `## Unmatched Responses\n`
+          msg += `------------------\n`;
+          msg += `### Unmatched Responses\n`;
+          const unmatchedResponseCount = summary.unmatchedResponses.length;
+          const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
+          msg += `Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
+
           const unmatchedMessage = await channel.send(msg);
           msg = ``;
           const thread = await unmatchedMessage.startThread({
@@ -172,26 +201,49 @@ import openai from 'openai';
           });
           for (const response of summary.unmatchedResponses) {
             for (const response of subtopic.responses) {
-              await thread.send(response.username + ' said "' + response.response + '"');
+              const latestResponse = responses[response.username];
+              if (latestResponse == response.response) {
+                await thread.send(response.username + ' said "' + response.response + '"');
+              } else {
+                await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+              }
               summarizedResponses.push(response);
             }
           }
         }
 
-        const unsummarizedResponses = []; // TODO
+        const unsummarizedResponses = [];
+
+        for (let [username, response] of Object.entries(responses)) {
+          const responseIncluded = summarizedResponses.some(
+            (sr) => sr.username == username && sr.response == response);
+          if (!responseIncluded) {
+            unsummarizedResponses.push({ username, response });
+          }
+        }
+
+        msg += `------------------\n`;
+
         if (unsummarizedResponses.length > 0) {
-          msg += `## Responses Not Yet Categorized\n`
-          // TODO post when update will happen
+          msg += `### Responses Not Yet Categorized\n`
+          const unsummarizedResponseCount = unsummarizedResponses.length;
+          const unsummarizedResponsePercent = toPercent(unsummarizedResponseCount / totalResponseCount);
+          msg += `Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
+          const secondsTilNextUpdate = Math.ceil((Date.now() % (summarizeFrequency*1000))/1000)
+          const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
+          msg += `${minutesTilNextUpdate} minutes until the next summary update.\n`;
           const unsummarizedMessage = await channel.send(msg);
           msg = ``;
           const thread = await unsummarizedMessage.startThread({
-            name: `Unsummarized responses`,
+            name: `Responses not yet categorized`,
             autoArchiveDuration: 60,
             reason: 'Thread for responses'
           });
           for (const response of unsummarizedResponses) {
             await thread.send(response.username + ' said "' + response.response + '"');
           }
+        } else {
+          msg += `All responses have been included in the current survey summary\n`;
         }
         
         if (msg.length > 0) {
@@ -242,7 +294,7 @@ import openai from 'openai';
       const choices = surveys;
       const filtered = choices.filter(choice => choice.startsWith(focusedValue));
 
-      await interaction.respond(
+      await interaction.respond( // TODO this errors sometime? "DiscordAPIError[10062]: Unknown interaction"
         filtered.map(choice => ({ name: choice, value: choice })),
       );
     }
