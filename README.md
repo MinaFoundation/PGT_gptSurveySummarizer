@@ -23,3 +23,11 @@ A discord bot for natural language surveys, inspired by and in the style of [tal
 ## Example Survey
 
 TODO
+
+## Contributions
+
+To make contributions do the following steps:
+
+1. Make an issue that includes a user story for what the user should be able to do (eg user should be able to view the survey summary in their local language).
+2. Get that issue approved by the product owners (for now just me / Evan / es92).
+3. Write a PR and get that approved by the code owners (for now also just me / Evan / es92). Each PR must correspond to an approved issue.
