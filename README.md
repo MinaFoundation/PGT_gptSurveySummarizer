@@ -6,10 +6,10 @@ A discord bot for natural language surveys, inspired by and in the style of [tal
 
 1. Create a .env file with the following variables: 
 
-    ```
+    ```shell
     DISCORD_TOKEN=
     OPENAI_API_KEY=
-    REDIS_URL=  # OPTIONAL
+    REDIS_URL=  # Optional
     CLIENT_ID=
     GUILD_ID=
     SUMMARIZE_FREQUENCY_SECONDS=3600
