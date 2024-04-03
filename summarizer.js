@@ -123,7 +123,8 @@ const gpt = async (
       { role: "system", content: system },
       { role: "user", content: user },
     ],
-    model: "gpt-3.5-turbo",
+    //model: "gpt-3.5-turbo",
+    model: "gpt-4-turbo-preview",
     response_format: { type: "json_object" },
   });
   const { finish_reason, message } = completion.choices[0];
