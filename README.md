@@ -26,7 +26,7 @@ TODO
 
 ## Contributions
 
-To make contributions do the following steps:
+To make a contribution do the following steps:
 
 1. Make an issue that includes a user story for what the user should be able to do (eg user should be able to view the survey summary in their local language).
 2. Get that issue approved by the product owners (for now just me / Evan / es92).
