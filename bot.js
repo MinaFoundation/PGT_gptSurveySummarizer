@@ -10,6 +10,10 @@ import openai from 'openai';
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
+process.on('unhandledRejection', error => {
+  console.error('Unhandled promise rejection:', error);
+});
+
 (async() => {
 
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -52,14 +56,14 @@ const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
   try {
-      await rest.put(
-          Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-          { body: [ command.toJSON() ] },
-      );
+    await rest.put(
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+      { body: [ command.toJSON() ] },
+    );
 
-      console.log('Successfully registered commands.');
+    console.log('Successfully registered commands.');
   } catch (error) {
-      console.error(error);
+    console.error('Error registering commands', error);
   }
 
   client.on('interactionCreate', async interaction => {
