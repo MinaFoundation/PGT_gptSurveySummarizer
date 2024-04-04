@@ -163,42 +163,44 @@ process.on('uncaughtException', error => {
           msg += `----------------------\n`
           await channel.send(msg);
           msg = ``;
-          for (const topic of summary.taxonomy) {
-            msg += `## Topic: ${topic.topicName}\n`
-            msg += `* ${topic.topicShortDescription}\n`
-            const topicResponseCount = 
-              topic.subtopics
-              .map((s) => s.responses == null ? 0 : s.responses.length)
-              .reduce((ps, v) => ps + v, 0);
+          if (summary.taxonomy != null) {
+            for (const topic of summary.taxonomy) {
+              msg += `## Topic: ${topic.topicName}\n`
+              msg += `* ${topic.topicShortDescription}\n`
+              const topicResponseCount = 
+                topic.subtopics
+                .map((s) => s.responses == null ? 0 : s.responses.length)
+                .reduce((ps, v) => ps + v, 0);
 
-            const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
-            msg += `* Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
-            for (const subtopic of topic.subtopics) {
-              msg += `### Subtopic: ${subtopic.subtopicName}\n`
-              msg += `> * ${subtopic.subtopicShortDescription}\n`
+              const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
+              msg += `* Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
+              for (const subtopic of topic.subtopics) {
+                msg += `### Subtopic: ${subtopic.subtopicName}\n`
+                msg += `> * ${subtopic.subtopicShortDescription}\n`
 
-              const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
+                const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
 
-              const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
-              msg += `> * Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
-              const subtopicMessage = await channel.send(msg);
-              msg = ``;
-              if (subtopic.responses != null && subtopic.responses.length > 0) {
-                const thread = await subtopicMessage.startThread({
-                  name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
-                  autoArchiveDuration: 60,
-                  reason: 'Thread for responses'
-                });
-                for (const response of subtopic.responses) {
-                  const latestResponse = responses[response.username];
-                  if (latestResponse == response.response) {
-                    await thread.send(response.username + ' said "' + response.response + '"');
-                  } else {
-                    await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+                const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
+                msg += `> * Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
+                const subtopicMessage = await channel.send(msg);
+                msg = ``;
+                if (subtopic.responses != null && subtopic.responses.length > 0) {
+                  const thread = await subtopicMessage.startThread({
+                    name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
+                    autoArchiveDuration: 60,
+                    reason: 'Thread for responses'
+                  });
+                  for (const response of subtopic.responses) {
+                    const latestResponse = responses[response.username];
+                    if (latestResponse == response.response) {
+                      await thread.send(response.username + ' said "' + response.response + '"');
+                    } else {
+                      await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+                    }
+                    summarizedResponses.push(response);
                   }
-                  summarizedResponses.push(response);
+                  await thread.setLocked(true);
                 }
-                await thread.setLocked(true);
               }
             }
           }
