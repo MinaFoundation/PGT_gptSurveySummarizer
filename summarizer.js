@@ -148,7 +148,7 @@ for working with very clear, concise claims that other people would be able to v
 export const clusteringPrompt = (title, description, responses) => `
 I will give you a survey title, description, and a list of responses.
 I want you to propose a way to break down the information contained in these responses into topics and subtopics of interest. 
-Keep the topic and subtopic names very concise and use the short description to explain what the topic is about. Each topic must have at least one subtopic.
+Keep the topic and subtopic names very concise and use the short description to explain what the topic is about. Each topic must have at least one subtopic. Do not return more topics or subtopics than there are responses.
 
 Return a JSON object of the form {
   "taxonomy": [
