@@ -205,7 +205,7 @@ process.on('uncaughtException', error => {
             }
           }
           if (summary.unmatchedResponses != null && summary.unmatchedResponses.length > 0) {
-            msg += `------------------\n`;
+            msg += `----------------------\n`
             msg += `### Unmatched Responses\n`;
             const unmatchedResponseCount = summary.unmatchedResponses.length;
             const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
@@ -241,7 +241,7 @@ process.on('uncaughtException', error => {
             }
           }
 
-          msg += `------------------\n`;
+          msg += `----------------------\n`
 
           if (unsummarizedResponses.length > 0) {
             msg += `### Responses Not Yet Categorized\n`
