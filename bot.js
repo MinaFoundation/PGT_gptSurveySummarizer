@@ -119,8 +119,8 @@ process.on('uncaughtException', error => {
           const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
 
           let msg = ``;
-          msg += `Survey: ${surveyName}\n`
-          msg += `${surveyDescription}`;
+          msg += `### Survey: ${surveyName}\n`
+          msg += `> ${surveyDescription}`;
 
 
           const reply = new ButtonBuilder()
@@ -132,21 +132,6 @@ process.on('uncaughtException', error => {
             content: `${msg}`,
             components: [new ActionRowBuilder().addComponents(reply)]
           });
-
-          //const modal = new ModalBuilder()
-          //  .setCustomId('respondModal-' + surveyName)
-          //  .setTitle(`Respond to Survey: suveryName`);// ${surveyName}`);
-
-          //const responseInput = new TextInputBuilder()
-          //  .setCustomId('responseInput')
-          //  .setLabel(`description here`)//`${surveyDescription}`)
-          //  .setStyle(TextInputStyle.Paragraph)
-          //  .setRequired(true);
-
-          //const actionRow = new ActionRowBuilder().addComponents(responseInput);
-          //modal.addComponents(actionRow);
-
-          //await interaction.showModal(modal);
         }
 
       // ------------------------------------------------
@@ -173,29 +158,29 @@ process.on('uncaughtException', error => {
           const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
 
           let msg = `# Survey: ${surveyName}\n`
-          msg += `${description}\n`
-          msg += `created by ${creator}\n`
+          msg += `> ${description}\n`
+          msg += `> created by ${creator}\n`
           msg += `----------------------\n`
           await channel.send(msg);
           msg = ``;
           for (const topic of summary.taxonomy) {
             msg += `## Topic: ${topic.topicName}\n`
-            msg += `${topic.topicShortDescription}\n`
+            msg += `* ${topic.topicShortDescription}\n`
             const topicResponseCount = 
               topic.subtopics
               .map((s) => s.responses == null ? 0 : s.responses.length)
               .reduce((ps, v) => ps + v, 0);
 
             const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
-            msg += `Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
+            msg += `* Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
             for (const subtopic of topic.subtopics) {
               msg += `### Subtopic: ${subtopic.subtopicName}\n`
-              msg += `${subtopic.subtopicShortDescription}\n`
+              msg += `> * ${subtopic.subtopicShortDescription}\n`
 
               const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
 
               const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
-              msg += `Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
+              msg += `> * Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
               const subtopicMessage = await channel.send(msg);
               msg = ``;
               if (subtopic.responses != null && subtopic.responses.length > 0) {
@@ -222,7 +207,7 @@ process.on('uncaughtException', error => {
             msg += `### Unmatched Responses\n`;
             const unmatchedResponseCount = summary.unmatchedResponses.length;
             const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
-            msg += `Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
+            msg += `* Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
 
             const unmatchedMessage = await channel.send(msg);
             msg = ``;
