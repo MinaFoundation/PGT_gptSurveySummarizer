@@ -204,7 +204,7 @@ process.on('uncaughtException', error => {
               }
             }
           }
-          if (summary.unmatchedResponses.length > 0) {
+          if (summary.unmatchedResponses != null && Psummary.unmatchedResponses.length > 0) {
             msg += `------------------\n`;
             msg += `### Unmatched Responses\n`;
             const unmatchedResponseCount = summary.unmatchedResponses.length;
