@@ -17,7 +17,6 @@ const main = async () => {
   await redisClient.connect();
 
   while (true) {
-    console.log('1');
     await checkUpdateSurveys(redisClient);
     await new Promise((r) => setTimeout(r, 30*1000));
   }
@@ -40,7 +39,8 @@ const checkUpdateSurveys = async (redisClient) => {
     const lastSummaryUpdateEpoch = Math.floor(lastSummaryTime/(summarizeFrequency*1000));
     const currentEpoch = Math.floor(Date.now()/(summarizeFrequency*1000));
 
-    console.log(lastEditTime, lastSummaryTime, lastSummaryUpdateEpoch, currentEpoch);
+    console.log(surveyName);
+    console.log('\t', lastSummaryTime - lastEditTime, lastSummaryUpdateEpoch, currentEpoch);
 
     if (lastEditTime != null) {
       if (lastSummaryTime == null) {
@@ -63,8 +63,14 @@ const updateSurvey = async (
   redisClient,
   surveyName
 ) => {
+  console.log('creating survey summary');
+
   const responses = await redisClient.hGetAll(`survey:${surveyName}:responses`);
-  console.log('creating summary for', surveyName);
+  const title = await redisClient.get(`survey:${surveyName}:title`);
+  const description = await redisClient.get(`survey:${surveyName}:description`);
+
+  console.log('title', title)
+  console.log('description', description)
   console.log('responses', responses)
 
   const apikey = process.env.OPENAI_API_KEY;
@@ -72,7 +78,7 @@ const updateSurvey = async (
   const { taxonomy } = await gpt(
     apikey,
     systemMessage(),
-    clusteringPrompt(JSON.stringify(Object.values(responses))),
+    clusteringPrompt(title, description, JSON.stringify(Object.values(responses))),
   );
 
   const batchSize = 10;
@@ -86,7 +92,7 @@ const updateSurvey = async (
         const assignment = await gpt(
           apikey,
           systemMessage(),
-          assignmentPrompt(JSON.stringify(taxonomy), response)
+          assignmentPrompt(title, description, JSON.stringify(taxonomy), response)
         );
         insertResponse(
           taxonomy,
@@ -139,8 +145,8 @@ You are familiar with public consultation tools like Pol.is and you understand t
 for working with very clear, concise claims that other people would be able to vote on.
 `;
 
-export const clusteringPrompt = (responses) => `
-I will give you a list of responses.
+export const clusteringPrompt = (title, description, responses) => `
+I will give you a survey title, description, and a list of responses.
 I want you to propose a way to break down the information contained in these responses into topics and subtopics of interest. 
 Keep the topic and subtopic names very concise and use the short description to explain what the topic is about. Each topic must have at least one subtopic.
 
@@ -161,15 +167,21 @@ Return a JSON object of the form {
   ]
 }
 
-Now here is the list of responses:
+Now here is the survey title: ${title}
+
+The survey description: ${description}
+
+And here is the list of responses:
 ${responses}
 `;
 
 export const assignmentPrompt = (
+  title, 
+  description, 
   taxonomy,
   response,
 ) => `
-I'm going to give you a response made by a participant and a list of topics and subtopics which have already been extracted.  
+I'm going to give you a response made by a participant to a survey, the title and description of the survey, and a list of topics and subtopics which have already been extracted from the survey.
 I want you to assign each response to the best matching topic and subtopic in the taxonomy. The topic must be a member of the taxonomy, and the subtopic must be a member of the topic.
 
 Return a JSON object of the form {
@@ -177,7 +189,11 @@ Return a JSON object of the form {
   "subtopicName": string // from the list of subtopics
 }
 
-Now here is the list of topics/subtopics: 
+Now here is the survey title: ${title}
+
+The survey description: ${description}
+
+And here is the list of topics/subtopics: 
 taxonomy: ${taxonomy}
 
 And then here is the response:
@@ -188,7 +204,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
   if (!matchedTopic) {
-    console.log("Topic missmatch, skipping response " + JSON.stringify(response));
+    console.log("Topic mismatch, skipping response " + JSON.stringify(response));
     unmatchedResponses.push(response);
     return;
   }
@@ -196,7 +212,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
     (subtopic) => subtopic.subtopicName === subtopicName
   );
   if (!subtopic) {
-    console.log("Subtopic missmatch, skipping response " + JSON.stringify(response));
+    console.log("Subtopic mismatch, skipping response " + JSON.stringify(response));
     unmatchedResponses.push(response);
     return;
   }

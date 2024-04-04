@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle } from 'discord.js';
+import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
@@ -12,6 +12,10 @@ const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
 process.on('unhandledRejection', error => {
   console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', error => {
+  console.error('Unhandled exception:', error);
 });
 
 (async() => {
@@ -83,8 +87,9 @@ process.on('unhandledRejection', error => {
 
       // ------------------------------------------------
       if (subcommand == 'create') {
+        const surveyName = options.getString('survey');
         const modal = new ModalBuilder()
-          .setCustomId('createModal')
+          .setCustomId('createModal-' + surveyName)
           .setTitle('Create Survey');
 
         const titleInput = new TextInputBuilder()
@@ -113,20 +118,35 @@ process.on('unhandledRejection', error => {
 
           const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
 
-          const modal = new ModalBuilder()
-            .setCustomId('respondModal-' + surveyName)
-            .setTitle('Respond to Survey');
+          let msg = ``;
+          msg += `Survey: ${surveyName}\n`
+          msg += `${surveyDescription}`;
 
-          const responseInput = new TextInputBuilder()
-            .setCustomId('responseInput')
-            .setLabel(`${surveyName} | ${surveyDescription}`)
-            .setStyle(TextInputStyle.Paragraph)
-            .setRequired(true);
 
-          const actionRow = new ActionRowBuilder().addComponents(responseInput);
-          modal.addComponents(actionRow);
+          const reply = new ButtonBuilder()
+                .setCustomId('respondButton-' + surveyName)
+                .setLabel('Respond')
+                .setStyle(ButtonStyle.Primary);
 
-          await interaction.showModal(modal);
+          await interaction.reply({ 
+            content: `${msg}`,
+            components: [new ActionRowBuilder().addComponents(reply)]
+          });
+
+          //const modal = new ModalBuilder()
+          //  .setCustomId('respondModal-' + surveyName)
+          //  .setTitle(`Respond to Survey: suveryName`);// ${surveyName}`);
+
+          //const responseInput = new TextInputBuilder()
+          //  .setCustomId('responseInput')
+          //  .setLabel(`description here`)//`${surveyDescription}`)
+          //  .setStyle(TextInputStyle.Paragraph)
+          //  .setRequired(true);
+
+          //const actionRow = new ActionRowBuilder().addComponents(responseInput);
+          //modal.addComponents(actionRow);
+
+          //await interaction.showModal(modal);
         }
 
       // ------------------------------------------------
@@ -269,10 +289,30 @@ process.on('unhandledRejection', error => {
       }
 
     // ------------------------------------------------
+    } else if (interaction.isButton()) {
+      if (interaction.customId.startsWith('respondButton')) {
+        const surveyName = interaction.customId.split('-').slice(1).join('-');
+
+        const modal = new ModalBuilder()
+          .setCustomId('respondModal-' + surveyName)
+          .setTitle(`Survey Response`);
+
+        const responseInput = new TextInputBuilder()
+          .setCustomId('responseInput')
+          .setLabel(`Please enter your response below`)
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true);
+
+        const actionRow = new ActionRowBuilder().addComponents(responseInput);
+        modal.addComponents(actionRow);
+
+        await interaction.showModal(modal);
+      }
     } else if (interaction.isModalSubmit()) {
 
       // ------------------------------------------------
-    	if (interaction.customId === 'createModal') {
+      if (interaction.customId.startsWith('createModal')) {
+        const surveyName = interaction.customId.split('-').slice(1).join('-');
         const title = interaction.fields.getTextInputValue('titleInput');
         const description = interaction.fields.getTextInputValue('descriptionInput');
         if (await redisClient.sIsMember('surveys', surveyName)) {
@@ -307,7 +347,7 @@ process.on('unhandledRejection', error => {
       const choices = surveys;
       const filtered = choices.filter(choice => choice.startsWith(focusedValue));
 
-      await interaction.respond( // TODO this errors sometime? "DiscordAPIError[10062]: Unknown interaction"
+      await interaction.respond(
         filtered.map(choice => ({ name: choice, value: choice })),
       );
     }
