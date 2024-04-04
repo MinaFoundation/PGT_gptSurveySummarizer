@@ -204,7 +204,7 @@ process.on('uncaughtException', error => {
               }
             }
           }
-          if (summary.unmatchedResponses != null && Psummary.unmatchedResponses.length > 0) {
+          if (summary.unmatchedResponses != null && summary.unmatchedResponses.length > 0) {
             msg += `------------------\n`;
             msg += `### Unmatched Responses\n`;
             const unmatchedResponseCount = summary.unmatchedResponses.length;
@@ -247,10 +247,13 @@ process.on('uncaughtException', error => {
             msg += `### Responses Not Yet Categorized\n`
             const unsummarizedResponseCount = unsummarizedResponses.length;
             const unsummarizedResponsePercent = toPercent(unsummarizedResponseCount / totalResponseCount);
-            msg += `Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
-            const secondsTilNextUpdate = Math.ceil((Date.now() % (summarizeFrequency*1000))/1000)
+            msg += `> Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
+            const timeSinceLastUpdate = (Date.now() % (summarizeFrequency*1000))
+            const timeOfLastUpdate = Date.now() - timeSinceLastUpdate;
+            const timeOfNextUpdate = timeOfLastUpdate + summarizeFrequency*1000;
+            const secondsTilNextUpdate = (timeOfNextUpdate - Date.now())/1000
             const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
-            msg += `${minutesTilNextUpdate} minutes until the next summary update.\n`;
+            msg += `> ${minutesTilNextUpdate} minutes until the next summary update.\n`;
             const unsummarizedMessage = await channel.send(msg);
             msg = ``;
             const thread = await unsummarizedMessage.startThread({
@@ -262,7 +265,7 @@ process.on('uncaughtException', error => {
               await thread.send(response.username + ' said "' + response.response + '"');
             }
           } else {
-            msg += `All responses have been included in the current survey summary\n`;
+            msg += `> All responses have been included in the current survey summary\n`;
           }
           
           if (msg.length > 0) {
