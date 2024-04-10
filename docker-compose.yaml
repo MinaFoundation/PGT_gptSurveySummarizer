@@ -1,0 +1,25 @@
+services:
+  bot:
+    image: gpt-survey-summarizer
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile
+    command: bot
+    environment:
+      CLIENT_ID: ""
+      DISCORD_TOKEN: ""
+      GUILD_ID: ""
+      REDIS_URL: "redis://redis:6379"
+      SUMMARIZE_FREQUENCY_SECONDS: ""
+  summarizer:
+    image: gpt-survey-summarizer
+    build:
+      context: ../.
+      dockerfile: docker/Dockerfile
+    command: summarizer
+    environment:
+      OPENAI_API_KEY: ""
+      REDIS_URL: "redis://redis:6379"
+      SUMMARIZE_FREQUENCY_SECONDS: ""
+  redis:
+    image: redis

@@ -1,1 +1,4 @@
 * @es92
+
+/Dockerfile @MinaFoundation/infra-eng-reviewers
+/docker-compose.yaml @MinaFoundation/infra-eng-reviewers
