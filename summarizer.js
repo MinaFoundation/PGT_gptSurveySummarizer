@@ -10,6 +10,14 @@ redisClient.on('error', err => console.log('Redis Client Error', err));
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
+process.on('unhandledRejection', error => {
+  console.error('Unhandled promise rejection:', error);
+});
+
+process.on('uncaughtException', error => {
+  console.error('Unhandled exception:', error);
+});
+
 // ==========================================================================================
 
 const main = async () => {
@@ -54,7 +62,6 @@ const checkUpdateSurveys = async (redisClient) => {
       }
     }
   }
-
 }
 
 // ==========================================================================================
@@ -75,7 +82,7 @@ const updateSurvey = async (
 
   const apikey = process.env.OPENAI_API_KEY;
 
-  const { taxonomy } = await gpt(
+  let { taxonomy } = await gpt(
     apikey,
     systemMessage(),
     clusteringPrompt(title, description, JSON.stringify(Object.values(responses))),
@@ -103,6 +110,8 @@ const updateSurvey = async (
       })
     );
   }
+
+  taxonomy = cleanupTaxonomy(taxonomy);
 
   const summary = {
     taxonomy,
@@ -222,4 +231,27 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   subtopic.responses.push(response);
 }
 
+function cleanupTaxonomy(taxonomy) {
+  taxonomy = filterEmptySubtopics(taxonomy);
+  taxonomy = filterEmptyTopics(taxonomy);
+  return taxonomy
+
+}
+
+function filterEmptySubtopics(taxonomy) {
+  return taxonomy.map((t) => {
+    t.subtopics = t.subtopics.filter((s) => {
+      return s.responses != null && s.responses.length > 0;
+    });
+    return t;
+  });
+}
+
+function filterEmptyTopics(taxonomy) {
+  return taxonomy.filter((t) => {
+    return t.subtopics.length > 0;
+  });
+}
+
 main()
+
