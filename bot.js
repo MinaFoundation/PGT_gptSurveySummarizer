@@ -157,6 +157,8 @@ process.on('uncaughtException', error => {
 
           const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
 
+          const pluralize = (n) => n == 1 ? '' : 's';
+
           const divider = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n`
 
           const number_to_discord_number = {
@@ -204,14 +206,17 @@ process.on('uncaughtException', error => {
                 .map((s) => s.responses == null ? 0 : s.responses.length)
                 .reduce((ps, v) => ps + v, 0);
 
-              msg += `## ${number_to_discord_number[index+1]} ${topic.topicName} [${topicResponseCount} responses]\n`
+              msg += `## ${number_to_discord_number[index+1]}`
+              msg += `${topic.topicName} [${topicResponseCount} response${pluralize(topicResponseCount)}]\n`
               msg += `${topic.topicShortDescription}\n`
               msg += `\n`
 
               for (const [subindex, subtopic] of topic.subtopics.entries()) {
                 const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
 
-                msg += `> ${number_to_discord_letter[subindex]} **${subtopic.subtopicName} [${subtopicResponseCount} responses]**\n`
+                msg += `> ${number_to_discord_letter[subindex]}`
+                msg += `**${subtopic.subtopicName} [${subtopicResponseCount} response${pluralize(subtopicResponseCount)}]**\n`
+
                 msg += `> ${subtopic.subtopicShortDescription}\n\n`
 
                 if (subtopic.responses != null && subtopic.responses.length > 0) {
