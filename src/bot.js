@@ -339,14 +339,29 @@ process.on('uncaughtException', error => {
       if (interaction.customId.startsWith('respondButton')) {
         const surveyName = interaction.customId.split('-').slice(1).join('-');
 
+        const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
+
+        let defaultText = '';
+        if (hadResponse) {
+          defaultText = await redisClient.hGet(`survey:${surveyName}:responses`, username)
+        }
+
+        let label;
+        if (hadResponse) {
+          label = `Please update your response below`;
+        } else {
+          label = `Please enter your response below`;
+        }
+
         const modal = new ModalBuilder()
           .setCustomId('respondModal-' + surveyName)
           .setTitle(`Survey Response`);
 
         const responseInput = new TextInputBuilder()
           .setCustomId('responseInput')
-          .setLabel(`Please enter your response below`)
+          .setLabel(label)
           .setStyle(TextInputStyle.Paragraph)
+          .setValue(defaultText)
           .setRequired(true);
 
         const actionRow = new ActionRowBuilder().addComponents(responseInput);
