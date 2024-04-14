@@ -2,6 +2,8 @@
 
 A discord bot for natural language surveys, inspired by and in the style of [talk to the city](https://github.com/AIObjectives/talk-to-the-city-reports).
 
+Join the discord survey for discussing and developing this tool [here](https://discord.gg/2cmxYYMyHN).
+
 ## Usage
 
 1. Create a .env file with the following variables: 
