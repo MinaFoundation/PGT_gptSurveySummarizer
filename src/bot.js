@@ -206,7 +206,7 @@ process.on('uncaughtException', error => {
                 .map((s) => s.responses == null ? 0 : s.responses.length)
                 .reduce((ps, v) => ps + v, 0);
 
-              msg += `## ${number_to_discord_number[index+1]}`
+              msg += `## ${number_to_discord_number[index+1]} `
               msg += `${topic.topicName} [${topicResponseCount} response${pluralize(topicResponseCount)}]\n`
               msg += `${topic.topicShortDescription}\n`
               msg += `\n`
@@ -214,7 +214,7 @@ process.on('uncaughtException', error => {
               for (const [subindex, subtopic] of topic.subtopics.entries()) {
                 const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
 
-                msg += `> ${number_to_discord_letter[subindex]}`
+                msg += `> ${number_to_discord_letter[subindex]} `
                 msg += `**${subtopic.subtopicName} [${subtopicResponseCount} response${pluralize(subtopicResponseCount)}]**\n`
 
                 msg += `> ${subtopic.subtopicShortDescription}\n\n`
