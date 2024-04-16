@@ -157,78 +157,111 @@ process.on('uncaughtException', error => {
 
           const toPercent = (p) => p.toLocaleString(undefined, {style: 'percent', maximumFractionDigits:0}); 
 
-          let msg = `# Survey: ${surveyName}\n`
-          msg += `> ${description}\n`
-          msg += `> created by ${creator}\n`
-          msg += `----------------------\n`
-          await channel.send(msg);
-          msg = ``;
+          const pluralize = (n) => n == 1 ? '' : 's';
+
+          const divider = `▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n`
+
+          const number_to_discord_number = {
+            0: ':zero:',
+            1: ':one:',
+            2: ':two:',
+            3: ':three:',
+            4: ':four:',
+            5: ':five:',
+            6: ':six:',
+            7: ':seven:',
+            8: ':eight:',
+            9: ':nine:',
+          }
+
+          const number_to_discord_letter = {
+            0: ':regional_indicator_a:',
+            1: ':regional_indicator_b:',
+            2: ':regional_indicator_c:',
+            3: ':regional_indicator_d:',
+            4: ':regional_indicator_e:',
+            5: ':regional_indicator_f:',
+            6: ':regional_indicator_g:',
+            7: ':regional_indicator_h:',
+            8: ':regional_indicator_i:',
+            9: ':regional_indicator_j:',
+          }
+
+          let msg = '';
+          msg += `# :ballot_box: ${surveyName}\n`;
+          msg += divider;
+          msg += `:page_facing_up: ${description}\n`;
+          msg += `:thought_balloon: created by ${creator}\n`;
+          msg += `:speech_balloon: ${totalResponseCount} responses\n`;
+          if (summary.taxonomy != null && Object.keys(summary.taxonomy).length > 0) {
+            msg += divider;
+          }
+
+          const threads = [];
+
           if (summary.taxonomy != null) {
-            for (const topic of summary.taxonomy) {
-              msg += `## Topic: ${topic.topicName}\n`
-              msg += `* ${topic.topicShortDescription}\n`
+            for (const [index, topic] of summary.taxonomy.entries()) {
               const topicResponseCount = 
                 topic.subtopics
                 .map((s) => s.responses == null ? 0 : s.responses.length)
                 .reduce((ps, v) => ps + v, 0);
 
-              const topicResponsePercent = toPercent(topicResponseCount / totalResponseCount);
-              msg += `* Responses: ${topicResponseCount} / ${totalResponseCount} out of the total (${topicResponsePercent})\n`
-              for (const subtopic of topic.subtopics) {
-                msg += `### Subtopic: ${subtopic.subtopicName}\n`
-                msg += `> * ${subtopic.subtopicShortDescription}\n`
+              msg += `## ${number_to_discord_number[index+1]} `
+              msg += `${topic.topicName} [${topicResponseCount} response${pluralize(topicResponseCount)}]\n`
+              msg += `${topic.topicShortDescription}\n`
+              msg += `\n`
 
+              for (const [subindex, subtopic] of topic.subtopics.entries()) {
                 const subtopicResponseCount = subtopic.responses == null ? 0 : subtopic.responses.length;
 
-                const subtopicResponsePercent = toPercent(subtopicResponseCount / topicResponseCount);
-                msg += `> * Responses: ${subtopicResponseCount} / ${topicResponseCount} of this topic (${subtopicResponsePercent})\n`
-                const subtopicMessage = await channel.send(msg);
-                msg = ``;
+                msg += `> ${number_to_discord_letter[subindex]} `
+                msg += `**${subtopic.subtopicName} [${subtopicResponseCount} response${pluralize(subtopicResponseCount)}]**\n`
+
+                msg += `> ${subtopic.subtopicShortDescription}\n\n`
+
                 if (subtopic.responses != null && subtopic.responses.length > 0) {
-                  const thread = await subtopicMessage.startThread({
-                    name: `${topic.topicName} / ${subtopic.subtopicName} responses`,
-                    autoArchiveDuration: 60,
-                    reason: 'Thread for responses'
-                  });
-                  for (const response of subtopic.responses) {
+
+                  const responseMessages = subtopic.responses.map((response) => {
+                    summarizedResponses.push(response);
                     const latestResponse = responses[response.username];
                     if (latestResponse == response.response) {
-                      await thread.send(response.username + ' said "' + response.response + '"');
+                      return response.username + ' said "' + response.response + '"';
                     } else {
-                      await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
+                      return response.username + ' previously said "' + response.response + '". The next update will include their latest response.';
                     }
-                    summarizedResponses.push(response);
-                  }
-                  await thread.setLocked(true);
+                  });
+
+                  const title = `${number_to_discord_number[index+1]} ${number_to_discord_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
+
+                  threads.push({
+                    title,
+                    responseMessages
+                  });
                 }
               }
             }
           }
           if (summary.unmatchedResponses != null && summary.unmatchedResponses.length > 0) {
-            msg += `----------------------\n`
+            msg += divider;
             msg += `### Unmatched Responses\n`;
-            const unmatchedResponseCount = summary.unmatchedResponses.length;
-            const unmatchedResponsePercent = toPercent(unmatchedResponseCount / totalResponseCount);
-            msg += `* Responses: ${unmatchedResponseCount} / ${totalResponseCount} out of the total (${unmatchedResponsePercent})\n`
+            msg += `:speech_balloon: Responses not matched with any topic: ${unmatchedResponseCount}\n`
 
-            const unmatchedMessage = await channel.send(msg);
-            msg = ``;
-            const thread = await unmatchedMessage.startThread({
-              name: `Unmatched responses`,
-              autoArchiveDuration: 60,
-              reason: 'Thread for responses'
-            });
-            for (const response of summary.unmatchedResponses) {
-              for (const response of subtopic.responses) {
-                const latestResponse = responses[response.username];
-                if (latestResponse == response.response) {
-                  await thread.send(response.username + ' said "' + response.response + '"');
-                } else {
-                  await thread.send(response.username + ' previously said "' + response.response + '". The next update will include their latest response.');
-                }
-                summarizedResponses.push(response);
+            const responseMessages = summary.unmatchedResponses.map((response) => {
+              summarizedResponses.push(response);
+              const latestResponse = responses[response.username];
+              if (latestResponse == response.response) {
+                return response.username + ' said "' + response.response + '"';
+              } else {
+                return response.username + ' previously said "' + response.response + '". The next update will include their latest response.';
               }
-            }
+            });
+
+            const title = ':speech_balloon: Unmatched responses';
+
+            threads.push({
+              title,
+              responseMessages
+            });
           }
 
           const unsummarizedResponses = [];
@@ -241,35 +274,58 @@ process.on('uncaughtException', error => {
             }
           }
 
-          msg += `----------------------\n`
+          msg += divider;
 
           if (unsummarizedResponses.length > 0) {
-            msg += `### Responses Not Yet Categorized\n`
+            msg += `## :new: Responses Not Yet Categorized\n`
             const unsummarizedResponseCount = unsummarizedResponses.length;
-            const unsummarizedResponsePercent = toPercent(unsummarizedResponseCount / totalResponseCount);
-            msg += `> Responses not included in the current summary: ${unsummarizedResponseCount} / ${totalResponseCount} out of the total (${unsummarizedResponsePercent})\n`
+            msg += `:speech_balloon: Responses not included in the current summary: ${unsummarizedResponseCount}\n`
             const timeSinceLastUpdate = (Date.now() % (summarizeFrequency*1000))
             const timeOfLastUpdate = Date.now() - timeSinceLastUpdate;
             const timeOfNextUpdate = timeOfLastUpdate + summarizeFrequency*1000;
             const secondsTilNextUpdate = (timeOfNextUpdate - Date.now())/1000
             const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
-            msg += `> ${minutesTilNextUpdate} minutes until the next summary update.\n`;
-            const unsummarizedMessage = await channel.send(msg);
-            msg = ``;
-            const thread = await unsummarizedMessage.startThread({
-              name: `Responses not yet categorized`,
-              autoArchiveDuration: 60,
-              reason: 'Thread for responses'
+            msg += `:timer: ${minutesTilNextUpdate} minutes until the next summary update.\n`;
+
+            const responseMessages = unsummarizedResponses.map((response) => {
+              return response.username + ' said "' + response.response + '"';
             });
-            for (const response of unsummarizedResponses) {
-              await thread.send(response.username + ' said "' + response.response + '"');
-            }
+
+            const title = ':new: Responses not yet categorized';
+
+            threads.push({
+              title,
+              responseMessages
+            });
           } else {
-            msg += `> All responses have been included in the current survey summary\n`;
+            msg += `:green_circle: All responses have been included in the current survey summary\n`;
+          }
+          if (threads.length > 0) {
+            msg += divider;
           }
           
           if (msg.length > 0) {
             await channel.send(msg);
+          }
+
+          if (threads.length > 0) {
+            for (const thread of threads) {
+              const {
+                    title,
+                    responseMessages
+              } = thread;
+
+              const message = await channel.send(title);
+              const discordThread = await message.startThread({
+                name: 'Responses',
+                autoArchiveDuration: 60,
+                reason: 'Thread for responses'
+              });
+              for (const response of responseMessages) {
+                await discordThread.send(response);
+              }
+              await discordThread.setLocked(true);
+            }
           }
         }
 
@@ -283,14 +339,29 @@ process.on('uncaughtException', error => {
       if (interaction.customId.startsWith('respondButton')) {
         const surveyName = interaction.customId.split('-').slice(1).join('-');
 
+        const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
+
+        let defaultText = '';
+        if (hadResponse) {
+          defaultText = await redisClient.hGet(`survey:${surveyName}:responses`, username)
+        }
+
+        let label;
+        if (hadResponse) {
+          label = `Please update your response below`;
+        } else {
+          label = `Please enter your response below`;
+        }
+
         const modal = new ModalBuilder()
           .setCustomId('respondModal-' + surveyName)
           .setTitle(`Survey Response`);
 
         const responseInput = new TextInputBuilder()
           .setCustomId('responseInput')
-          .setLabel(`Please enter your response below`)
+          .setLabel(label)
           .setStyle(TextInputStyle.Paragraph)
+          .setValue(defaultText)
           .setRequired(true);
 
         const actionRow = new ActionRowBuilder().addComponents(responseInput);
