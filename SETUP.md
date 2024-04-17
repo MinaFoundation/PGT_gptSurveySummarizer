@@ -44,6 +44,27 @@ CLIENT_ID=<Your Discord Application Client ID> (It's available in the [Discord D
 GUILD_ID=<Your Discord Server (Guild) ID> (To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings)
 REDIS_URL=redis://localhost:6379
 
+## Finding the Client ID
+- Navigate to the [Discord Developer Portal](https://discord.com/developers/applications/)
+- Select Your Application: Click on the application you created for your bot.
+- Locate the Client ID:
+ - Under the "Application" section (usually the first page you land on after selecting your application), you will find your Client ID. It's a long string of numbers.
+ - Click the "Copy" button next to the Client ID to copy it to your clipboard.
+
+## Finding the Guild ID (Server ID)
+To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings.
+
+### Enabling Developer Mode
+- Open Discord Settings: Click on the gear icon next to your username at the bottom left corner of the Discord interface.
+- Access Advanced Settings: In the left sidebar, scroll down and select "Advanced" under the "App Settings" section.
+- Enable Developer Mode: Toggle the "Developer Mode" switch to the on position.
+
+### Copying the Guild ID
+- Right-Click Your Server Icon:
+ - After enabling Developer Mode, go back to the server list on the left side of the Discord interface.
+ - Right-click the server (guild) where you intend to use the bot.
+- Select 'Copy ID': At the bottom of the context menu, click "Copy ID" to copy the Guild ID to your clipboard.
+
 # Step 4: Registering Slash Commands
 - Use the Discord.js guide to register your slash commands either globally or to a specific guild for testing. The command registration can be part of your bot startup process or a separate script.
 
