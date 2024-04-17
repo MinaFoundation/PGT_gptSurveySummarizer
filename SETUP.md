@@ -40,8 +40,8 @@
 - Add your Discord Bot Token, OpenAI API Key, and Redis connection details (if applicable). Example:
 DISCORD_TOKEN=<Your Discord Bot Token>
 OPENAI_API_KEY=<Your OpenAI API Key>
-CLIENT_ID=<Your Discord Application Client ID>
-GUILD_ID=<Your Discord Server (Guild) ID>
+CLIENT_ID=<Your Discord Application Client ID> (It's available in the [Discord Developer Portal](https://discord.com/developers/applications/)
+GUILD_ID=<Your Discord Server (Guild) ID> (To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings)
 REDIS_URL=redis://localhost:6379
 
 # Step 4: Registering Slash Commands
