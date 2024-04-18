@@ -32,4 +32,4 @@ To make a contribution do the following steps:
 
 1. Make an issue that includes a user story for what the user should be able to do (eg user should be able to view the survey summary in their local language).
 2. Get that issue approved by the product owners (for now just me / Evan / es92).
-3. Write a PR and get that approved by the code owners (for now also just me / Evan / es92). Each PR must correspond to an approved issue.
+3. Write a PR and get that approved by the code owners (for now also just me / Evan / es92). Each PR must correspond to an approved issue. By default PRs should be merged by the PR submitter, though in some cases if changes are needed they can be merged by code owners.
