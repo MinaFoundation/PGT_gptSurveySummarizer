@@ -5,15 +5,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"node bot.js\" \"node summarizer.js\""
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "@discordjs/rest": "^2.2.0",
-    "concurrently": "^8.2.2",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "openai": "^4.31.0",
