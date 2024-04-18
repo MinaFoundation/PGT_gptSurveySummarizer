@@ -11,7 +11,11 @@ Join the discord server for discussing and developing this tool [here](https://d
     ```shell
     DISCORD_TOKEN=
     OPENAI_API_KEY=
+<<<<<<< HEAD
     REDIS_URL=
+=======
+    REDIS_URL=  # Optional
+>>>>>>> 1c5cedd (Revert "Merge pull request #18 from MinaFoundation/smorci/dockerfile")
     CLIENT_ID=
     GUILD_ID=
     SUMMARIZE_FREQUENCY_SECONDS=3600
