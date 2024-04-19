@@ -18,21 +18,34 @@ process.on('uncaughtException', error => {
   console.error('Unhandled exception:', error);
 });
 
+const maxResponsesForMultiResponsePerUser = 5;
+
 (async() => {
 
+  const is_dev = process.argv[2] == '--dev';
+
+  const prefix = is_dev ? 'dev_' : '';
+
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+  const create_multi_cmd = 'create-multi-response';
 
   const redisClient = createClient({ url: process.env.REDIS_URL });
   await redisClient.connect();
 
   const command = 
     new SlashCommandBuilder()
-    .setName('gptsurvey')
+    .setName(prefix + 'gptsurvey')
     .setDescription('create, respond to, and view gpt-powered natural language surveys')
     .addSubcommand(sc => 
       sc
         .setName('create')
-        .setDescription('create a new survey')
+        .setDescription('create a new survey, with one response per user. This is best for sentiment and questions.')
+    )
+    .addSubcommand(sc => 
+      sc
+        .setName(create_multi_cmd)
+        .setDescription('create a new survey, with up to 5 responses per user. This is best for brainstorming and feedback.')
     )
     .addSubcommand(sc => 
       sc
@@ -64,11 +77,12 @@ process.on('uncaughtException', error => {
       Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
       { body: [ command.toJSON() ] },
     );
-
     console.log('Successfully registered commands.');
   } catch (error) {
     console.error('Error registering commands', error);
   }
+
+  client.once('ready', () => console.log('ready'));
 
   client.on('interactionCreate', async interaction => {
     const { user } = interaction;
@@ -86,10 +100,11 @@ process.on('uncaughtException', error => {
       const subcommand = interaction.options.getSubcommand()
 
       // ------------------------------------------------
-      if (subcommand == 'create') {
+      if (subcommand == 'create' || subcommand == create_multi_cmd) {
+        const type = subcommand == create_multi_cmd ? 'multi' : 'single';
         const surveyName = options.getString('survey');
         const modal = new ModalBuilder()
-          .setCustomId('createModal-' + surveyName)
+          .setCustomId('createModal-' + type + '-' + surveyName)
           .setTitle('Create Survey');
 
         const titleInput = new TextInputBuilder()
@@ -143,6 +158,7 @@ process.on('uncaughtException', error => {
         } else {
           const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
           const description = await redisClient.get(`survey:${surveyName}:description`);
+          const surveyType = await redisClient.get(`survey:${surveyName}:type`);
           const creator = await redisClient.get(`survey:${surveyName}:username`);
           const responses = await redisClient.hGetAll(`survey:${surveyName}:responses`);
           const summary = JSON.parse(summaryJSON);
@@ -266,12 +282,26 @@ process.on('uncaughtException', error => {
 
           const unsummarizedResponses = [];
 
-          for (let [username, response] of Object.entries(responses)) {
-            const responseIncluded = summarizedResponses.some(
-              (sr) => sr.username == username && sr.response == response);
-            if (!responseIncluded) {
-              unsummarizedResponses.push({ username, response });
+          if (surveyType == 'single') {
+            for (let [username, response] of Object.entries(responses)) {
+              const responseIncluded = summarizedResponses.some(
+                (sr) => sr.username == username && sr.response == response);
+              if (!responseIncluded) {
+                unsummarizedResponses.push({ username, response });
+              }
             }
+          } else {
+            for (let [username, response] of Object.entries(responses)) {
+              let userResponses = JSON.parse(response);
+              userResponses = userResponses.filter((r) => r != '');
+              userResponses.forEach((response) => {
+                const responseIncluded = summarizedResponses.some(
+                  (sr) => sr.username.split('[')[0] == username && sr.response == response);
+                if (!responseIncluded) {
+                  unsummarizedResponses.push({ username, response });
+                }
+              });
+            };
           }
 
           msg += divider;
@@ -338,34 +368,64 @@ process.on('uncaughtException', error => {
     } else if (interaction.isButton()) {
       if (interaction.customId.startsWith('respondButton')) {
         const surveyName = interaction.customId.split('-').slice(1).join('-');
+        const surveyType = await redisClient.get(`survey:${surveyName}:type`);
 
         const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
 
-        let defaultText = '';
-        if (hadResponse) {
-          defaultText = await redisClient.hGet(`survey:${surveyName}:responses`, username)
-        }
-
-        let label;
-        if (hadResponse) {
-          label = `Please update your response below`;
-        } else {
-          label = `Please enter your response below`;
-        }
+        const plural = surveyType == 'single' ? '' : 's';
 
         const modal = new ModalBuilder()
           .setCustomId('respondModal-' + surveyName)
-          .setTitle(`Survey Response`);
+          .setTitle(`Survey Response${plural}`);
 
-        const responseInput = new TextInputBuilder()
-          .setCustomId('responseInput')
-          .setLabel(label)
-          .setStyle(TextInputStyle.Paragraph)
-          .setValue(defaultText)
-          .setRequired(true);
+        let label;
+        if (hadResponse) {
+          label = `Please update your response${plural} below`;
+        } else {
+          label = `Please enter your response${plural} below`;
+        }
 
-        const actionRow = new ActionRowBuilder().addComponents(responseInput);
-        modal.addComponents(actionRow);
+        if (surveyType == 'single') {
+          let defaultText = '';
+          if (hadResponse) {
+            defaultText = await redisClient.hGet(`survey:${surveyName}:responses`, username)
+          }
+
+          const responseInput = new TextInputBuilder()
+            .setCustomId('responseInput')
+            .setLabel(label)
+            .setStyle(TextInputStyle.Paragraph)
+            .setValue(defaultText)
+            .setRequired(true);
+
+          const actionRow = new ActionRowBuilder().addComponents(responseInput);
+          modal.addComponents(actionRow);
+        } else {
+          let priorResponses = new Array(maxResponsesForMultiResponsePerUser).fill(null).map(() => '');
+          if (hadResponse) {
+            const priorResponseData = await redisClient.hGet(`survey:${surveyName}:responses`, username)
+            priorResponses = JSON.parse(priorResponseData);
+          }
+          const components = new Array(maxResponsesForMultiResponsePerUser).fill(null).map((_, i) => {
+            let label_i;
+            if (i == 0) {
+              label_i = label + `:`;
+            } else {
+              label_i = `Response ${i+1}:`;
+            }
+            const responseInput = new TextInputBuilder()
+              .setCustomId('responseInput-' + i)
+              .setLabel(label_i)
+              .setStyle(TextInputStyle.Paragraph)
+              .setValue(priorResponses[i])
+              .setRequired(i == 0);
+            const actionRow = new ActionRowBuilder().addComponents(responseInput);
+
+            return actionRow
+
+          });
+          modal.addComponents(components);
+        }
 
         await interaction.showModal(modal);
       }
@@ -373,15 +433,17 @@ process.on('uncaughtException', error => {
 
       // ------------------------------------------------
       if (interaction.customId.startsWith('createModal')) {
-        const surveyName = interaction.customId.split('-').slice(1).join('-');
+        const surveyType = interaction.customId.split('-').slice(1,2).join('-');
+        const surveyName = interaction.customId.split('-').slice(2).join('-');
         const title = interaction.fields.getTextInputValue('titleInput');
         const description = interaction.fields.getTextInputValue('descriptionInput');
         if (await redisClient.sIsMember('surveys', surveyName)) {
           await interaction.reply({ content: 'A survey with that name already exists' });
         } else {
-          createSurvey(
+          await createSurvey(
             redisClient, 
             title, 
+            surveyType,
             description,
             username
           );
@@ -391,7 +453,17 @@ process.on('uncaughtException', error => {
       // ------------------------------------------------
       } else if (interaction.customId.startsWith('respondModal')) {
         const surveyName = interaction.customId.split('-').slice(1).join('-');
-        const response = interaction.fields.getTextInputValue('responseInput')
+        const surveyType = await redisClient.get(`survey:${surveyName}:type`);
+        const plural = surveyType == 'single' ? '' : 's';
+        let response;
+        if (surveyType == 'single') {
+          response = interaction.fields.getTextInputValue('responseInput');
+        } else {
+          const responses = new Array(maxResponsesForMultiResponsePerUser).fill(null).map((_, i) => {
+            return interaction.fields.getTextInputValue('responseInput-' + i);
+          });
+          response = JSON.stringify(responses);
+        }
         const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
         await respond(redisClient, surveyName, username, response)
         if (hadResponse) {
@@ -421,15 +493,16 @@ process.on('uncaughtException', error => {
 
 const runTest = async (redisClient) => {
   await redisClient.flushAll();
-  await createSurvey(redisClient, 'test-survey', 'test-description', 'evan');
+  await createSurvey(redisClient, 'test-survey', 'single', 'test-description', 'evan');
   await respond(redisClient, 'test-survey', 'evan', 'comment1');
   await respond(redisClient, 'test-survey', 'bob', 'comment2');
 }
 
-const createSurvey = async (redisClient, surveyName, description, username) => {
+const createSurvey = async (redisClient, surveyName, surveyType, description, username) => {
   await redisClient.sAdd('surveys', surveyName);
   const initialSummaryJSON = JSON.stringify({});
   await redisClient.set(`survey:${surveyName}:summary`, initialSummaryJSON);
+  await redisClient.set(`survey:${surveyName}:type`, surveyType);
   await redisClient.set(`survey:${surveyName}:title`, surveyName);
   await redisClient.set(`survey:${surveyName}:description`, description);
   await redisClient.set(`survey:${surveyName}:username`, username);
