@@ -72,15 +72,31 @@ const updateSurvey = async (
 ) => {
   console.log('creating survey summary');
 
-  const responses = await redisClient.hGetAll(`survey:${surveyName}:responses`);
+  const responseData = await redisClient.hGetAll(`survey:${surveyName}:responses`);
   const title = await redisClient.get(`survey:${surveyName}:title`);
   const description = await redisClient.get(`survey:${surveyName}:description`);
+  const surveyType = await redisClient.get(`survey:${surveyName}:type`);
 
   console.log('title', title)
   console.log('description', description)
-  console.log('responses', responses)
 
   const apikey = process.env.OPENAI_API_KEY;
+
+  let responses;
+  if (surveyType == 'single') {
+    responses = responseData;
+  } else {
+    responses = {};
+    Object.entries(responseData).forEach(([ username, response ]) => {
+      let userResponses = JSON.parse(response);
+      userResponses = userResponses.filter((r) => r != '');
+      userResponses.forEach((r, i) => {
+        responses[username + `[${i}]`] = r;
+      });
+    });
+  }
+
+  console.log('responses', responses)
 
   let { taxonomy } = await gpt(
     apikey,
