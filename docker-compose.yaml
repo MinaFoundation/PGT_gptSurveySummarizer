@@ -1,9 +1,7 @@
 services:
   bot:
     image: gpt-survey-summarizer
-    build:
-      context: ../.
-      dockerfile: docker/Dockerfile
+    build: .
     command: bot
     environment:
       CLIENT_ID: ""
@@ -13,9 +11,7 @@ services:
       SUMMARIZE_FREQUENCY_SECONDS: ""
   summarizer:
     image: gpt-survey-summarizer
-    build:
-      context: ../.
-      dockerfile: docker/Dockerfile
+    build: .
     command: summarizer
     environment:
       OPENAI_API_KEY: ""

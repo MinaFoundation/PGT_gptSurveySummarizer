@@ -11,11 +11,7 @@ Join the discord server for discussing and developing this tool [here](https://d
     ```shell
     DISCORD_TOKEN=
     OPENAI_API_KEY=
-<<<<<<< HEAD
     REDIS_URL=
-=======
-    REDIS_URL=  # Optional
->>>>>>> 1c5cedd (Revert "Merge pull request #18 from MinaFoundation/smorci/dockerfile")
     CLIENT_ID=
     GUILD_ID=
     SUMMARIZE_FREQUENCY_SECONDS=3600
@@ -31,12 +27,14 @@ Join the discord server for discussing and developing this tool [here](https://d
 ### Build it
 
 ```
-docker build -t <your-image-name>:<your-image-tag> -f docker/Dockerfile .
+docker build -t <your-image-name>:<your-image-tag> .
 ```
 
 ### Run it
 
 The image has two operational modes: **bot** by default and **summarizer**
+
+To run the bot use the `bot` argument and to run the summarizer use `summarizer`.
 
 ```
 docker run -it -d --env-file ./.env <your-image-name>:<your-image-tag> bot
@@ -44,12 +42,10 @@ docker run -it -d --env-file ./.env <your-image-name>:<your-image-tag> bot
 
 The `--env-file` flag takes a filename as an argument and expects each line to be in the VAR=VAL format, mimicking the argument passed to `--env`. Comment lines need only be prefixed with #
 
-The container runs the command `npm start` so whatever is configured in `package.json` will be executed by the container.
-
 ### Test it
 
 ```
-docker-compose --file docker/docker-compose.yaml up --build
+docker-compose up --build
 ```
 
 ## Example Survey
