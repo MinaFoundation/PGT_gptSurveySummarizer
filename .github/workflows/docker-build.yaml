@@ -1,14 +1,18 @@
 name: Docker build
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - '*'
-  pull_request:
-    branches:
-      - main
+  # Disabled to not break development
+  #push:
+    #branches:
+      #- main
+    #tags:
+      #- '*'
+  #pull_request:
+    #branches:
+      #- main
+  
+  # Only for testing
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,7 +21,11 @@ jobs:
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v3
-      
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: 🛠️ Build Docker
         # https://github.com/marketplace/actions/docker-build-push-action
         uses: mr-smithers-excellent/docker-build-push@v6
@@ -25,4 +33,3 @@ jobs:
           image: 673156464838.dkr.ecr.us-west-2.amazonaws.com/gpt-survey-summarizer
           tags: ${{ github.ref_name }}
           registry: 673156464838.dkr.ecr.us-west-2.amazonaws.com
-          pushImage: false
