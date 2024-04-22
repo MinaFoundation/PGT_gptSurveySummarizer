@@ -30,6 +30,5 @@ jobs:
         # https://github.com/marketplace/actions/docker-build-push-action
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          image: 673156464838.dkr.ecr.us-west-2.amazonaws.com/gpt-survey-summarizer
-          tags: ${{ github.ref_name }}
+          image: gpt-survey-summarizer
           registry: 673156464838.dkr.ecr.us-west-2.amazonaws.com
