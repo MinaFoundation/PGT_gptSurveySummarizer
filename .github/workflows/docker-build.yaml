@@ -2,9 +2,9 @@ name: Docker build
 
 on:
   # Disabled to not break development
-  #push:
-    #branches:
-      #- main
+  push:
+    branches:
+      - PM-1523-build-workflow # TODO: change to `main`
     #tags:
       #- '*'
   #pull_request:
