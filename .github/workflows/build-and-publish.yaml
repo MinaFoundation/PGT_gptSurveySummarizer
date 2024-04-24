@@ -1,38 +1,35 @@
-name: Docker build
+name: Build and publish
 
 on:
-  # Disabled to not break development
+  # Run build when PR is merged
   push:
     branches:
-      - PM-1523-build-workflow # TODO: change to `main`
-    #tags:
-      #- '*'
-  #pull_request:
-    #branches:
-      #- main
-  
-  # Only for testing
-  workflow_dispatch:
+      - main
 
 env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
 
 jobs:
-  publish:
-    name: Build and Push Docker Image
+  build-and-publish:
+    name: Build and Publish Docker Image
     runs-on: minafoundation-default-runners
     steps:
+
       - name: 📥 Checkout
         uses: actions/checkout@v4
+
       - name: 🦀 Get gpt-survey-summarizer version from package.json
         id: gpt-survey-summarizer
         uses: martinbeentjes/npm-get-version-action@v1.3.1
+
       - name: 🏷️ Generate Tag
         run: echo "TAG=${{ steps.gpt-survey-summarizer.outputs.current-version }}-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: 🔑 ECR Login
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+
       - name: 🔍 Check if Tag already exists
         id: checktag
         uses: tyriis/docker-image-tag-exists@main
@@ -40,6 +37,7 @@ jobs:
           registry: ${{ env.ECR_REPOSITORY_URL}}
           repository: ${{ env.ECR_REPOSITORY_NAME }}
           tag: ${{ env.TAG }}
+
       - name: 🛠️ Build and Push Docker
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
