@@ -43,7 +43,7 @@ jobs:
 
       - name: 🔑 ECR Login
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: 🔍 Check if Tag already exists
         id: checktag
