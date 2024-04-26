@@ -1,14 +1,20 @@
 name: Build and publish
 
 on:
-  # Run build when PR is merged
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      docker_tag_prefix:
+        description: "Enter the Docker Tag Prefix (e.g adhoc-test)"
+        required: true
+        type: string
 
 env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
+  DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
 
 jobs:
   build-and-publish:
@@ -19,12 +25,12 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 🦀 Get gpt-survey-summarizer version from package.json
-        id: gpt-survey-summarizer
+      - name: 🦀 Get application version from package.json
+        id: application-version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
       - name: 🏷️ Generate Tag
-        run: echo "TAG=${{ steps.gpt-survey-summarizer.outputs.current-version }}-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "TAG=${{ steps.application-version.outputs.current-version }}-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: 🔑 ECR Login
         id: login-ecr
@@ -40,6 +46,7 @@ jobs:
 
       - name: 🛠️ Build and Push Docker
         uses: mr-smithers-excellent/docker-build-push@v6
+        if: steps.checktag.outputs.tag == 'not found'
         with:
           image: ${{ env.ECR_REPOSITORY_NAME }}
           registry: ${{ env.ECR_REPOSITORY_URL }}
