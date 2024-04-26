@@ -30,7 +30,16 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
       - name: 🏷️ Generate Tag
-        run: echo "TAG=${{ steps.application-version.outputs.current-version }}-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: |
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "TAG=${{ env.DOCKER_TAG_PREFIX }}-${{ steps.application-version.outputs.current-version }}-$SHORT_SHA" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "push" ] && [ -n "${{ github.event.ref }}" ]; then
+            echo "TAG=${{ steps.application-version.outputs.current-version }}-$SHORT_SHA" >> $GITHUB_ENV
+          else
+            echo "Invalid event. Exiting..."
+            exit 1
+          fi
 
       - name: 🔑 ECR Login
         id: login-ecr
