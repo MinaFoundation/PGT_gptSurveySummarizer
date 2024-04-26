@@ -10,6 +10,9 @@ import openai from 'openai';
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
+import package_json from '../package.json' with { type: 'json' };
+const version = package_json.version;
+
 process.on('unhandledRejection', error => {
   console.error('Unhandled promise rejection:', error);
 });
@@ -68,6 +71,11 @@ const maxResponsesForMultiResponsePerUser = 5;
             .setAutocomplete(true)
             .setRequired(true)) // TODO do not allow the user to proceed until a matching option has
                                 //      been selected (I've seen that in other discord bots I think)
+    )
+    .addSubcommand(sc => 
+      sc
+        .setName('version')
+        .setDescription('view the version number')
     )
 
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -350,6 +358,8 @@ const maxResponsesForMultiResponsePerUser = 5;
         }
 
       // ------------------------------------------------
+      } else if (subcommand == 'version') {
+        await interaction.reply({ content: `version number ${version}` });
       } else {
         console.error('unknown subcommand');
       }
