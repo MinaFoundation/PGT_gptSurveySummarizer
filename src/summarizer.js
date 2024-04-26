@@ -25,7 +25,13 @@ const main = async () => {
   await redisClient.connect();
 
   while (true) {
-    await checkUpdateSurveys(redisClient);
+    console.log('checking surveys for updates...');
+    try {
+      await checkUpdateSurveys(redisClient);
+    } catch (e) {
+      console.error('error while processing surveys:', e);
+    }
+    console.log('done checking surveys for updates.');
     await new Promise((r) => setTimeout(r, 30*1000));
   }
 
@@ -146,6 +152,7 @@ const gpt = async (
   apikey,
   system,
   user,
+  maxTries = 5
 ) => {
   const openai = new OpenAI({ apikey });
 
@@ -159,7 +166,19 @@ const gpt = async (
     response_format: { type: "json_object" },
   });
   const { finish_reason, message } = completion.choices[0];
-  const result = JSON.parse(message.content);
+  let result;
+  try {
+    result = JSON.parse(message.content);
+  } catch(e) {
+    console.error('error while processing gpt response:', e);
+    console.error('gpt response:', message.content);
+    if (maxTries == 1) {
+      throw e;
+    } else {
+      console.log('trying again; tries remaining', maxTries - 1);
+      return await gpt(apikey, system, user, maxTries - 1);
+    }
+  }
   return result;
 }
 
