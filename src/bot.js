@@ -239,12 +239,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
                   const responseMessages = subtopic.responses.map((response) => {
                     summarizedResponses.push(response);
-                    const latestResponse = responses[response.username];
-                    if (latestResponse == response.response) {
-                      return response.username + ' said "' + response.response + '"';
-                    } else {
-                      return response.username + ' previously said "' + response.response + '". The next update will include their latest response.';
-                    }
+                    return formatResponse(surveyType, response, responses);
                   });
 
                   const title = `${number_to_discord_number[index+1]} ${number_to_discord_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
@@ -264,12 +259,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
             const responseMessages = summary.unmatchedResponses.map((response) => {
               summarizedResponses.push(response);
-              const latestResponse = responses[response.username];
-              if (latestResponse == response.response) {
-                return response.username + ' said "' + response.response + '"';
-              } else {
-                return response.username + ' previously said "' + response.response + '". The next update will include their latest response.';
-              }
+              return formatResponse(surveyType, response, responses);
             });
 
             const title = ':speech_balloon: Unmatched responses';
@@ -490,6 +480,23 @@ const maxResponsesForMultiResponsePerUser = 5;
 
   //await runTest(redisClient);
 })();
+
+function formatResponse(surveyType, response, responses) {
+  let responseIsLatest;
+  if (surveyType == 'single') {
+    const latestResponse = responses[response.username];
+    responseIsLatest = latestResponse == response.response;
+  } else {
+    const baseUsername = response.username.split('[')[0];
+    let userResponses = JSON.parse(responses[baseUsername]);
+    responseIsLatest = userResponses.some((r) => r == response.response);
+  }
+  if (responseIsLatest) {
+    return response.username + ' said "' + response.response + '"';
+  } else {
+    return response.username + ' previously said "' + response.response + '". The next update will include their latest response.';
+  }
+}
 
 const runTest = async (redisClient) => {
   await redisClient.flushAll();
