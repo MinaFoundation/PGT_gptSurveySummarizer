@@ -119,6 +119,7 @@ const maxResponsesForMultiResponsePerUser = 5;
           .setCustomId('titleInput')
           .setLabel("What is your survey title?")
           .setStyle(TextInputStyle.Short)
+          .setMaxLength(80)
           .setRequired(true);
 
         const descriptionInput = new TextInputBuilder()
