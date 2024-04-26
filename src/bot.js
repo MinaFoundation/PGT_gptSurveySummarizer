@@ -74,7 +74,7 @@ const maxResponsesForMultiResponsePerUser = 5;
     )
     .addSubcommand(sc => 
       sc
-        .setName('version')
+        .setName('info')
         .setDescription('view the version number')
     )
 
@@ -358,8 +358,9 @@ const maxResponsesForMultiResponsePerUser = 5;
         }
 
       // ------------------------------------------------
-      } else if (subcommand == 'version') {
-        await interaction.reply({ content: `version number ${version}` });
+      } else if (subcommand == 'info') {
+        const github = 'https://github.com/MinaFoundation/gptSurveySummarizer';
+        await interaction.reply({ content: `version number ${version}\n\nLearn more about the project on our [github](${github}).` });
       } else {
         console.error('unknown subcommand');
       }
