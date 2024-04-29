@@ -382,7 +382,7 @@ const maxResponsesForMultiResponsePerUser = 5;
           }
           chunks.push(chunk);
           for (const [ i, chunk ] of Object.entries(chunks)) {
-            console.log(i, chunk.length);
+            console.log('sending chunk', i, chunk.length);
             const toSend = { content: chunk };
             if (i == chunks.length - 1) {
               toSend.files = files;
