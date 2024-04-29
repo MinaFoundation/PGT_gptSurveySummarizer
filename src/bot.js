@@ -255,7 +255,9 @@ const maxResponsesForMultiResponsePerUser = 5;
                 msg += `> ${number_to_discord_letter[subindex]} `
                 msg += `**${subtopic.subtopicName} [${subtopicResponseCount} response${pluralize(subtopicResponseCount)}]**\n`
 
-                msg += `> ${subtopic.subtopicShortDescription}\n\n`
+                msg += `> ${subtopic.subtopicShortDescription}\n> \n`
+
+                msg += `> ${subtopic.subtopicSummary}\n\n`
 
                 if (subtopic.responses != null && subtopic.responses.length > 0) {
 
@@ -367,7 +369,31 @@ const maxResponsesForMultiResponsePerUser = 5;
             files.push(new AttachmentBuilder(Buffer.from(content)).setName('responses.txt'));
           }
 
-          await interaction.reply({ content: msg, files });
+          const lines = msg.split('\n');
+          const chunks = [];
+          let chunk = ''
+          for (const line of lines) {
+            const chunkWithLine = chunk + '\n' + line;
+            if (chunkWithLine.length > 2000) {
+              chunks.push(chunk);
+              chunk = '';
+            }
+            chunk = chunk + '\n' + line;
+          }
+          chunks.push(chunk);
+          for (const [ i, chunk ] of Object.entries(chunks)) {
+            console.log(i, chunk.length);
+            const toSend = { content: chunk };
+            if (i == chunks.length - 1) {
+              toSend.files = files;
+            }
+
+            if (i == 0) {
+              await interaction.reply(toSend);
+            } else {
+              await interaction.followUp(toSend);
+            }
+          }
         }
 
       // ------------------------------------------------
