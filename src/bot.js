@@ -137,7 +137,7 @@ const maxResponsesForMultiResponsePerUser = 5;
       } else if (subcommand == 'respond') {
         const surveyName = options.getString('survey');
         if (!(await redisClient.sIsMember('surveys', surveyName))) {
-          await interaction.reply({ content: 'There is no survey with that name' });
+          await interaction.reply({ content: 'There is no survey with that name', ephemeral: true });
         } else {
 
           const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
@@ -163,7 +163,7 @@ const maxResponsesForMultiResponsePerUser = 5;
         const surveyName = options.getString('survey');
 
         if (!(await redisClient.sIsMember('surveys', surveyName))) {
-          await interaction.reply({ content: 'There is no survey with that name' });
+          await interaction.reply({ content: 'There is no survey with that name', ephemeral: true });
         } else {
           const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
           const description = await redisClient.get(`survey:${surveyName}:description`);
@@ -361,7 +361,7 @@ const maxResponsesForMultiResponsePerUser = 5;
       // ------------------------------------------------
       } else if (subcommand == 'info') {
         const github = 'https://github.com/MinaFoundation/gptSurveySummarizer';
-        await interaction.reply({ content: `version number ${version}\n\nLearn more about the project on our [github](${github}).` });
+        await interaction.reply({ content: `version number ${version}\n\nLearn more about the project on our [github](${github}).`, ephemeral: true });
       } else {
         console.error('unknown subcommand');
       }
@@ -440,7 +440,7 @@ const maxResponsesForMultiResponsePerUser = 5;
         const title = interaction.fields.getTextInputValue('titleInput');
         const description = interaction.fields.getTextInputValue('descriptionInput');
         if (await redisClient.sIsMember('surveys', surveyName)) {
-          await interaction.reply({ content: 'A survey with that name already exists' });
+          await interaction.reply({ content: 'A survey with that name already exists', ephemeral: true });
         } else {
           await createSurvey(
             redisClient, 
@@ -449,7 +449,7 @@ const maxResponsesForMultiResponsePerUser = 5;
             description,
             username
           );
-          await interaction.reply({ content: 'Your Survey was created successfully!' });
+          await interaction.reply({ content: 'Your Survey was created successfully!', ephemeral: true });
         }
 
       // ------------------------------------------------
@@ -469,9 +469,9 @@ const maxResponsesForMultiResponsePerUser = 5;
         const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
         await respond(redisClient, surveyName, username, response)
         if (hadResponse) {
-          await interaction.reply({ content: 'Your Response was updated successfully!' });
+          await interaction.reply({ content: 'Your Response was updated successfully!', ephemeral: true });
         } else {
-          await interaction.reply({ content: 'Your Response was added successfully!' });
+          await interaction.reply({ content: 'Your Response was added successfully!', ephemeral: true });
         }
       }
     // ------------------------------------------------
