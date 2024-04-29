@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
@@ -137,7 +137,7 @@ const maxResponsesForMultiResponsePerUser = 5;
       } else if (subcommand == 'respond') {
         const surveyName = options.getString('survey');
         if (!(await redisClient.sIsMember('surveys', surveyName))) {
-          await interaction.reply({ content: 'There is no survey with that name' });
+          await interaction.reply({ content: 'There is no survey with that name', ephemeral: true });
         } else {
 
           const surveyDescription = await redisClient.get(`survey:${surveyName}:description`);
@@ -163,7 +163,7 @@ const maxResponsesForMultiResponsePerUser = 5;
         const surveyName = options.getString('survey');
 
         if (!(await redisClient.sIsMember('surveys', surveyName))) {
-          await interaction.reply({ content: 'There is no survey with that name' });
+          await interaction.reply({ content: 'There is no survey with that name', ephemeral: true });
         } else {
           const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
           const description = await redisClient.get(`survey:${surveyName}:description`);
@@ -174,7 +174,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
           const summarizedResponses = []
 
-          await interaction.reply('Please see the following for the latest survey summary:');
+          //await interaction.reply('Please see the following for the latest survey summary:');
 
           const channel = client.channels.cache.get(interaction.channelId)
 
@@ -212,6 +212,19 @@ const maxResponsesForMultiResponsePerUser = 5;
             9: ':regional_indicator_j:',
           }
 
+          const number_to_letter = {
+            0: 'A',
+            1: 'B',
+            2: 'C',
+            3: 'D',
+            4: 'E',
+            5: 'F',
+            6: 'G',
+            7: 'H',
+            8: 'I',
+            9: 'J',
+          }
+
           let msg = '';
           msg += `# :ballot_box: ${surveyName}\n`;
           msg += divider;
@@ -242,7 +255,9 @@ const maxResponsesForMultiResponsePerUser = 5;
                 msg += `> ${number_to_discord_letter[subindex]} `
                 msg += `**${subtopic.subtopicName} [${subtopicResponseCount} response${pluralize(subtopicResponseCount)}]**\n`
 
-                msg += `> ${subtopic.subtopicShortDescription}\n\n`
+                msg += `> ${subtopic.subtopicShortDescription}\n> \n`
+
+                msg += `> ${subtopic.subtopicSummary}\n\n`
 
                 if (subtopic.responses != null && subtopic.responses.length > 0) {
 
@@ -251,7 +266,7 @@ const maxResponsesForMultiResponsePerUser = 5;
                     return formatResponse(surveyType, response, responses);
                   });
 
-                  const title = `${number_to_discord_number[index+1]} ${number_to_discord_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
+                  const title = `${index+1}${number_to_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
 
                   threads.push({
                     title,
@@ -271,7 +286,7 @@ const maxResponsesForMultiResponsePerUser = 5;
               return formatResponse(surveyType, response, responses);
             });
 
-            const title = ':speech_balloon: Unmatched responses';
+            const title = 'Unmatched responses';
 
             threads.push({
               title,
@@ -316,11 +331,12 @@ const maxResponsesForMultiResponsePerUser = 5;
             const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
             msg += `:timer: ${minutesTilNextUpdate} minutes until the next summary update.\n`;
 
+
             const responseMessages = unsummarizedResponses.map((response) => {
               return response.username + ' said "' + response.response + '"';
             });
 
-            const title = ':new: Responses not yet categorized';
+            const title = 'New responses not yet categorized';
 
             threads.push({
               title,
@@ -332,28 +348,50 @@ const maxResponsesForMultiResponsePerUser = 5;
           if (threads.length > 0) {
             msg += divider;
           }
-          
-          if (msg.length > 0) {
-            await channel.send(msg);
-          }
 
+          const content = '';
+          const files = [];
           if (threads.length > 0) {
+            let content = '';
+
             for (const thread of threads) {
               const {
                     title,
                     responseMessages
               } = thread;
 
-              const message = await channel.send(title);
-              const discordThread = await message.startThread({
-                name: 'Responses',
-                autoArchiveDuration: 60,
-                reason: 'Thread for responses'
-              });
+              content += title + '\n';
               for (const response of responseMessages) {
-                await discordThread.send(response);
+                content += '    ' + response + '\n';
               }
-              await discordThread.setLocked(true);
+              content += '\n';
+            }
+            files.push(new AttachmentBuilder(Buffer.from(content)).setName('responses.txt'));
+          }
+
+          const lines = msg.split('\n');
+          const chunks = [];
+          let chunk = ''
+          for (const line of lines) {
+            const chunkWithLine = chunk + '\n' + line;
+            if (chunkWithLine.length > 2000) {
+              chunks.push(chunk);
+              chunk = '';
+            }
+            chunk = chunk + '\n' + line;
+          }
+          chunks.push(chunk);
+          for (const [ i, chunk ] of Object.entries(chunks)) {
+            console.log(i, chunk.length);
+            const toSend = { content: chunk };
+            if (i == chunks.length - 1) {
+              toSend.files = files;
+            }
+
+            if (i == 0) {
+              await interaction.reply(toSend);
+            } else {
+              await interaction.followUp(toSend);
             }
           }
         }
@@ -361,7 +399,7 @@ const maxResponsesForMultiResponsePerUser = 5;
       // ------------------------------------------------
       } else if (subcommand == 'info') {
         const github = 'https://github.com/MinaFoundation/gptSurveySummarizer';
-        await interaction.reply({ content: `version number ${version}\n\nLearn more about the project on our [github](${github}).` });
+        await interaction.reply({ content: `version number ${version}\n\nLearn more about the project on our [github](${github}).`, ephemeral: true });
       } else {
         console.error('unknown subcommand');
       }
@@ -440,7 +478,7 @@ const maxResponsesForMultiResponsePerUser = 5;
         const title = interaction.fields.getTextInputValue('titleInput');
         const description = interaction.fields.getTextInputValue('descriptionInput');
         if (await redisClient.sIsMember('surveys', surveyName)) {
-          await interaction.reply({ content: 'A survey with that name already exists' });
+          await interaction.reply({ content: 'A survey with that name already exists', ephemeral: true });
         } else {
           await createSurvey(
             redisClient, 
@@ -449,7 +487,7 @@ const maxResponsesForMultiResponsePerUser = 5;
             description,
             username
           );
-          await interaction.reply({ content: 'Your Survey was created successfully!' });
+          await interaction.reply({ content: 'Your Survey was created successfully!', ephemeral: true });
         }
 
       // ------------------------------------------------
@@ -469,9 +507,9 @@ const maxResponsesForMultiResponsePerUser = 5;
         const hadResponse = await redisClient.hExists(`survey:${surveyName}:responses`, username)
         await respond(redisClient, surveyName, username, response)
         if (hadResponse) {
-          await interaction.reply({ content: 'Your Response was updated successfully!' });
+          await interaction.reply({ content: 'Your Response was updated successfully!', ephemeral: true });
         } else {
-          await interaction.reply({ content: 'Your Response was added successfully!' });
+          await interaction.reply({ content: 'Your Response was added successfully!', ephemeral: true });
         }
       }
     // ------------------------------------------------
@@ -490,6 +528,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
   client.login(process.env.DISCORD_TOKEN);
 
+  //await redisClient.flushAll();
   //await runTest(redisClient);
 })();
 

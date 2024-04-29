@@ -32,7 +32,7 @@ const main = async () => {
       console.error('error while processing surveys:', e);
     }
     console.log('done checking surveys for updates.');
-    await new Promise((r) => setTimeout(r, 30*1000));
+    await new Promise((r) => setTimeout(r, 1*1000));
   }
 
   // NOTE this updates every time a new response shows up; disabled for now
@@ -134,6 +134,21 @@ const updateSurvey = async (
   }
 
   taxonomy = cleanupTaxonomy(taxonomy);
+
+  for (const topic of taxonomy) {
+    for (const subtopic of topic.subtopics) {
+      const summary = await gpt(
+        apikey,
+        systemMessage(),
+        summarizePrompt(title, 
+                        description,
+                        topic.topicName, 
+                        subtopic.subtopicName, 
+                        subtopic.subtopicDescription, 
+                        JSON.stringify(subtopic.responses)));
+      subtopic.subtopicSummary = summary.summary;
+    }
+  }
 
   const summary = {
     taxonomy,
@@ -243,6 +258,32 @@ taxonomy: ${taxonomy}
 And then here is the response:
 ${response} 
 `;
+
+const summarizePrompt = (
+  title,
+  description,
+  topic, 
+  subtopic, 
+  subtopicDescription,
+  responses,
+) => `
+I'm going to give you a survey title, survey description, response topic, response subtopic, and responses in that subtopic. I want you to produce a summary of the responses. Keep the summary concise, but complete.
+
+Return a JSON object of the form {
+  "summary": string
+}
+
+Now here is the survey title: ${title}
+
+The survey description: ${description}
+
+And here is the topic, subtopic, and responses.
+Topic: ${topic}
+Subtopic: ${subtopic}
+Subtopic Description: ${subtopicDescription}
+Responses: ${responses}
+`;
+
 
 function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
