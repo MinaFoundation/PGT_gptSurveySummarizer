@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
@@ -174,7 +174,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
           const summarizedResponses = []
 
-          await interaction.reply('Please see the following for the latest survey summary:');
+          //await interaction.reply('Please see the following for the latest survey summary:');
 
           const channel = client.channels.cache.get(interaction.channelId)
 
@@ -210,6 +210,19 @@ const maxResponsesForMultiResponsePerUser = 5;
             7: ':regional_indicator_h:',
             8: ':regional_indicator_i:',
             9: ':regional_indicator_j:',
+          }
+
+          const number_to_letter = {
+            0: 'A',
+            1: 'B',
+            2: 'C',
+            3: 'D',
+            4: 'E',
+            5: 'F',
+            6: 'G',
+            7: 'H',
+            8: 'I',
+            9: 'J',
           }
 
           let msg = '';
@@ -251,7 +264,7 @@ const maxResponsesForMultiResponsePerUser = 5;
                     return formatResponse(surveyType, response, responses);
                   });
 
-                  const title = `${number_to_discord_number[index+1]} ${number_to_discord_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
+                  const title = `${index+1}${number_to_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
 
                   threads.push({
                     title,
@@ -271,7 +284,7 @@ const maxResponsesForMultiResponsePerUser = 5;
               return formatResponse(surveyType, response, responses);
             });
 
-            const title = ':speech_balloon: Unmatched responses';
+            const title = 'Unmatched responses';
 
             threads.push({
               title,
@@ -316,11 +329,12 @@ const maxResponsesForMultiResponsePerUser = 5;
             const minutesTilNextUpdate = Math.ceil(secondsTilNextUpdate/60)
             msg += `:timer: ${minutesTilNextUpdate} minutes until the next summary update.\n`;
 
+
             const responseMessages = unsummarizedResponses.map((response) => {
               return response.username + ' said "' + response.response + '"';
             });
 
-            const title = ':new: Responses not yet categorized';
+            const title = 'New responses not yet categorized';
 
             threads.push({
               title,
@@ -332,30 +346,28 @@ const maxResponsesForMultiResponsePerUser = 5;
           if (threads.length > 0) {
             msg += divider;
           }
-          
-          if (msg.length > 0) {
-            await channel.send(msg);
-          }
 
+          const content = '';
+          const files = [];
           if (threads.length > 0) {
+            let content = '';
+
             for (const thread of threads) {
               const {
                     title,
                     responseMessages
               } = thread;
 
-              const message = await channel.send(title);
-              const discordThread = await message.startThread({
-                name: 'Responses',
-                autoArchiveDuration: 60,
-                reason: 'Thread for responses'
-              });
+              content += title + '\n';
               for (const response of responseMessages) {
-                await discordThread.send(response);
+                content += '    ' + response + '\n';
               }
-              await discordThread.setLocked(true);
+              content += '\n';
             }
+            files.push(new AttachmentBuilder(Buffer.from(content)).setName('responses.txt'));
           }
+
+          await interaction.reply({ content: msg, files });
         }
 
       // ------------------------------------------------
@@ -490,6 +502,7 @@ const maxResponsesForMultiResponsePerUser = 5;
 
   client.login(process.env.DISCORD_TOKEN);
 
+  //await redisClient.flushAll();
   //await runTest(redisClient);
 })();
 
