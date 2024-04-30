@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      #- main
+      - PM-1524-deploy-workflow
+ # workflow_dispatch:
+ #   inputs:
+ #     docker_tag_prefix:
+ #       description: "Enter the Docker Tag Prefix (e.g adhoc-test)"
+ #       required: true
+ #       type: string
+
+#env:
+#  ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
+#  ECR_REPOSITORY_NAME: gpt-survey-summarizer
+#  DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
+
+jobs:
+  deploy:
+    name: Build and Publish Docker Image
+    runs-on: minafoundation-default-runners
+    steps:
+
+      - name: Test k8s
+        run: |
+          kubectl get ns
+
