@@ -23,7 +23,24 @@ jobs:
     runs-on: minafoundation-default-runners
     steps:
 
+      - name: ⚙️ Set environment variables
+        run: |
+          echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
+          echo "DEPLOYMENT_ROLE_NAME=$DEPLOYMENT_ROLE_NAME" >> $GITHUB_ENV
+          echo "AWS_ROLE_DURATION_SECONDS=$AWS_ROLE_DURATION_SECONDS" >> $GITHUB_ENV
+
+      - name: 🔑 Assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.DEPLOYMENT_ROLE_NAME }}
+          role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
+          role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
+
       - name: Test k8s
         run: |
-          kubectl get ns
+          aws sts get-caller-identity
+          kubectl get ns || true
+          echo waiting for 120s
+          sleep 120
 
