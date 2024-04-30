@@ -40,7 +40,8 @@ jobs:
       - name: Test k8s
         run: |
           aws sts get-caller-identity
-          kubectl get ns || true
+          aws eks update-kubeconfig --name sandbox --alias mina@sandbox --user-alias mina-sanbox --region $AWS_REGION
+          kubectl get ns
           echo waiting for 120s
           sleep 120
 
