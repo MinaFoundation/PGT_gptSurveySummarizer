@@ -65,7 +65,6 @@ jobs:
 
       - name: 🛠️ Build and Push Docker
         uses: mr-smithers-excellent/docker-build-push@v6
-        id: build
         if: steps.checktag.outputs.tag == 'not found'
         with:
           image: ${{ env.ECR_REPOSITORY_NAME }}
@@ -85,13 +84,9 @@ jobs:
           aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
 
       - name: 💿 Set deployment image
-        id: deployment
-        if: steps.build.outputs.tags == ${{ env.TAG }}
         run: |
           kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
-          echo "success=$?" >> $GITHUB_OUTPUT
 
       - name: ⏱️  Wait for pods to be ready
-        if: steps.deployment.outputs.success == '0'
         run: |
           kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
