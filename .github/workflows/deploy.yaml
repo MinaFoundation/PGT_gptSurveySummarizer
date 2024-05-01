@@ -5,17 +5,19 @@ on:
     branches:
       #- main
       - PM-1524-deploy-workflow
- # workflow_dispatch:
- #   inputs:
- #     docker_tag_prefix:
- #       description: "Enter the Docker Tag Prefix (e.g adhoc-test)"
- #       required: true
- #       type: string
+  workflow_dispatch:
+    inputs:
+      deployment_tag:
+        description: "Enter the Tag of the image to deploy (e.g. 0.2.0-64bfbb3)"
+        required: true
+        type: string
 
-#env:
-#  ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
-#  ECR_REPOSITORY_NAME: gpt-survey-summarizer
-#  DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
+env:
+  ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
+  ECR_REPOSITORY_NAME: gpt-survey-summarizer
+  DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
+  APPLICATION_NAME: gpt-survey-summarizer 
+  PLATFORM: sandbox
 
 jobs:
   deploy:
@@ -23,7 +25,7 @@ jobs:
     runs-on: minafoundation-default-runners
     steps:
 
-      - name: ⚙️ Set environment variables
+      - name: ⚙️  Set environment variables
         run: |
           echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
           echo "DEPLOYMENT_ROLE_NAME=$DEPLOYMENT_ROLE_NAME" >> $GITHUB_ENV
@@ -37,11 +39,14 @@ jobs:
           role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
           role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
 
-      - name: Test k8s
+      - name: Update kubeconfig
         run: |
-          aws sts get-caller-identity
-          aws eks update-kubeconfig --name sandbox --alias mina@sandbox --user-alias mina-sanbox --region $AWS_REGION
-          kubectl get ns
-          echo waiting for 120s
-          sleep 120
+          aws eks update-kubeconfig --name $PLATFORM --alias mina@$PLATFORM --user-alias mina-$PLATFORM --region $AWS_REGION 1>/dev/null
 
+      - name: Set deployment image
+        run: |
+          kubectl set image -l app.kubernetes.io/name=$APPLICATION_NAME deployments $ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-c112953
+
+      - name: Wait for deployments to be ready
+        run: |
+          kubectl wait --for=condition=Ready -l app.kubernetes.io/name=$APPLICATION_NAME deployments
