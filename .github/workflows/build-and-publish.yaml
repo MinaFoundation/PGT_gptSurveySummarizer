@@ -16,7 +16,7 @@ env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
   APPLICATION_NAME: gpt-survey-summarizer 
-  DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
+  DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
   PLATFORM: sandbox
   NAMESPACE: governance
 
