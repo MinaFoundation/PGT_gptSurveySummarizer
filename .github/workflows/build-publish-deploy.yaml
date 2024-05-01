@@ -17,7 +17,7 @@ env:
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
   APPLICATION_NAME: gpt-survey-summarizer 
   DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
-  PLATFORM: sandbox
+  PLATFORM: staging
   NAMESPACE: governance
 
 jobs:
@@ -79,14 +79,12 @@ jobs:
           role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
           role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
 
-      - name: 🆙 Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
+      - name: ⬇️ Get kubeconfig
+        run: aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
 
+      # "*=" means we set the image for every container in the selected deployments
       - name: 💿 Set deployment image
-        run: |
-          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+        run: kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
 
-      - name: ⏱️  Wait for pods to be ready
-        run: |
-          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+      - name: ⏱️ Wait for pods to be ready
+        run: kubectl rollout status deployment --timeout=10m -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
