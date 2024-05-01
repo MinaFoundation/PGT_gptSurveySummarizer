@@ -72,30 +72,26 @@ jobs:
           registry: ${{ env.ECR_REPOSITORY_URL }}
           tags: ${{ env.TAG }}
 
-      - name: Check output format
-        run: |
-          echo ${{ steps.build.outputs.tags }}
+      - name: 🔑 Assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.DEPLOYMENT_ROLE_NAME }}
+          role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
+          role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
 
-#      - name: 🔑 Assume role
-#        uses: aws-actions/configure-aws-credentials@v4
-#        with:
-#          aws-region: ${{ env.AWS_REGION }}
-#          role-to-assume: ${{ env.DEPLOYMENT_ROLE_NAME }}
-#          role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
-#          role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
-#
-#      - name: 🆙 Update kubeconfig
-#        run: |
-#          aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
-#
-#      - name: 💿 Set deployment image
-#        id: deployment
-#        if: steps.checktag.outputs.tag == 'found'
-#        run: |
-#          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
-#          echo "success=$?" >> $GITHUB_OUTPUT
-#
-#      - name: ⏱️  Wait for pods to be ready
-#        if: steps.deployment.outputs.success == '0'
-#        run: |
-#          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+      - name: 🆙 Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
+
+      - name: 💿 Set deployment image
+        id: deployment
+        if: steps.build.outputs.tags == ${{ env.TAG }}
+        run: |
+          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+          echo "success=$?" >> $GITHUB_OUTPUT
+
+      - name: ⏱️  Wait for pods to be ready
+        if: steps.deployment.outputs.success == '0'
+        run: |
+          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
