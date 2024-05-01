@@ -45,7 +45,7 @@ jobs:
 
       - name: Set deployment image
         run: |
-          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-64bfbb3" -l app.kubernetes.io/name=$APPLICATION_NAME
+          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-64bfbb3" -l app.kubernetes.io/name=$APPLICATION_NAME -n governance
       - name: Wait for pods to be ready
         run: |
-          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME
+          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n governance
