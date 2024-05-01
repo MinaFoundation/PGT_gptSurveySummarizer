@@ -18,6 +18,7 @@ env:
   DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
   APPLICATION_NAME: gpt-survey-summarizer 
   PLATFORM: sandbox
+  NAMESPACE: governance
 
 jobs:
   deploy:
@@ -39,13 +40,13 @@ jobs:
           role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
           role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
 
-      - name: Update kubeconfig
+      - name: 🆙 Update kubeconfig
         run: |
           aws eks update-kubeconfig --name $PLATFORM --alias mina@$PLATFORM --user-alias mina-$PLATFORM --region $AWS_REGION 1>/dev/null
 
-      - name: Set deployment image
+      - name: 💿 Set deployment image
         run: |
-          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-64bfbb3" -l app.kubernetes.io/name=$APPLICATION_NAME -n governance
-      - name: Wait for pods to be ready
+          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-c112953" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+      - name: ⏱️ Wait for pods to be ready
         run: |
-          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n governance
+          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
