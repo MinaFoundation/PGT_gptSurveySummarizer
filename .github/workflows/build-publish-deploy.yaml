@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - PM-1524-deploy-workflow
   workflow_dispatch:
     inputs:
       docker_tag_prefix:
@@ -86,5 +85,5 @@ jobs:
       - name: 💿 Set deployment image
         run: kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
 
-      - name: ⏱️ Wait for pods to be ready
+      - name: ⏱️ Wait for deployment to be ready
         run: kubectl rollout status deployment --timeout=10m -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
