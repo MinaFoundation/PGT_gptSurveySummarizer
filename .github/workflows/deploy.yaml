@@ -3,21 +3,20 @@ name: Deploy
 on:
   push:
     branches:
-      #- main
       - PM-1524-deploy-workflow
   workflow_dispatch:
     inputs:
       deployment_tag:
-        description: "Enter the Tag of the image to deploy (e.g. 0.2.0-64bfbb3)"
+        description: "Enter the tag of the image to deploy (e.g. 0.2.0-64bfbb3)"
         required: true
         type: string
 
 env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
-  DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
   APPLICATION_NAME: gpt-survey-summarizer 
-  PLATFORM: sandbox
+  DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
+  PLATFORM: staging
   NAMESPACE: governance
 
 jobs:
@@ -42,11 +41,12 @@ jobs:
 
       - name: 🆙 Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name $PLATFORM --alias mina@$PLATFORM --user-alias mina-$PLATFORM --region $AWS_REGION 1>/dev/null
+          aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
 
       - name: 💿 Set deployment image
         run: |
-          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:0.2.0-c112953" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$DEPLOYMENT_TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+
       - name: ⏱️ Wait for pods to be ready
         run: |
           kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
