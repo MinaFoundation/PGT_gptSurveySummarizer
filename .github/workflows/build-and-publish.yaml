@@ -1,9 +1,10 @@
-name: Build and publish
+name: Build - publish - deploy
 
 on:
   push:
     branches:
       - main
+      - PM-1524-deploy-workflow
   workflow_dispatch:
     inputs:
       docker_tag_prefix:
@@ -14,13 +15,22 @@ on:
 env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
-  DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
+  APPLICATION_NAME: gpt-survey-summarizer 
+  DEPLOYMENT_TAG: ${{ github.event.inputs.deployment_tag }}
+  PLATFORM: sandbox
+  NAMESPACE: governance
 
 jobs:
-  build-and-publish:
-    name: Build and Publish Docker Image
+  build-publish-deploy:
+    name: Build Publish and Deploy Docker Image
     runs-on: minafoundation-default-runners
     steps:
+
+      - name: ⚙️  Set environment variables
+        run: |
+          echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
+          echo "DEPLOYMENT_ROLE_NAME=$DEPLOYMENT_ROLE_NAME" >> $GITHUB_ENV
+          echo "AWS_ROLE_DURATION_SECONDS=$AWS_ROLE_DURATION_SECONDS" >> $GITHUB_ENV
 
       - name: 📥 Checkout
         uses: actions/checkout@v4
@@ -55,8 +65,37 @@ jobs:
 
       - name: 🛠️ Build and Push Docker
         uses: mr-smithers-excellent/docker-build-push@v6
+        id: build
         if: steps.checktag.outputs.tag == 'not found'
         with:
           image: ${{ env.ECR_REPOSITORY_NAME }}
           registry: ${{ env.ECR_REPOSITORY_URL }}
           tags: ${{ env.TAG }}
+
+      - name: Check output format
+        run: |
+          echo ${{ steps.build.outputs.tags }}
+
+#      - name: 🔑 Assume role
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-region: ${{ env.AWS_REGION }}
+#          role-to-assume: ${{ env.DEPLOYMENT_ROLE_NAME }}
+#          role-session-name: ${{ env.DEPLOYMENT_ROLE_NAME }}
+#          role-duration-seconds: ${{ env.AWS_ROLE_DURATION_SECONDS }}
+#
+#      - name: 🆙 Update kubeconfig
+#        run: |
+#          aws eks update-kubeconfig --name $PLATFORM --region $AWS_REGION 1>/dev/null
+#
+#      - name: 💿 Set deployment image
+#        id: deployment
+#        if: steps.checktag.outputs.tag == 'found'
+#        run: |
+#          kubectl set image deployment "*=$ECR_REPOSITORY_URL/$ECR_REPOSITORY_NAME:$TAG" -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
+#          echo "success=$?" >> $GITHUB_OUTPUT
+#
+#      - name: ⏱️  Wait for pods to be ready
+#        if: steps.deployment.outputs.success == '0'
+#        run: |
+#          kubectl wait --for='jsonpath={.status.conditions[?(@.type=="Ready")].status}=True' pods -l app.kubernetes.io/name=$APPLICATION_NAME -n $NAMESPACE
