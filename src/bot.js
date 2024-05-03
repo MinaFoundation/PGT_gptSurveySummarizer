@@ -306,7 +306,13 @@ const maxResponsesForMultiResponsePerUser = 5;
             }
           } else {
             for (let [username, response] of Object.entries(responses)) {
-              let userResponses = JSON.parse(response);
+              let userResponses;
+              try {
+                userResponses = JSON.parse(response);
+              } catch(e) {
+                console.error('error processing multi-response', e);
+                userResponses = [ response ];
+              }
               userResponses = userResponses.filter((r) => r != '');
               userResponses.forEach((response) => {
                 const responseIncluded = summarizedResponses.some(
@@ -444,7 +450,12 @@ const maxResponsesForMultiResponsePerUser = 5;
           let priorResponses = new Array(maxResponsesForMultiResponsePerUser).fill(null).map(() => '');
           if (hadResponse) {
             const priorResponseData = await redisClient.hGet(`survey:${surveyName}:responses`, username)
-            priorResponses = JSON.parse(priorResponseData);
+            try {
+              priorResponses = JSON.parse(priorResponseData);
+            } catch(e) {
+              console.error('error processing multi-response', e);
+              priorResponses = [ priorResponseData ];
+            }
           }
           const components = new Array(maxResponsesForMultiResponsePerUser).fill(null).map((_, i) => {
             let label_i;
@@ -539,7 +550,13 @@ function formatResponse(surveyType, response, responses) {
     responseIsLatest = latestResponse == response.response;
   } else {
     const baseUsername = response.username.split('[')[0];
-    let userResponses = JSON.parse(responses[baseUsername]);
+    let userResponses;
+    try {
+      userResponses = JSON.parse(responses[baseUsername]);
+    } catch(e) {
+      console.error('error processing multi-response', e);
+      userResponses = [ responses[response.username] ];
+    }
     responseIsLatest = userResponses.some((r) => r == response.response);
   }
   if (responseIsLatest) {
