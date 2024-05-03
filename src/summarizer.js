@@ -93,12 +93,18 @@ const updateSurvey = async (
     responses = responseData;
   } else {
     responses = {};
+    console.log(responseData);
     Object.entries(responseData).forEach(([ username, response ]) => {
-      let userResponses = JSON.parse(response);
-      userResponses = userResponses.filter((r) => r != '');
-      userResponses.forEach((r, i) => {
-        responses[username + `[${i}]`] = r;
-      });
+      try {
+        let userResponses = JSON.parse(response);
+        userResponses = userResponses.filter((r) => r != '');
+        userResponses.forEach((r, i) => {
+          responses[username + `[${i}]`] = r;
+        });
+      } catch(e) {
+        console.error('error processing multi-response', e);
+        responses[username] = response;
+      }
     });
   }
 
