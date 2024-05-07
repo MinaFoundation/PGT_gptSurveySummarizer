@@ -368,7 +368,7 @@ const startAutoPosting = async (client, redisClient) => {
       const channelId = autoPostSurvey.split(':')[0]
       const surveyName = autoPostSurvey.split(':').slice(1).join(':');
 
-      console.log('posting', surveyName, 'to', channel);
+      console.log('posting', surveyName, 'to', channelId);
 
       const messagesToSend = await makeSurveyPost(redisClient, surveyName);
       const channel = client.channels.cache.get(channelId)
