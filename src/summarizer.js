@@ -2,7 +2,12 @@ import "dotenv/config";
 import OpenAI from "openai";
 import { createClient } from "redis";
 import { redisConfig, summarizeFrequency, apikey } from "./config.js";
-import { systemMessage, clusteringPrompt, assignmentPrompt, summarizePrompt } from "./prompts.js";
+import {
+  systemMessage,
+  clusteringPrompt,
+  assignmentPrompt,
+  summarizePrompt,
+} from "./prompts.js";
 
 const subscribeRedisClient = createClient(redisConfig);
 subscribeRedisClient.on("error", (err) =>
@@ -100,7 +105,6 @@ const updateSurvey = async (redisClient, surveyName) => {
 
   console.log("title", title);
   console.log("description", description);
-
 
   let responses;
   if (surveyType == "single") {
@@ -226,7 +230,6 @@ const gpt = async (apikey, system, user, maxTries = 5) => {
   }
   return result;
 };
-
 
 function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;

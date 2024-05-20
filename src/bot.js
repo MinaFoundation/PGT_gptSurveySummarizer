@@ -1,6 +1,9 @@
 import "dotenv/config";
 import surveyToText from "./surveyToText.js";
-import { maxResponsesForMultiResponsePerUser, create_multi_cmd } from "./constants.js";
+import {
+  maxResponsesForMultiResponsePerUser,
+  create_multi_cmd,
+} from "./constants.js";
 import { createClient } from "redis";
 import {
   discordConfig,
@@ -31,7 +34,6 @@ process.on("unhandledRejection", (error) => {
 process.on("uncaughtException", (error) => {
   console.error("Unhandled exception:", error);
 });
-
 
 (async () => {
   const is_dev = process.argv[2] == "--dev";
