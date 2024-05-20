@@ -1,6 +1,8 @@
 import "dotenv/config";
 import package_json from "../package.json" with { type: "json" };
 
+export const apikey = process.env.OPENAI_API_KEY;
+
 export const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 export const redisConfig = {
   password: process.env.REDIS_PASSWORD,
