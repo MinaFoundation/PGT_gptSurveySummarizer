@@ -14,7 +14,7 @@ on:
 env:
   ECR_REPOSITORY_URL: 673156464838.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY_NAME: gpt-survey-summarizer
-  APPLICATION_NAME: gpt-survey-summarizer 
+  APPLICATION_NAME: gpt-survey-summarizer
   DOCKER_TAG_PREFIX: ${{ github.event.inputs.docker_tag_prefix }}
   PLATFORM: staging
   NAMESPACE: governance
@@ -24,7 +24,6 @@ jobs:
     name: Build Publish and Deploy Docker Image
     runs-on: minafoundation-default-runners
     steps:
-
       - name: ⚙️  Set environment variables
         run: |
           echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV

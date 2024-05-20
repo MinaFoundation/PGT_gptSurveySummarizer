@@ -6,21 +6,21 @@ Join the discord server for discussing and developing this tool [here](https://d
 
 ## Usage
 
-1. Create a .env file with the following variables: 
+1. Create a .env file with the following variables:
 
-    ```shell
-    DISCORD_TOKEN=
-    OPENAI_API_KEY=
-    REDIS_URL=
-    CLIENT_ID=
-    GUILD_ID=
-    SUMMARIZE_FREQUENCY_SECONDS=3600
-    ```
+   ```shell
+   DISCORD_TOKEN=
+   OPENAI_API_KEY=
+   REDIS_URL=
+   CLIENT_ID=
+   GUILD_ID=
+   SUMMARIZE_FREQUENCY_SECONDS=3600
+   ```
 
 1. Run `npm install`
-2. Start redis with `redis-server`
-3. Start the main bot script with `npm run bot`
-4. Start the gpt summarization script with `npm run summarizer`
+1. Start redis with `redis-server`
+1. Start the main bot script with `npm run bot`
+1. Start the gpt summarization script with `npm run summarizer`
 
 ## Docker image
 

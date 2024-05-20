@@ -18,5 +18,8 @@
     "dotenv": "^16.4.5",
     "openai": "^4.31.0",
     "redis": "^4.6.13"
+  },
+  "devDependencies": {
+    "prettier": "3.2.5"
   }
 }

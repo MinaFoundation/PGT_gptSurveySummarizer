@@ -1,21 +1,23 @@
-import 'dotenv/config'
+import "dotenv/config";
 import OpenAI from "openai";
-import { createClient } from 'redis';
+import { createClient } from "redis";
 
 const subscribeRedisClient = createClient({ url: process.env.REDIS_URL });
-subscribeRedisClient.on('error', err => console.log('Redis Client Error', err));
+subscribeRedisClient.on("error", (err) =>
+  console.log("Redis Client Error", err),
+);
 
 const redisClient = createClient({ url: process.env.REDIS_URL });
-redisClient.on('error', err => console.log('Redis Client Error', err));
+redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
-process.on('unhandledRejection', error => {
-  console.error('Unhandled promise rejection:', error);
+process.on("unhandledRejection", (error) => {
+  console.error("Unhandled promise rejection:", error);
 });
 
-process.on('uncaughtException', error => {
-  console.error('Unhandled exception:', error);
+process.on("uncaughtException", (error) => {
+  console.error("Unhandled exception:", error);
 });
 
 // ==========================================================================================
@@ -25,14 +27,14 @@ const main = async () => {
   await redisClient.connect();
 
   while (true) {
-    console.log('checking surveys for updates...');
+    console.log("checking surveys for updates...");
     try {
       await checkUpdateSurveys(redisClient);
     } catch (e) {
-      console.error('error while processing surveys:', e);
+      console.error("error while processing surveys:", e);
     }
-    console.log('done checking surveys for updates.');
-    await new Promise((r) => setTimeout(r, 1*1000));
+    console.log("done checking surveys for updates.");
+    await new Promise((r) => setTimeout(r, 1 * 1000));
   }
 
   // NOTE this updates every time a new response shows up; disabled for now
@@ -42,25 +44,39 @@ const main = async () => {
 };
 
 const checkUpdateSurveys = async (redisClient) => {
-  const surveys = await redisClient.sMembers('surveys');
-  for (let surveyName of surveys){
-    let lastEditTime = await redisClient.get(`survey:${surveyName}:last-edit-time`);
-    let lastSummaryTime = await redisClient.get(`survey:${surveyName}:last-summary-time`);
+  const surveys = await redisClient.sMembers("surveys");
+  for (let surveyName of surveys) {
+    let lastEditTime = await redisClient.get(
+      `survey:${surveyName}:last-edit-time`,
+    );
+    let lastSummaryTime = await redisClient.get(
+      `survey:${surveyName}:last-summary-time`,
+    );
 
     lastEditTime = parseInt(lastEditTime);
     lastSummaryTime = parseInt(lastSummaryTime);
 
-    const lastSummaryUpdateEpoch = Math.floor(lastSummaryTime/(summarizeFrequency*1000));
-    const currentEpoch = Math.floor(Date.now()/(summarizeFrequency*1000));
+    const lastSummaryUpdateEpoch = Math.floor(
+      lastSummaryTime / (summarizeFrequency * 1000),
+    );
+    const currentEpoch = Math.floor(Date.now() / (summarizeFrequency * 1000));
 
     console.log(surveyName);
-    console.log('\t', lastSummaryTime - lastEditTime, lastSummaryUpdateEpoch, currentEpoch);
+    console.log(
+      "\t",
+      lastSummaryTime - lastEditTime,
+      lastSummaryUpdateEpoch,
+      currentEpoch,
+    );
 
     if (lastEditTime != null) {
       if (lastSummaryTime == null) {
         await updateSurvey(redisClient, surveyName);
       } else {
-        if (lastEditTime >= lastSummaryTime && lastSummaryUpdateEpoch != currentEpoch) {
+        if (
+          lastEditTime >= lastSummaryTime &&
+          lastSummaryUpdateEpoch != currentEpoch
+        ) {
           if (lastSummaryUpdateEpoch != currentEpoch) {
             await updateSurvey(redisClient, surveyName);
           }
@@ -68,52 +84,55 @@ const checkUpdateSurveys = async (redisClient) => {
       }
     }
   }
-}
+};
 
 // ==========================================================================================
 
-const updateSurvey = async (
-  redisClient,
-  surveyName
-) => {
-  console.log('creating survey summary');
+const updateSurvey = async (redisClient, surveyName) => {
+  console.log("creating survey summary");
 
-  const responseData = await redisClient.hGetAll(`survey:${surveyName}:responses`);
+  const responseData = await redisClient.hGetAll(
+    `survey:${surveyName}:responses`,
+  );
   const title = await redisClient.get(`survey:${surveyName}:title`);
   const description = await redisClient.get(`survey:${surveyName}:description`);
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
 
-  console.log('title', title)
-  console.log('description', description)
+  console.log("title", title);
+  console.log("description", description);
 
   const apikey = process.env.OPENAI_API_KEY;
 
   let responses;
-  if (surveyType == 'single') {
+  if (surveyType == "single") {
     responses = responseData;
   } else {
     responses = {};
     console.log(responseData);
-    Object.entries(responseData).forEach(([ username, response ]) => {
+    Object.entries(responseData).forEach(([username, response]) => {
       try {
         let userResponses = JSON.parse(response);
-        userResponses = userResponses.filter((r) => r != '');
+        userResponses = userResponses.filter((r) => r != "");
         userResponses.forEach((r, i) => {
           responses[username + `[${i}]`] = r;
         });
-      } catch(e) {
-        console.error('error processing multi-response', e);
+      } catch (e) {
+        console.error("error processing multi-response", e);
         responses[username] = response;
       }
     });
   }
 
-  console.log('responses', responses)
+  console.log("responses", responses);
 
   let { taxonomy } = await gpt(
     apikey,
     systemMessage(),
-    clusteringPrompt(title, description, JSON.stringify(Object.values(responses))),
+    clusteringPrompt(
+      title,
+      description,
+      JSON.stringify(Object.values(responses)),
+    ),
   );
 
   const batchSize = 10;
@@ -123,11 +142,16 @@ const updateSurvey = async (
   for (let i = 0; i < Object.keys(responses).length; i += batchSize) {
     const batch = Object.entries(responses).slice(i, i + batchSize);
     await Promise.all(
-      batch.map(async ([ username, response ]) => {
+      batch.map(async ([username, response]) => {
         const assignment = await gpt(
           apikey,
           systemMessage(),
-          assignmentPrompt(title, description, JSON.stringify(taxonomy), response)
+          assignmentPrompt(
+            title,
+            description,
+            JSON.stringify(taxonomy),
+            response,
+          ),
         );
         insertResponse(
           taxonomy,
@@ -135,7 +159,7 @@ const updateSurvey = async (
           { response, username },
           unmatchedResponses,
         );
-      })
+      }),
     );
   }
 
@@ -146,12 +170,15 @@ const updateSurvey = async (
       const summary = await gpt(
         apikey,
         systemMessage(),
-        summarizePrompt(title, 
-                        description,
-                        topic.topicName, 
-                        subtopic.subtopicName, 
-                        subtopic.subtopicDescription, 
-                        JSON.stringify(subtopic.responses)));
+        summarizePrompt(
+          title,
+          description,
+          topic.topicName,
+          subtopic.subtopicName,
+          subtopic.subtopicDescription,
+          JSON.stringify(subtopic.responses),
+        ),
+      );
       subtopic.subtopicSummary = summary.summary;
     }
   }
@@ -159,22 +186,20 @@ const updateSurvey = async (
   const summary = {
     taxonomy,
     unmatchedResponses,
-  }
+  };
 
   console.log(JSON.stringify(summary, null, 2));
 
-  await redisClient.set(`survey:${surveyName}:summary`, JSON.stringify(summary));
+  await redisClient.set(
+    `survey:${surveyName}:summary`,
+    JSON.stringify(summary),
+  );
   await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
-}
+};
 
 // ==========================================================================================
 
-const gpt = async (
-  apikey,
-  system,
-  user,
-  maxTries = 5
-) => {
+const gpt = async (apikey, system, user, maxTries = 5) => {
   const openai = new OpenAI({ apikey });
 
   const completion = await openai.chat.completions.create({
@@ -190,18 +215,18 @@ const gpt = async (
   let result;
   try {
     result = JSON.parse(message.content);
-  } catch(e) {
-    console.error('error while processing gpt response:', e);
-    console.error('gpt response:', message.content);
+  } catch (e) {
+    console.error("error while processing gpt response:", e);
+    console.error("gpt response:", message.content);
     if (maxTries == 1) {
       throw e;
     } else {
-      console.log('trying again; tries remaining', maxTries - 1);
+      console.log("trying again; tries remaining", maxTries - 1);
       return await gpt(apikey, system, user, maxTries - 1);
     }
   }
   return result;
-}
+};
 
 export const systemMessage = () => `
 You are a professional research assistant. You have helped run many public consultations, 
@@ -240,12 +265,7 @@ And here is the list of responses:
 ${responses}
 `;
 
-export const assignmentPrompt = (
-  title, 
-  description, 
-  taxonomy,
-  response,
-) => `
+export const assignmentPrompt = (title, description, taxonomy, response) => `
 I'm going to give you a response made by a participant to a survey, the title and description of the survey, and a list of topics and subtopics which have already been extracted from the survey.
 I want you to assign each response to the best matching topic and subtopic in the taxonomy. The topic must be a member of the taxonomy, and the subtopic must be a member of the topic.
 
@@ -268,8 +288,8 @@ ${response}
 const summarizePrompt = (
   title,
   description,
-  topic, 
-  subtopic, 
+  topic,
+  subtopic,
   subtopicDescription,
   responses,
 ) => `
@@ -290,20 +310,23 @@ Subtopic Description: ${subtopicDescription}
 Responses: ${responses}
 `;
 
-
 function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
   if (!matchedTopic) {
-    console.log("Topic mismatch, skipping response " + JSON.stringify(response));
+    console.log(
+      "Topic mismatch, skipping response " + JSON.stringify(response),
+    );
     unmatchedResponses.push(response);
     return;
   }
   const subtopic = matchedTopic.subtopics.find(
-    (subtopic) => subtopic.subtopicName === subtopicName
+    (subtopic) => subtopic.subtopicName === subtopicName,
   );
   if (!subtopic) {
-    console.log("Subtopic mismatch, skipping response " + JSON.stringify(response));
+    console.log(
+      "Subtopic mismatch, skipping response " + JSON.stringify(response),
+    );
     unmatchedResponses.push(response);
     return;
   }
@@ -316,8 +339,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
 function cleanupTaxonomy(taxonomy) {
   taxonomy = filterEmptySubtopics(taxonomy);
   taxonomy = filterEmptyTopics(taxonomy);
-  return taxonomy
-
+  return taxonomy;
 }
 
 function filterEmptySubtopics(taxonomy) {
@@ -335,5 +357,4 @@ function filterEmptyTopics(taxonomy) {
   });
 }
 
-main()
-
+main();
