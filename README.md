@@ -9,11 +9,13 @@ Join the discord server for discussing and developing this tool [here](https://d
 1. Create a .env file with the following variables:
 
    ```shell
-   DISCORD_TOKEN=
-   OPENAI_API_KEY=
-   REDIS_URL=
-   CLIENT_ID=
-   GUILD_ID=
+   DISCORD_TOKEN=XXXXXXXXX
+   OPENAI_API_KEY=XXXXXXXXX
+   REDIS_HOST=XXXXXX without port
+   REDIS_PORT=XXXXX
+   REDIS_PASSWORD=XXXXXXX
+   CLIENT_ID=XXXXXXXXX
+   GUILD_ID=XXXXXXXXXX
    SUMMARIZE_FREQUENCY_SECONDS=3600
    ```
 

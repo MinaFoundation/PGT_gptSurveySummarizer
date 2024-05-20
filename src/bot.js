@@ -48,7 +48,14 @@ const maxResponsesForMultiResponsePerUser = 5;
 
   const create_multi_cmd = "create-multi-response";
 
-  const redisClient = createClient({ url: process.env.REDIS_URL });
+
+  const redisClient = createClient({
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+          host: process.env.REDIS_HOST,
+          port: process.env.REDIS_PORT
+      }
+  });
   await redisClient.connect();
 
   const command = new SlashCommandBuilder()
