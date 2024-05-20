@@ -7,7 +7,6 @@ import {
   TextInputStyle,
   ButtonBuilder,
   ButtonStyle,
-  AttachmentBuilder,
 } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
@@ -15,18 +14,16 @@ import { Routes } from "discord-api-types/v10";
 import {
   ActionRowBuilder,
   ModalBuilder,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
   SlashCommandBuilder,
 } from "@discordjs/builders";
 import { createClient } from "redis";
-import openai from "openai";
 
 import surveyToText from "./surveyToText.js";
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 
 import package_json from "../package.json" with { type: "json" };
+import { discordConfig, redisConfig } from "./config.js";
 const version = package_json.version;
 
 process.on("unhandledRejection", (error) => {
@@ -49,13 +46,7 @@ const maxResponsesForMultiResponsePerUser = 5;
   const create_multi_cmd = "create-multi-response";
 
 
-  const redisClient = createClient({
-      password: process.env.REDIS_PASSWORD,
-      socket: {
-          host: process.env.REDIS_HOST,
-          port: process.env.REDIS_PORT
-      }
-  });
+  const redisClient = createClient(redisConfig);
   await redisClient.connect();
 
   const command = new SlashCommandBuilder()
@@ -141,13 +132,13 @@ const maxResponsesForMultiResponsePerUser = 5;
       sc.setName("info").setDescription("view the version number"),
     );
 
-  const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
+  const rest = new REST({ version: "10" }).setToken(discordConfig.token);
 
   try {
     await rest.put(
       Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        process.env.GUILD_ID,
+        discordConfig.clientId,
+        discordConfig.guildId
       ),
       { body: [command.toJSON()] },
     );
@@ -434,7 +425,7 @@ const maxResponsesForMultiResponsePerUser = 5;
     }
   });
 
-  client.login(process.env.DISCORD_TOKEN);
+  client.login(discordConfig.token);
 
   //await redisClient.flushAll();
   //await runTest(redisClient);

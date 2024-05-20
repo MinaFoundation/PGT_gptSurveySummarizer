@@ -1,25 +1,14 @@
 import "dotenv/config";
 import OpenAI from "openai";
 import { createClient } from "redis";
+import { redisConfig } from "./config";
 
-const subscribeRedisClient = createClient({
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT
-  }
-});
+const subscribeRedisClient = createClient(redisConfig);
 subscribeRedisClient.on("error", (err) =>
   console.log("Redis Client Error", err),
 );
 
-const redisClient = createClient({
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT
-  }
-});
+const redisClient = createClient(redisConfig);
 redisClient.on("error", (err) => console.log("Redis Client Error", err));
 
 const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
