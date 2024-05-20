@@ -1,7 +1,12 @@
 import "dotenv/config";
 import surveyToText from "./surveyToText.js";
 import { createClient } from "redis";
-
+import {
+  discordConfig,
+  redisConfig,
+  summarizeFrequency,
+  version,
+} from "./config.js";
 import {
   Client,
   GatewayIntentBits,
@@ -10,20 +15,15 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v10";
-import {
-  discordConfig,
-  redisConfig,
-  summarizeFrequency,
-  version,
-} from "./config.js";
-
 import {
   ActionRowBuilder,
   ModalBuilder,
   SlashCommandBuilder,
 } from "@discordjs/builders";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v10";
+
+
 
 process.on("unhandledRejection", (error) => {
   console.error("Unhandled promise rejection:", error);
