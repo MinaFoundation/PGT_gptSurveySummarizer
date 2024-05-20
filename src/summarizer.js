@@ -1,4 +1,3 @@
-import "dotenv/config";
 import OpenAI from "openai";
 import { createClient } from "redis";
 import { redisConfig, summarizeFrequency, apikey } from "./config.js";
@@ -211,7 +210,7 @@ const gpt = async (apikey, system, user, maxTries = 5) => {
       { role: "user", content: user },
     ],
 
-    model: "gpt-4o",
+    model: "gpt-4-turbo",
     response_format: { type: "json_object" },
   });
   const { finish_reason, message } = completion.choices[0];

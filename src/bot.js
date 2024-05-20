@@ -1,4 +1,3 @@
-import "dotenv/config";
 import surveyToText from "./surveyToText.js";
 import {
   maxResponsesForMultiResponsePerUser,

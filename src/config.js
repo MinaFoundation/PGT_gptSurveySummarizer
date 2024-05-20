@@ -1,8 +1,9 @@
-import "dotenv/config";
 import package_json from "../package.json" with { type: "json" };
+import dotenv from "dotenv";
+
+dotenv.config({ path: `.env.local`, override: true });
 
 export const apikey = process.env.OPENAI_API_KEY;
-
 export const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 export const redisConfig = {
   password: process.env.REDIS_PASSWORD,
@@ -11,6 +12,7 @@ export const redisConfig = {
     port: process.env.REDIS_PORT,
   },
 };
+
 export const discordConfig = {
   token: process.env.DISCORD_TOKEN,
   clientId: process.env.CLIENT_ID,

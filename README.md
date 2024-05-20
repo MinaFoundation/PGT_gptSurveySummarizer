@@ -6,7 +6,7 @@ Join the discord server for discussing and developing this tool [here](https://d
 
 ## Usage
 
-1. Create a .env file with the following variables:
+1. Create a .env.local file with the following variables:
 
    ```shell
    DISCORD_TOKEN=XXXXXXXXX
