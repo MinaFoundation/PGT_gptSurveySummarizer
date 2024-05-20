@@ -22,6 +22,7 @@ Join the discord server for discussing and developing this tool [here](https://d
 1. Run `npm install`
 1. Start redis with `redis-server`
 1. Start the main bot script with `npm run bot`
+1. Or Start the main bot script with `npm run dev` to use nodemon in development phase.
 1. Start the gpt summarization script with `npm run summarizer`
 
 ## Docker image
