@@ -1,5 +1,6 @@
 import "dotenv/config";
 import surveyToText from "./surveyToText.js";
+import { maxResponsesForMultiResponsePerUser, create_multi_cmd } from "./constants.js";
 import { createClient } from "redis";
 import {
   discordConfig,
@@ -23,8 +24,6 @@ import {
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 
-
-
 process.on("unhandledRejection", (error) => {
   console.error("Unhandled promise rejection:", error);
 });
@@ -33,7 +32,6 @@ process.on("uncaughtException", (error) => {
   console.error("Unhandled exception:", error);
 });
 
-const maxResponsesForMultiResponsePerUser = 5;
 
 (async () => {
   const is_dev = process.argv[2] == "--dev";
@@ -41,8 +39,6 @@ const maxResponsesForMultiResponsePerUser = 5;
   const prefix = is_dev ? "dev_" : "";
 
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-  const create_multi_cmd = "create-multi-response";
 
   const redisClient = createClient(redisConfig);
   await redisClient.connect();
