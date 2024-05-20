@@ -1,4 +1,5 @@
 import "dotenv/config";
+import package_json from "../package.json" with { type: "json" };
 
 export const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
 export const redisConfig = {
@@ -13,3 +14,5 @@ export const discordConfig = {
   clientId: process.env.CLIENT_ID,
   guildId: process.env.GUILD_ID,
 };
+
+export const version = package_json.version;

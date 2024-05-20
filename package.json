@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "bot": "node src/bot.js",
     "dev": "nodemon src/bot.js",
-    "summarizer": "node src/summarizer.js"
+    "summarizer": "node src/summarizer.js",
+    "prettier": "npx prettier . --write"
   },
   "author": "",
   "license": "ISC",

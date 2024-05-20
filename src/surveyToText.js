@@ -1,6 +1,5 @@
 import { AttachmentBuilder } from "discord.js";
-
-const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
+import { summarizeFrequency } from "./config";
 
 export default async function surveyToText(redisClient, surveyName) {
   const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);

@@ -1,4 +1,6 @@
 import "dotenv/config";
+import surveyToText from "./surveyToText.js";
+import { createClient } from "redis";
 
 import {
   Client,
@@ -10,19 +12,18 @@ import {
 } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
-import { discordConfig, redisConfig, summarizeFrequency } from "./config.js";
+import {
+  discordConfig,
+  redisConfig,
+  summarizeFrequency,
+  version,
+} from "./config.js";
 
 import {
   ActionRowBuilder,
   ModalBuilder,
   SlashCommandBuilder,
 } from "@discordjs/builders";
-import { createClient } from "redis";
-
-import surveyToText from "./surveyToText.js";
-
-import package_json from "../package.json" with { type: "json" };
-const version = package_json.version;
 
 process.on("unhandledRejection", (error) => {
   console.error("Unhandled promise rejection:", error);
@@ -42,7 +43,6 @@ const maxResponsesForMultiResponsePerUser = 5;
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
   const create_multi_cmd = "create-multi-response";
-
 
   const redisClient = createClient(redisConfig);
   await redisClient.connect();
@@ -136,7 +136,7 @@ const maxResponsesForMultiResponsePerUser = 5;
     await rest.put(
       Routes.applicationGuildCommands(
         discordConfig.clientId,
-        discordConfig.guildId
+        discordConfig.guildId,
       ),
       { body: [command.toJSON()] },
     );
