@@ -1,4 +1,4 @@
-import surveyToText from "./surveyToText.js";
+import surveyToText from "./lib/surveyToText.js";
 import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,

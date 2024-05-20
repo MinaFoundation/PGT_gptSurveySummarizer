@@ -18,11 +18,17 @@
     "@discordjs/rest": "^2.2.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
+    "module-alias": "^2.2.3",
     "openai": "^4.31.0",
     "redis": "^4.6.13"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
     "prettier": "3.2.5"
+  },
+  "_moduleAliases": {
+    "@lib": "lib",
+    "@config": "config.js",
+    "@prompts": "prompts.js"
   }
 }
