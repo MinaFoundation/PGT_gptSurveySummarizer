@@ -7,6 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "bot": "node src/bot.js",
+    "dev": "nodemon src/bot.js",
     "summarizer": "node src/summarizer.js"
   },
   "author": "",
@@ -20,6 +21,7 @@
     "redis": "^4.6.13"
   },
   "devDependencies": {
+    "nodemon": "^3.1.0",
     "prettier": "3.2.5"
   }
 }
