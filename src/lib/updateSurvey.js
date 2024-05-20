@@ -6,6 +6,21 @@ import {
   summarizePrompt,
 } from "../prompts.js";
 
+function filterEmptySubtopics(taxonomy) {
+  return taxonomy.map((t) => {
+    t.subtopics = t.subtopics.filter((s) => {
+      return s.responses != null && s.responses.length > 0;
+    });
+    return t;
+  });
+}
+
+function filterEmptyTopics(taxonomy) {
+  return taxonomy.filter((t) => {
+    return t.subtopics.length > 0;
+  });
+}
+
 function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
