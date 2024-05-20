@@ -10,6 +10,7 @@ import {
 } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
+import { discordConfig, redisConfig, summarizeFrequency } from "./config.js";
 
 import {
   ActionRowBuilder,
@@ -20,10 +21,7 @@ import { createClient } from "redis";
 
 import surveyToText from "./surveyToText.js";
 
-const summarizeFrequency = process.env.SUMMARIZE_FREQUENCY_SECONDS;
-
 import package_json from "../package.json" with { type: "json" };
-import { discordConfig, redisConfig } from "./config.js";
 const version = package_json.version;
 
 process.on("unhandledRejection", (error) => {
