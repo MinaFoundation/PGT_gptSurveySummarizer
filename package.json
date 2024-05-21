@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "bot": "node src/bot.js",
     "dev": "nodemon src/bot.js",
     "summarizer": "node src/summarizer.js",
@@ -16,8 +16,10 @@
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "@discordjs/rest": "^2.2.0",
+    "chai": "^5.1.1",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
+    "mocha": "^10.4.0",
     "module-alias": "^2.2.3",
     "openai": "^4.31.0",
     "redis": "^4.6.13"
