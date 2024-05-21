@@ -29,8 +29,8 @@
     "prettier": "3.2.5"
   },
   "_moduleAliases": {
-    "@lib": "lib",
-    "@config": "config.js",
-    "@prompts": "prompts.js"
+    "@lib": "src/lib",
+    "@config": "src/config.js",
+    "@prompts": "src/prompts.js"
   }
 }
