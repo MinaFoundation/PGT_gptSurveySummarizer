@@ -1,4 +1,7 @@
-export const handleCreateModal = async (interaction, username) => {
+import { createSurvey } from "../lib/createSurvey.js";
+import { handleRespond } from "./handleRespond.js";
+import { maxResponsesForMultiResponsePerUser } from "../constants.js";
+export const handleCreateModal = async (interaction, username, redisClient) => {
   const [surveyType, surveyName] = interaction.customId.split("-").slice(1);
   const title = interaction.fields.getTextInputValue("titleInput");
   const description = interaction.fields.getTextInputValue("descriptionInput");
@@ -16,7 +19,7 @@ export const handleCreateModal = async (interaction, username) => {
   }
 };
 
-export const handleRespondModal = async (interaction, username) => {
+export const handleRespondModal = async (interaction, username, redisClient) => {
   const surveyName = interaction.customId.split("-").slice(1).join("-");
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";
@@ -35,7 +38,7 @@ export const handleRespondModal = async (interaction, username) => {
     `survey:${surveyName}:responses`,
     username,
   );
-  await respond(redisClient, surveyName, username, response);
+  await handleRespond(redisClient, surveyName, username, response);
   await interaction.reply({
     content: `Your Response was ${hadResponse ? "updated" : "added"} successfully!`,
     ephemeral: true,

@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-export const handleRespond = async (interaction, surveyName) => {
+export const handleRespond = async (redisClient, interaction, surveyName) => {
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     await interaction.reply({
       content: "There is no survey with that name",
