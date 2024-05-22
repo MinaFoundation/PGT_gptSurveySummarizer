@@ -1,3 +1,5 @@
+import { summarizeFrequency } from "../config.js";
+
 export const startAutoPosting = async (client, redisClient) => {
   while (true) {
     const timeSinceLastUpdate = Date.now() % (summarizeFrequency * 1000);

@@ -1,17 +1,13 @@
 import { createSurvey } from "./lib/createSurvey.js";
 import { makeSurveyPost } from "./lib/makeSurveyPost.js";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
+import { command } from "./utils/commandBuilder.js";
 import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,
 } from "./constants.js";
 import { createClient } from "redis";
-import {
-  discordConfig,
-  redisConfig,
-  summarizeFrequency,
-  version,
-} from "./config.js";
+import { discordConfig, redisConfig, version } from "./config.js";
 import {
   Client,
   GatewayIntentBits,
@@ -20,11 +16,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import {
-  ActionRowBuilder,
-  ModalBuilder,
-  SlashCommandBuilder,
-} from "@discordjs/builders";
+import { ActionRowBuilder, ModalBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 
@@ -37,97 +29,10 @@ process.on("uncaughtException", (error) => {
 });
 
 (async () => {
-  const is_dev = process.argv[2] == "--dev";
-
-  const prefix = is_dev ? "dev_" : "";
-
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
   const redisClient = createClient(redisConfig);
   await redisClient.connect();
-
-  const command = new SlashCommandBuilder()
-    .setName(prefix + "gptsurvey")
-    .setDescription(
-      "create, respond to, and view gpt-powered natural language surveys",
-    )
-    .addSubcommand((sc) =>
-      sc
-        .setName("create")
-        .setDescription(
-          "create a new survey, with one response per user. This is best for sentiment and questions.",
-        ),
-    )
-    .addSubcommand((sc) =>
-      sc
-        .setName(create_multi_cmd)
-        .setDescription(
-          "create a new survey, with up to 5 responses per user. This is best for brainstorming and feedback.",
-        ),
-    )
-    .addSubcommand(
-      (sc) =>
-        sc
-          .setName("respond")
-          .setDescription("respond to a survey")
-          .addStringOption((option) =>
-            option
-              .setName("survey")
-              .setDescription("survey name")
-              .setAutocomplete(true)
-              .setRequired(true),
-          ), // TODO do not allow the user to proceed until a matching option has
-      //      been selected (I've seen that in other discord bots I think)
-    )
-    .addSubcommand(
-      (sc) =>
-        sc
-          .setName("view")
-          .setDescription("view the summary and responses for a survey")
-          .addStringOption((option) =>
-            option
-              .setName("survey")
-              .setDescription("survey name")
-              .setAutocomplete(true)
-              .setRequired(true),
-          ), // TODO do not allow the user to proceed until a matching option has
-      //      been selected (I've seen that in other discord bots I think)
-    )
-    .addSubcommand(
-      (sc) =>
-        sc
-          .setName("start-auto-post")
-          .setDescription(
-            "start automatically posting a survey on this channel regularly",
-          )
-          .addStringOption((option) =>
-            option
-              .setName("survey")
-              .setDescription("survey name")
-              .setAutocomplete(true)
-              .setRequired(true),
-          ), // TODO do not allow the user to proceed until a matching option has
-      //      been selected (I've seen that in other discord bots I think)
-    )
-    .addSubcommand(
-      (sc) =>
-        sc
-          .setName("stop-auto-post")
-          .setDescription(
-            "stop automatically posting a survey on this channel regularly",
-          )
-          .addStringOption((option) =>
-            option
-              .setName("survey")
-              .setDescription("survey name")
-              .setAutocomplete(true)
-              .setRequired(true),
-          ), // TODO do not allow the user to proceed until a matching option has
-      //      been selected (I've seen that in other discord bots I think)
-    )
-    .addSubcommand((sc) =>
-      sc.setName("info").setDescription("view the version number"),
-    );
 
   const rest = new REST({ version: "10" }).setToken(discordConfig.token);
 
