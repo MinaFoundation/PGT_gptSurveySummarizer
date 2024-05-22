@@ -1,4 +1,17 @@
-import surveyToText from "./surveyToText.js";
-import { gpt } from "./gptClient.js";
+import checkUpdateSurveys from "./checkUpdateSurveys";
+import createSurvey from "./createSurvey";
+import gptClient from "./gptClient";
+import makeSurveyPost from "./makeSurveyPost";
+import startAutoPosting from "./startAutoPosting";
+import surveyToText from "./surveyToText";
+import updateSurvey from "./updateSurvey";
 
-export { gpt, surveyToText };
+export {
+  checkUpdateSurveys,
+  createSurvey,
+  gptClient,
+  makeSurveyPost,
+  startAutoPosting,
+  surveyToText,
+  updateSurvey,
+};

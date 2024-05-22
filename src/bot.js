@@ -2,6 +2,15 @@ import { createSurvey } from "./lib/createSurvey.js";
 import { makeSurveyPost } from "./lib/makeSurveyPost.js";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import { command } from "./utils/commandBuilder.js";
+import { handleAutoPost } from "./utils/handleAutoPost.js";
+import { handleCreate } from "./utils/handleCreate.js";
+import { handleCreateModal } from "./utils/handleModals.js";
+import { handleInfo } from "./utils/handleInfo.js";
+import { handleCreateModal } from "./utils/handleModals.js";
+import { handleRespondModal } from "./utils/handleModals.js";
+import { handleRespond } from "./utils/handleRespond.js";
+import { handleView } from "./utils/handleView.js";
+
 import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,
