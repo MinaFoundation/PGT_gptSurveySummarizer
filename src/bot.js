@@ -423,20 +423,4 @@ process.on("uncaughtException", (error) => {
   });
 
   client.login(discordConfig.token);
-
-  //await redisClient.flushAll();
-  //await runTest(redisClient);
 })();
-
-const runTest = async (redisClient) => {
-  await redisClient.flushAll();
-  await createSurvey(
-    redisClient,
-    "test-survey",
-    "single",
-    "test-description",
-    "evan",
-  );
-  await respond(redisClient, "test-survey", "evan", "comment1");
-  await respond(redisClient, "test-survey", "bob", "comment2");
-};
