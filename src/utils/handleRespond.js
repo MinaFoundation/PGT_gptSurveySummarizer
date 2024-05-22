@@ -24,3 +24,9 @@ export const handleRespond = async (redisClient, interaction, surveyName) => {
     components: [new ActionRowBuilder().addComponents(reply)],
   });
 };
+
+export const respond = async (redisClient, surveyName, username, response) => {
+  await redisClient.hSet(`survey:${surveyName}:responses`, username, response);
+  await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
+  await redisClient.publish("survey-refresh", surveyName);
+};

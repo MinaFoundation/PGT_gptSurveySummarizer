@@ -54,7 +54,7 @@ process.on("uncaughtException", (error) => {
   }
 
   client.once("ready", () => {
-    console.log("ready");
+    console.log("Ready as ", client.user.username);
     startAutoPosting(client, redisClient);
   });
 

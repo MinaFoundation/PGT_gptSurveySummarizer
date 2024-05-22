@@ -1,5 +1,5 @@
 import { createSurvey } from "../lib/createSurvey.js";
-import { handleRespond } from "./handleRespond.js";
+import { handleRespond, respond } from "./handleRespond.js";
 import { maxResponsesForMultiResponsePerUser } from "../constants.js";
 
 export const handleCreateModal = async (interaction, username, redisClient) => {
@@ -39,7 +39,8 @@ export const handleRespondModal = async (interaction, username, redisClient) => 
     `survey:${surveyName}:responses`,
     username,
   );
-  await handleRespond(redisClient, surveyName, username, response);
+  await respond(redisClient, surveyName, username, response);
+
   await interaction.reply({
     content: `Your Response was ${hadResponse ? "updated" : "added"} successfully!`,
     ephemeral: true,
