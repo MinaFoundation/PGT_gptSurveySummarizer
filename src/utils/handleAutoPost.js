@@ -1,4 +1,4 @@
-export const handleAutoPost = async (interaction, action) => {
+export const handleAutoPost = async (interaction, action, client, redisClient) => {
   const channel = client.channels.cache.get(interaction.channelId);
   const surveyName = interaction.options.getString("survey");
   const key = "auto-post-surveys";
