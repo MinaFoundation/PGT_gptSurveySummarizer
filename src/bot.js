@@ -83,7 +83,7 @@ process.on("uncaughtException", (error) => {
           await handleRespond(redisClient, interaction, surveyName);
           break;
         case "view":
-          await handleView(interaction, surveyName, redisClient, makeSurveyPost);
+          await handleView(interaction, surveyName, redisClient);
           break;
         case "start-auto-post":
           await handleAutoPost(interaction, "start", client, redisClient);
