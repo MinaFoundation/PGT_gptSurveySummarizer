@@ -1,5 +1,3 @@
-import { createSurvey } from "./lib/createSurvey.js";
-import { makeSurveyPost } from "./lib/makeSurveyPost.js";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import { command } from "./handlers/commandBuilder.js";
 import { handleAutoPost } from "./handlers/handleAutoPost.js";
