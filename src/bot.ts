@@ -111,7 +111,6 @@ process.on("uncaughtException", (error) => {
           interaction,
           username,
           redisClient,
-          maxResponsesForMultiResponsePerUser,
         );
       }
     } else if (interaction.isAutocomplete()) {
