@@ -23,6 +23,7 @@ Join the discord server for discussing and developing this tool [here](https://d
 1. Fill the REDIS_HOST, REDIS_PORT and REDIS_PASSWORD for connecting your Redis DB
    - Go to [Redis](https://redis.io/) and create an account.
    - Create a db and click ```connect``` copy and paste your password, socket and port into .env.local file
+   - You can see the redis configuration in ```config.js```
 1. Start the main bot script with `npm run bot`
 1. Or Start the main bot script with `npm run dev` to use nodemon in development phase.
 1. Start the gpt summarization script with `npm run summarizer`
