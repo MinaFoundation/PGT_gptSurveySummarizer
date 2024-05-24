@@ -6,11 +6,11 @@ import {
 } from "discord.js";
 
 export const handleRespondButton = async (
-  interaction,
-  surveyName,
-  redisClient,
-  username,
-  maxResponsesForMultiResponsePerUser,
+  interaction: any,
+  surveyName: any,
+  redisClient: any,
+  username: any,
+  maxResponsesForMultiResponsePerUser: any,
 ) => {
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const hadResponse = await redisClient.hExists(

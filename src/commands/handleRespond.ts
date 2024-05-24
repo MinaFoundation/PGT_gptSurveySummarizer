@@ -1,6 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-export const handleRespond = async (redisClient, interaction, surveyName) => {
+export const handleRespond = async (
+  redisClient: any,
+  interaction: any,
+  surveyName: any,
+) => {
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     await interaction.reply({
       content: "There is no survey with that name",
@@ -25,7 +29,12 @@ export const handleRespond = async (redisClient, interaction, surveyName) => {
   });
 };
 
-export const respond = async (redisClient, surveyName, username, response) => {
+export const respond = async (
+  redisClient: any,
+  surveyName: any,
+  username: any,
+  response: any,
+) => {
   await redisClient.hSet(`survey:${surveyName}:responses`, username, response);
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.publish("survey-refresh", surveyName);
