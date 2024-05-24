@@ -107,11 +107,7 @@ process.on("uncaughtException", (error) => {
       if (interaction.customId.startsWith("createModal")) {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
-        await handleRespondModal(
-          interaction,
-          username,
-          redisClient,
-        );
+        await handleRespondModal(interaction, username, redisClient);
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");

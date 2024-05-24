@@ -3,16 +3,16 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandStringOption,
 } from "@discordjs/builders";
-import { create_multi_cmd } from "../constants.js";
+import { create_multi_cmd } from "@constants";
 
-const createStringOption = (name, description, required = true) =>
+const createStringOption = (name: string, description: string, required = true) =>
   new SlashCommandStringOption()
     .setName(name)
     .setDescription(description)
     .setAutocomplete(true)
     .setRequired(required);
 
-const createSubcommand = (name, description, options = []) => {
+const createSubcommand = (name: string, description: string, options = []) => {
   const subcommand = new SlashCommandSubcommandBuilder()
     .setName(name)
     .setDescription(description);
