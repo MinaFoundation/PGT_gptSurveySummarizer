@@ -21,9 +21,8 @@
 
 ## C. Redis Setup
 
-- Install Redis:
-- Ensure Redis is installed on your local system or use a cloud provider like Redis Labs.
-- Follow the installation guide for your operating system or cloud provider's instructions.
+- Go to [Redis](https://redis.io/) and create an account.
+- Create a db and click ```connect``` copy and paste your password, socket and port into .env.local file
 
 # Step 2: Project Initialization
 
