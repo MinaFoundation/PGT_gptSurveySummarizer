@@ -1,4 +1,3 @@
-import { RedisClientType } from "@redis/client";
 import { ChatInputCommandInteraction, Client } from "discord.js";
 
 export const handleAutoPost = async (
