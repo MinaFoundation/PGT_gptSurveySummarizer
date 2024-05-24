@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es6", // Set the JavaScript version target
+    "module": "commonjs", // CommonJS modules for Node.js
+    "esModuleInterop": true, // Enables import/export compatibility
+    "allowJs": true, // Allow JavaScript files to be compiled
+    "outDir": "./dist", // Redirect output structure to the directory
+    "baseUrl": ".", // Base directory to resolve non-relative module names
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@commands/*": ["src/commands/*"], // Maps to the commands folder
+      "@lib/*": ["src/lib/*"], // Maps to the lib folder
+      "@constants": ["src/constants"], // Maps to the constants.js file
+      "@config": ["src/config"] // Maps to the config.js file
+    }
+  },
+  "include": [
+    "src/**/*.ts", // Include all TypeScript files in src
+    "src/**/*.js" // Include all JavaScript files in src
+  ],
+  "exclude": [
+    "node_modules", // Exclude node_modules
+    ".vscode",
+    "**/*.spec.ts" // Exclude test files
+  ]
+}

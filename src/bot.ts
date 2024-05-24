@@ -1,20 +1,22 @@
 import { startAutoPosting } from "./lib/startAutoPosting.js";
-import { command } from "./commands/commandBuilder.js";
-import { handleAutoPost } from "./commands/handleAutoPost.js";
-import { handleCreate } from "./commands/handleCreate.js";
-import { handleCreateModal } from "./commands/handleModals.js";
-import { handleInfo } from "./commands/handleInfo.js";
-import { handleRespondModal } from "./commands/handleModals.js";
-import { handleRespond } from "./commands/handleRespond.js";
-import { handleRespondButton } from "./commands/handleRespondButton.js";
-import { handleView } from "./commands/handleView.js";
+import {
+  command,
+  handleAutoPost,
+  handleCreate,
+  handleInfo,
+  handleCreateModal,
+  handleRespondModal,
+  handleRespond,
+  handleRespondButton,
+  handleView,
+} from "@commands/index";
 
 import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,
-} from "./constants.js";
+} from "@constants";
+import { discordConfig, redisConfig, version } from "@config";
 import { createClient } from "redis";
-import { discordConfig, redisConfig, version } from "./config.js";
 import { Client, GatewayIntentBits } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
