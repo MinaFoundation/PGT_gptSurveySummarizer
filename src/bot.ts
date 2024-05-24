@@ -15,6 +15,7 @@ import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,
 } from "@constants";
+
 import { discordConfig, redisConfig, version } from "@config";
 import { createClient } from "redis";
 import { Client, GatewayIntentBits } from "discord.js";

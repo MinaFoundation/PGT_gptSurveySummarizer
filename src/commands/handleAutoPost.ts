@@ -5,7 +5,7 @@ export const handleAutoPost = async (
   interaction: ChatInputCommandInteraction,
   action: string,
   client: Client,
-  redisClient: RedisClientType,
+  redisClient: any,
 ) => {
   const channel = client.channels.cache.get(interaction.channelId);
   const surveyName = interaction.options.getString("survey");
