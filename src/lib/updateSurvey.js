@@ -1,4 +1,5 @@
 import { gpt } from "./gptClient.js";
+import { apikey } from "../config.js";
 import {
   systemMessage,
   clusteringPrompt,
