@@ -18,8 +18,6 @@ process.on("uncaughtException", (error) => {
   console.error("Unhandled exception:", error);
 });
 
-// ==========================================================================================
-
 const main = async () => {
   await subscribeRedisClient.connect();
   await redisClient.connect();

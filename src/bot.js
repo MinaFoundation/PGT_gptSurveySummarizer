@@ -64,8 +64,6 @@ process.on("uncaughtException", (error) => {
     //      If they aren't unique, maps should probably use ids to avoid users making multiple comments.
     const username = user.username;
 
-    // ------------------------------------------------
-
     if (interaction.isChatInputCommand()) {
       const { commandName, options } = interaction;
       const surveyName = options.getString("survey");
