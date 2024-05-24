@@ -5,7 +5,11 @@ import {
 } from "@discordjs/builders";
 import { create_multi_cmd } from "@constants";
 
-const createStringOption = (name: string, description: string, required = true) =>
+const createStringOption = (
+  name: string,
+  description: string,
+  required = true,
+) =>
   new SlashCommandStringOption()
     .setName(name)
     .setDescription(description)

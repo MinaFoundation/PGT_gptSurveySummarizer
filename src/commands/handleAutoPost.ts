@@ -1,8 +1,11 @@
+import { RedisClientType } from "@redis/client";
+import { ChatInputCommandInteraction, Client } from "discord.js";
+
 export const handleAutoPost = async (
-  interaction,
-  action,
-  client,
-  redisClient,
+  interaction: ChatInputCommandInteraction,
+  action: string,
+  client: Client,
+  redisClient: RedisClientType,
 ) => {
   const channel = client.channels.cache.get(interaction.channelId);
   const surveyName = interaction.options.getString("survey");
