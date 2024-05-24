@@ -10,7 +10,7 @@ export const handleRespondButton = async (
   surveyName,
   redisClient,
   username,
-  maxResponsesForMultiResponsePerUser
+  maxResponsesForMultiResponsePerUser,
 ) => {
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const hadResponse = await redisClient.hExists(

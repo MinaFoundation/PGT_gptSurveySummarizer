@@ -1,5 +1,5 @@
 import { createSurvey } from "../lib/createSurvey.js";
-import { handleRespond, respond } from "./handleRespond.js";
+import { respond } from "./handleRespond.js";
 import { maxResponsesForMultiResponsePerUser } from "../constants.js";
 
 export const handleCreateModal = async (interaction, username, redisClient) => {
@@ -20,7 +20,11 @@ export const handleCreateModal = async (interaction, username, redisClient) => {
   }
 };
 
-export const handleRespondModal = async (interaction, username, redisClient) => {
+export const handleRespondModal = async (
+  interaction,
+  username,
+  redisClient,
+) => {
   const surveyName = interaction.customId.split("-").slice(1).join("-");
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";

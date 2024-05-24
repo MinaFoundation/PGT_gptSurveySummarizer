@@ -1,13 +1,13 @@
 import { startAutoPosting } from "./lib/startAutoPosting.js";
-import { command } from "./handlers/commandBuilder.js";
-import { handleAutoPost } from "./handlers/handleAutoPost.js";
-import { handleCreate } from "./handlers/handleCreate.js";
-import { handleCreateModal } from "./handlers/handleModals.js";
-import { handleInfo } from "./handlers/handleInfo.js";
-import { handleRespondModal } from "./handlers/handleModals.js";
-import { handleRespond } from "./handlers/handleRespond.js";
-import { handleRespondButton } from "./handlers/handleRespondButton.js";
-import { handleView } from "./handlers/handleView.js";
+import { command } from "./commands/commandBuilder.js";
+import { handleAutoPost } from "./commands/handleAutoPost.js";
+import { handleCreate } from "./commands/handleCreate.js";
+import { handleCreateModal } from "./commands/handleModals.js";
+import { handleInfo } from "./commands/handleInfo.js";
+import { handleRespondModal } from "./commands/handleModals.js";
+import { handleRespond } from "./commands/handleRespond.js";
+import { handleRespondButton } from "./commands/handleRespondButton.js";
+import { handleView } from "./commands/handleView.js";
 
 import {
   maxResponsesForMultiResponsePerUser,
@@ -15,10 +15,7 @@ import {
 } from "./constants.js";
 import { createClient } from "redis";
 import { discordConfig, redisConfig, version } from "./config.js";
-import {
-  Client,
-  GatewayIntentBits,
-} from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 
@@ -96,19 +93,34 @@ process.on("uncaughtException", (error) => {
     } else if (interaction.isButton()) {
       if (interaction.customId.startsWith("respondButton")) {
         const surveyName = interaction.customId.split("-").slice(1).join("-");
-        await handleRespondButton(interaction, surveyName, redisClient, username, maxResponsesForMultiResponsePerUser);
+        await handleRespondButton(
+          interaction,
+          surveyName,
+          redisClient,
+          username,
+          maxResponsesForMultiResponsePerUser,
+        );
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
-        await handleRespondModal(interaction, username, redisClient, maxResponsesForMultiResponsePerUser);
+        await handleRespondModal(
+          interaction,
+          username,
+          redisClient,
+          maxResponsesForMultiResponsePerUser,
+        );
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
       const focusedValue = interaction.options.getFocused();
-      const filtered = surveys.filter(choice => choice.startsWith(focusedValue));
-      await interaction.respond(filtered.map(choice => ({ name: choice, value: choice })));
+      const filtered = surveys.filter((choice) =>
+        choice.startsWith(focusedValue),
+      );
+      await interaction.respond(
+        filtered.map((choice) => ({ name: choice, value: choice })),
+      );
     }
   });
 
