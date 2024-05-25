@@ -1,4 +1,5 @@
 import { summarizeFrequency } from "../config.js";
+import { makeSurveyPost } from "./makeSurveyPost.js";
 
 export const startAutoPosting = async (client, redisClient) => {
   while (true) {
