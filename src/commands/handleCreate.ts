@@ -1,3 +1,4 @@
+import { maxResponsesForMultiResponsePerUser } from "@constants";
 import {
   ModalBuilder,
   TextInputBuilder,
@@ -27,11 +28,24 @@ const createModal = async (
     .setLabel("Write a short description for your survey")
     .setStyle(TextInputStyle.Paragraph);
 
+  const fieldsInput = new TextInputBuilder()
+    .setCustomId("fieldsInput")
+    .setLabel(
+      `Up to ${maxResponsesForMultiResponsePerUser} line separated field names`,
+    )
+    .setStyle(TextInputStyle.Paragraph)
+    .setMaxLength(1300)
+    .setPlaceholder(
+      `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each label up to 45 chars. Each field has a 600 character limit.`,
+    );
+
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
   const secondActionRow = new ActionRowBuilder().addComponents(
     descriptionInput,
   );
-  modal.addComponents(firstActionRow, secondActionRow);
+  const thirdActionRow = new ActionRowBuilder().addComponents(fieldsInput);
+
+  modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
 
   await interaction.showModal(modal);
 };

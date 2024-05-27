@@ -38,12 +38,15 @@ export const handleRespondButton = async (
       .setRequired(true);
     modal.addComponents(new ActionRowBuilder().addComponents(responseInput));
   } else {
-    const description = await redisClient.get(`survey:${surveyName}:description`);
-    const multipleQuestions = description.split('\n')
-
-    let priorResponses = new Array(multipleQuestions.length).fill(
-      "",
+    const description = await redisClient.get(
+      `survey:${surveyName}:description`,
     );
+    const fields = await redisClient.get(
+      `survey:${surveyName}:fields`,
+    );
+    const multipleQuestions = fields.split("\n");
+
+    let priorResponses = new Array(multipleQuestions.length).fill("");
     if (hadResponse) {
       const priorResponseData = await redisClient.hGet(
         `survey:${surveyName}:responses`,
@@ -56,7 +59,6 @@ export const handleRespondButton = async (
         priorResponses = [priorResponseData];
       }
     }
-    
 
     const components = new Array(multipleQuestions.length)
       .fill(null)
@@ -65,6 +67,7 @@ export const handleRespondButton = async (
           .setCustomId(`responseInput-${i}`)
           .setLabel(multipleQuestions[i])
           .setStyle(TextInputStyle.Paragraph)
+          .setPlaceholder(`Survey Description: ${description}`)
           .setValue(priorResponses[i])
           .setRequired(i === 0);
         return new ActionRowBuilder().addComponents(responseInput);

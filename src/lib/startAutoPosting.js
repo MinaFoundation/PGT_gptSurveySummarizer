@@ -28,7 +28,7 @@ export const startAutoPosting = async (client, redisClient) => {
       console.log("posting", surveyName, "to", channelId);
 
       const messagesToSend = await makeSurveyPost(redisClient, surveyName);
-      const channel = await client.channels.fetch(channelId)
+      const channel = await client.channels.fetch(channelId);
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {

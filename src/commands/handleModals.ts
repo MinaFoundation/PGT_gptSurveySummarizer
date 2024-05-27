@@ -10,6 +10,7 @@ export const handleCreateModal = async (
   const [surveyType, surveyName] = interaction.customId.split("-").slice(1);
   const title = interaction.fields.getTextInputValue("titleInput");
   const description = interaction.fields.getTextInputValue("descriptionInput");
+  const fields = interaction.fields.getTextInputValue("fieldsInput")
 
   if (await redisClient.sIsMember("surveys", surveyName)) {
     await interaction.reply({
@@ -17,7 +18,7 @@ export const handleCreateModal = async (
       ephemeral: true,
     });
   } else {
-    await createSurvey(redisClient, title, surveyType, description, username);
+    await createSurvey(redisClient, title, surveyType, description, fields, username);
     await interaction.reply({
       content: "Your Survey was created successfully!",
       ephemeral: true,
@@ -37,8 +38,11 @@ export const handleRespondModal = async (
   if (surveyType === "single") {
     response = interaction.fields.getTextInputValue("responseInput");
   } else {
-    const description = await redisClient.get(`survey:${surveyName}:description`);
-    const multipleQuestions = description.split('\n')
+    const description = await redisClient.get(
+      `survey:${surveyName}:description`,
+    );
+    const fields = await redisClient.get(`survey:${surveyName}:fields`)
+    const multipleQuestions = fields.split("\n");
 
     const responses = new Array(multipleQuestions.length)
       .fill(null)
