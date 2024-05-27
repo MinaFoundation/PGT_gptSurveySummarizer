@@ -4,10 +4,12 @@ services:
     build: .
     command: bot
     environment:
-      CLIENT_ID: ""
       DISCORD_TOKEN: ""
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      CLIENT_ID: ""
       GUILD_ID: ""
-      REDIS_URL: "redis://redis:6379"
       SUMMARIZE_FREQUENCY_SECONDS: ""
   summarizer:
     image: gpt-survey-summarizer
@@ -15,7 +17,9 @@ services:
     command: summarizer
     environment:
       OPENAI_API_KEY: ""
-      REDIS_URL: "redis://redis:6379"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
   redis:
     image: redis
