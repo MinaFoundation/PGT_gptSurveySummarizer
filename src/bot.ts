@@ -116,8 +116,11 @@ process.on("uncaughtException", (error) => {
       const filtered = surveys.filter((choice) =>
         choice.startsWith(focusedValue),
       );
+      const start = Math.max(filtered.length - 25, 0);
+      const limitedChoices = filtered.slice(start);
+      
       await interaction.respond(
-        filtered.map((choice) => ({ name: choice, value: choice })),
+        limitedChoices.map((choice) => ({ name: choice, value: choice })),
       );
     }
   });
