@@ -1,21 +1,19 @@
 services:
   bot:
     image: gpt-survey-summarizer
+    env_file:
+      - .env.local
     build: .
     command: bot
     environment:
-      CLIENT_ID: ""
-      DISCORD_TOKEN: ""
-      GUILD_ID: ""
       REDIS_URL: "redis://redis:6379"
-      SUMMARIZE_FREQUENCY_SECONDS: ""
   summarizer:
     image: gpt-survey-summarizer
+    env_file:
+      - .env.local
     build: .
     command: summarizer
     environment:
-      OPENAI_API_KEY: ""
       REDIS_URL: "redis://redis:6379"
-      SUMMARIZE_FREQUENCY_SECONDS: ""
   redis:
     image: redis
