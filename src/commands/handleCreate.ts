@@ -31,12 +31,18 @@ const createModal = async (
   const fieldsInput = new TextInputBuilder()
     .setCustomId("fieldsInput")
     .setLabel(
-      `Up to ${maxResponsesForMultiResponsePerUser} line separated field names`,
+      type === "single"
+        ? "Write your question"
+        : `Up to ${maxResponsesForMultiResponsePerUser} line separated field names`,
     )
     .setStyle(TextInputStyle.Paragraph)
-    .setMaxLength(1300)
+    .setMaxLength(
+      type === "single" ? 45 : 45 * maxResponsesForMultiResponsePerUser * 2,
+    )
     .setPlaceholder(
-      `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each label up to 45 chars. Each field has a 600 character limit.`,
+      type === "single"
+        ? "Enter your question Max 45 character."
+        : `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each field up to 45 chars. Each field has a 600 character limit.`,
     );
 
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
