@@ -13,6 +13,12 @@ export const handleRespondButton = async (
   maxResponsesForMultiResponsePerUser: any,
 ) => {
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
+  const description = await redisClient.get(
+    `survey:${surveyName}:description`,
+  );
+  const fields = await redisClient.get(
+    `survey:${surveyName}:fields`,
+  );
   const hadResponse = await redisClient.hExists(
     `survey:${surveyName}:responses`,
     username,
@@ -23,8 +29,8 @@ export const handleRespondButton = async (
     .setTitle(`Respond: ${surveyName}`);
 
   const label = hadResponse
-    ? `Please update your response${plural} below`
-    : `Please enter your response${plural} below`;
+    ? `Please update your response${plural} here`
+    : `Please enter your response${plural} here`;
 
   if (surveyType === "single") {
     const defaultText = hadResponse
@@ -32,18 +38,14 @@ export const handleRespondButton = async (
       : "";
     const responseInput = new TextInputBuilder()
       .setCustomId("responseInput")
-      .setLabel(label)
+      .setLabel(fields)
       .setStyle(TextInputStyle.Paragraph)
       .setValue(defaultText)
+      .setPlaceholder(label)
       .setRequired(true);
     modal.addComponents(new ActionRowBuilder().addComponents(responseInput));
   } else {
-    const description = await redisClient.get(
-      `survey:${surveyName}:description`,
-    );
-    const fields = await redisClient.get(
-      `survey:${surveyName}:fields`,
-    );
+    
     const multipleQuestions = fields.split("\n");
 
     let priorResponses = new Array(multipleQuestions.length).fill("");
