@@ -1,19 +1,25 @@
 services:
   bot:
     image: gpt-survey-summarizer
-    env_file:
-      - .env.local
     build: .
     command: bot
     environment:
-      REDIS_URL: "redis://redis:6379"
+      DISCORD_TOKEN: ""
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      CLIENT_ID: ""
+      GUILD_ID: ""
+      SUMMARIZE_FREQUENCY_SECONDS: ""
   summarizer:
     image: gpt-survey-summarizer
-    env_file:
-      - .env.local
     build: .
     command: summarizer
     environment:
-      REDIS_URL: "redis://redis:6379"
+      OPENAI_API_KEY: ""
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      SUMMARIZE_FREQUENCY_SECONDS: ""
   redis:
     image: redis
