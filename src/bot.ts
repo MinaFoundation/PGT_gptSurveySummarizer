@@ -112,7 +112,6 @@ process.on("uncaughtException", (error) => {
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
-      console.log(surveys)
       const focusedValue = interaction.options.getFocused();
       const filtered = surveys.filter((choice) =>
         choice.startsWith(focusedValue),
