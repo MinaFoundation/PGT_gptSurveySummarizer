@@ -42,7 +42,7 @@ const createModal = async (
     .setPlaceholder(
       type === "single"
         ? "Enter your question Max 45 character."
-        : `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each field up to 45 chars. Each field has a 600 character limit.`,
+        : `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each field(line) up to 45 chars.`,
     );
 
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
