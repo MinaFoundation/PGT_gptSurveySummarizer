@@ -112,12 +112,15 @@ process.on("uncaughtException", (error) => {
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
+      console.log(surveys)
       const focusedValue = interaction.options.getFocused();
       const filtered = surveys.filter((choice) =>
         choice.startsWith(focusedValue),
       );
+      const start = Math.max(filtered.length - 25, 0); // Calculate starting index for slicing from the end
+      const limitedChoices = filtered.slice(start);
       await interaction.respond(
-        filtered.map((choice) => ({ name: choice, value: choice })),
+        limitedChoices.map((choice) => ({ name: choice, value: choice })),
       );
     }
   });
