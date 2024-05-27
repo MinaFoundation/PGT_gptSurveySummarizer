@@ -18,9 +18,6 @@ RUN npm ci
 # Copy source code
 COPY ./src ./src/
 
-# Copy tests
-COPY ./test ./test/
-
 ENTRYPOINT ["npm", "run"]
 
 # Possible modes: [ bot (default), summarizer ]
