@@ -20,7 +20,7 @@ export const handleRespondButton = async (
   const plural = surveyType === "single" ? "" : "s";
   const modal = new ModalBuilder()
     .setCustomId(`respondModal-${surveyName}`)
-    .setTitle(`Survey Response${plural}`);
+    .setTitle(`Respond: ${surveyName}`);
 
   const label = hadResponse
     ? `Please update your response${plural} below`
@@ -38,7 +38,10 @@ export const handleRespondButton = async (
       .setRequired(true);
     modal.addComponents(new ActionRowBuilder().addComponents(responseInput));
   } else {
-    let priorResponses = new Array(maxResponsesForMultiResponsePerUser).fill(
+    const description = await redisClient.get(`survey:${surveyName}:description`);
+    const multipleQuestions = description.split('\n')
+
+    let priorResponses = new Array(multipleQuestions.length).fill(
       "",
     );
     if (hadResponse) {
@@ -53,12 +56,14 @@ export const handleRespondButton = async (
         priorResponses = [priorResponseData];
       }
     }
-    const components = new Array(maxResponsesForMultiResponsePerUser)
+    
+
+    const components = new Array(multipleQuestions.length)
       .fill(null)
       .map((_, i) => {
         const responseInput = new TextInputBuilder()
           .setCustomId(`responseInput-${i}`)
-          .setLabel(i === 0 ? `${label}:` : `Response ${i + 1}:`)
+          .setLabel(multipleQuestions[i])
           .setStyle(TextInputStyle.Paragraph)
           .setValue(priorResponses[i])
           .setRequired(i === 0);

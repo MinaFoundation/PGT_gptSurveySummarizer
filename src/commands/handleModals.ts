@@ -10,6 +10,7 @@ export const handleCreateModal = async (
   const [surveyType, surveyName] = interaction.customId.split("-").slice(1);
   const title = interaction.fields.getTextInputValue("titleInput");
   const description = interaction.fields.getTextInputValue("descriptionInput");
+
   if (await redisClient.sIsMember("surveys", surveyName)) {
     await interaction.reply({
       content: "A survey with that name already exists",
@@ -36,7 +37,10 @@ export const handleRespondModal = async (
   if (surveyType === "single") {
     response = interaction.fields.getTextInputValue("responseInput");
   } else {
-    const responses = new Array(maxResponsesForMultiResponsePerUser)
+    const description = await redisClient.get(`survey:${surveyName}:description`);
+    const multipleQuestions = description.split('\n')
+
+    const responses = new Array(multipleQuestions.length)
       .fill(null)
       .map((_, i) =>
         interaction.fields.getTextInputValue(`responseInput-${i}`),
