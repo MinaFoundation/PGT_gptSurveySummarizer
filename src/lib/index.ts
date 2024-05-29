@@ -5,6 +5,7 @@ import { makeSurveyPost } from "./makeSurveyPost";
 import { startAutoPosting } from "./startAutoPosting";
 import surveyToText from "./surveyToText";
 import { updateSurvey } from "./updateSurvey";
+import {threadPost} from "./threadPost";
 
 export {
   checkUpdateSurveys,
@@ -14,4 +15,5 @@ export {
   startAutoPosting,
   surveyToText,
   updateSurvey,
+  threadPost
 };

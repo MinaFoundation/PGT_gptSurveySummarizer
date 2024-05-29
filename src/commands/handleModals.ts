@@ -1,6 +1,5 @@
 import { createSurvey } from "../lib/createSurvey.js";
 import { respond } from "./handleRespond.js";
-import { maxResponsesForMultiResponsePerUser } from "../constants.js";
 
 export const handleCreateModal = async (
   interaction: any,
@@ -30,6 +29,7 @@ export const handleCreateModal = async (
       content: "Your Survey was created successfully!",
       ephemeral: true,
     });
+    return title
   }
 };
 

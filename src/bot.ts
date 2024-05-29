@@ -21,6 +21,7 @@ import { createClient } from "redis";
 import { Client, GatewayIntentBits } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
+import { threadPost } from "@lib/threadPost.js";
 
 process.on("unhandledRejection", (error) => {
   console.error("Unhandled promise rejection:", error);
@@ -106,7 +107,9 @@ process.on("uncaughtException", (error) => {
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
-        await handleCreateModal(interaction, username, redisClient);
+        const sn = await handleCreateModal(interaction, username, redisClient);
+        console.log(sn)
+        await threadPost(client, redisClient, sn)
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       }
