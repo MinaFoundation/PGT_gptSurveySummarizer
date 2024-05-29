@@ -107,9 +107,13 @@ process.on("uncaughtException", (error) => {
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
-        const sn = await handleCreateModal(interaction, username, redisClient);
-        console.log(sn)
-        await threadPost(client, redisClient, sn)
+        const [sn, desc] = await handleCreateModal(
+          interaction,
+          username,
+          redisClient,
+        );
+        console.log(sn);
+        await threadPost(client, redisClient, sn, desc);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       }
