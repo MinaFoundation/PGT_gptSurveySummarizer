@@ -113,7 +113,7 @@ export default async function surveyToText(redisClient, surveyName) {
   if (summary.unmatchedResponses != null && summary.unmatchedResponses.length > 0) {
     msg += divider;
     msg += `### Unmatched Responses\n`;
-    msg += `:speech_balloon: Responses not matched with any topic: ${unmatchedResponseCount}\n`
+    msg += `:speech_balloon: Responses not matched with any topic: ${summary.unmatchedResponses.length}\n`
 
     const responseMessages = summary.unmatchedResponses.map((response) => {
       summarizedResponses.push(response);
