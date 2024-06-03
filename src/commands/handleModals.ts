@@ -1,4 +1,5 @@
 import { createSurvey } from "../lib/createSurvey.js";
+import { editSurvey } from "./handleEdit.js";
 import { respond } from "./handleRespond.js";
 import { maxResponsesForMultiResponsePerUser } from "../constants.js";
 
@@ -28,6 +29,72 @@ export const handleCreateModal = async (
     );
     await interaction.reply({
       content: "Your Survey was created successfully!",
+      ephemeral: true,
+    });
+  }
+};
+
+export const handleEditModal = async (
+  interaction: any,
+  username: any,
+  redisClient: any,
+) => {
+  const [surveyType, surveyName] = interaction.customId.split("-").slice(1);
+  const title = interaction.fields.getTextInputValue("titleInput");
+  const description = interaction.fields.getTextInputValue("descriptionInput");
+  const fields = interaction.fields.getTextInputValue("fieldsInput");
+
+  if (!(await redisClient.sIsMember("surveys", surveyName))) {
+    await interaction.reply({
+      content: "There is no survey with that name",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  const surveyTitle = await redisClient.get(`survey:${surveyName}:title`);
+  const surveyDescription = await redisClient.get(
+    `survey:${surveyName}:description`,
+  );
+  const surveyFields = await redisClient.get(`survey:${surveyName}:fields`);
+
+  let updatedTitle = surveyTitle;
+  let updatedDescription = surveyDescription;
+  let updatedFields = surveyFields;
+  let updated = false;
+
+  if (title && title !== surveyTitle) {
+    updatedTitle = title;
+    updated = true;
+  }
+
+  if (description && description !== surveyDescription) {
+    updatedDescription = description;
+    updated = true;
+  }
+
+  if (fields && fields !== surveyFields) {
+    updatedFields = fields;
+    updated = true;
+  }
+
+  if (updated) {
+    await editSurvey(
+      redisClient,
+      title,
+      updatedTitle,
+      surveyType,
+      updatedDescription,
+      updatedFields,
+      username,
+    );
+    await interaction.reply({
+      content: "Your Survey was updated successfully!",
+      ephemeral: true,
+    });
+  } else {
+    await interaction.reply({
+      content: "No changes were made as the input values were the same.",
       ephemeral: true,
     });
   }

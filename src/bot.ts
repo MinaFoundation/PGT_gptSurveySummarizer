@@ -4,11 +4,13 @@ import {
   handleAutoPost,
   handleCreate,
   handleInfo,
+  handleEdit,
   handleCreateModal,
   handleRespondModal,
   handleRespond,
   handleRespondButton,
   handleView,
+  handleEditModal,
 } from "@commands/index";
 
 import {
@@ -78,6 +80,9 @@ process.on("uncaughtException", (error) => {
         case "respond":
           await handleRespond(redisClient, interaction, surveyName);
           break;
+        case "edit":
+          await handleEdit(interaction, redisClient, surveyName);
+          break;
         case "view":
           await handleView(interaction, surveyName, redisClient);
           break;
@@ -109,6 +114,8 @@ process.on("uncaughtException", (error) => {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
+      } else if (interaction.customId.startsWith("editModal")) {
+        await handleEditModal(interaction, username, redisClient)
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
