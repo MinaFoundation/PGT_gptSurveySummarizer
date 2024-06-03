@@ -81,7 +81,7 @@ export const handleEditModal = async (
   if (updated) {
     await editSurvey(
       redisClient,
-      title,
+      surveyName,
       updatedTitle,
       surveyType,
       updatedDescription,

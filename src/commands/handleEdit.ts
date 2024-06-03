@@ -27,8 +27,6 @@ const editModal = async (
   );
 
   const surveyFields = await redisClient.get(`survey:${surveyName}:fields`);
-  const stringFields: string =
-    type === "single" ? surveyFields : surveyFields.join("\n");
 
   const modal = new ModalBuilder()
     .setCustomId(`editModal-${type}-${surveyName}`)
@@ -54,13 +52,13 @@ const editModal = async (
     .setLabel(
       type === "single"
         ? "Edit your question"
-        : `Edit questions up to ${maxResponsesForMultiResponsePerUser} line separated field names`,
+        : `Edit questions line separated field names`,
     )
     .setStyle(TextInputStyle.Paragraph)
     .setMaxLength(
       type === "single" ? 45 : 45 * maxResponsesForMultiResponsePerUser * 2,
     )
-    .setPlaceholder(trimString(stringFields))
+    .setPlaceholder(trimString(surveyFields))
     .setRequired(false);
 
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
@@ -92,21 +90,32 @@ export const editSurvey = async (
   fields: any,
   username: string,
 ) => {
-  const surveyExists = await redisClient.sIsMember("surveys", surveyName);
+  if (surveyName !== updatedSurveyName) {
+    await redisClient.rename(`survey:${surveyName}:summary`, `survey:${updatedSurveyName}:summary`);
+    await redisClient.rename(`survey:${surveyName}:type`, `survey:${updatedSurveyName}:type`);
+    await redisClient.rename(`survey:${surveyName}:title`, `survey:${updatedSurveyName}:title`);
+    await redisClient.rename(`survey:${surveyName}:description`, `survey:${updatedSurveyName}:description`);
+    await redisClient.rename(`survey:${surveyName}:fields`, `survey:${updatedSurveyName}:fields`);
+    await redisClient.rename(`survey:${surveyName}:username`, `survey:${updatedSurveyName}:username`);
+    await redisClient.rename(`survey:${surveyName}:last-edit-time`, `survey:${updatedSurveyName}:last-edit-time`);
+    await redisClient.rename(`survey:${surveyName}:last-summary-time`, `survey:${updatedSurveyName}:last-summary-time`);
 
-  if (!surveyExists) {
-    await redisClient.sAdd("surveys", surveyName);
-    const initialSummaryJSON = JSON.stringify({});
-    await redisClient.set(`survey:${surveyName}:summary`, initialSummaryJSON);
-    await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
+    await redisClient.sRem("surveys", surveyName);
+    await redisClient.sAdd("surveys", updatedSurveyName);
+
+    await redisClient.set(`survey:${updatedSurveyName}:type`, surveyType);
+    await redisClient.set(`survey:${updatedSurveyName}:title`, updatedSurveyName);
+    await redisClient.set(`survey:${updatedSurveyName}:description`, description);
+    await redisClient.set(`survey:${updatedSurveyName}:fields`, fields);
+    await redisClient.set(`survey:${updatedSurveyName}:username`, username);
+    await redisClient.set(`survey:${updatedSurveyName}:last-edit-time`, Date.now());
+  } else {
+    await redisClient.set(`survey:${surveyName}:type`, surveyType);
+    await redisClient.set(`survey:${surveyName}:description`, description);
+    await redisClient.set(`survey:${surveyName}:fields`, fields);
+    await redisClient.set(`survey:${surveyName}:username`, username);
+    await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   }
-
-  await redisClient.set(`survey:${surveyName}:type`, surveyType);
-  await redisClient.set(`survey:${surveyName}:title`, updatedSurveyName);
-  await redisClient.set(`survey:${surveyName}:description`, description);
-  await redisClient.set(`survey:${surveyName}:fields`, fields);
-  await redisClient.set(`survey:${surveyName}:username`, username);
-  await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
 };
 
 function trimString(input: string): string {
