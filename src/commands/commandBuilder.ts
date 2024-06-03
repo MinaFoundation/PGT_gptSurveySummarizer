@@ -44,6 +44,11 @@ export const command = new SlashCommandBuilder()
     ]),
   )
   .addSubcommand(
+    createSubcommand("edit", "Edit a survey", [
+      createStringOption("survey", "Survey name"),
+    ]),
+  )
+  .addSubcommand(
     createSubcommand(
       create_multi_cmd,
       "Create a new survey, with up to 5 responses per user. This is best for brainstorming and feedback.",

@@ -13,6 +13,8 @@ export const handleRespondButton = async (
   maxResponsesForMultiResponsePerUser: any,
 ) => {
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
+  const description = await redisClient.get(`survey:${surveyName}:description`);
+  const fields = await redisClient.get(`survey:${surveyName}:fields`);
   const hadResponse = await redisClient.hExists(
     `survey:${surveyName}:responses`,
     username,
@@ -20,11 +22,11 @@ export const handleRespondButton = async (
   const plural = surveyType === "single" ? "" : "s";
   const modal = new ModalBuilder()
     .setCustomId(`respondModal-${surveyName}`)
-    .setTitle(`Survey Response${plural}`);
+    .setTitle(`Respond: ${surveyName}`);
 
   const label = hadResponse
-    ? `Please update your response${plural} below`
-    : `Please enter your response${plural} below`;
+    ? `Please update your response${plural} here`
+    : `Please enter your response${plural} here`;
 
   if (surveyType === "single") {
     const defaultText = hadResponse
@@ -32,15 +34,16 @@ export const handleRespondButton = async (
       : "";
     const responseInput = new TextInputBuilder()
       .setCustomId("responseInput")
-      .setLabel(label)
+      .setLabel(fields)
       .setStyle(TextInputStyle.Paragraph)
       .setValue(defaultText)
+      .setPlaceholder(label)
       .setRequired(true);
     modal.addComponents(new ActionRowBuilder().addComponents(responseInput));
   } else {
-    let priorResponses = new Array(maxResponsesForMultiResponsePerUser).fill(
-      "",
-    );
+    const multipleQuestions = fields.split("\n");
+
+    let priorResponses = new Array(multipleQuestions.length).fill("");
     if (hadResponse) {
       const priorResponseData = await redisClient.hGet(
         `survey:${surveyName}:responses`,
@@ -53,13 +56,15 @@ export const handleRespondButton = async (
         priorResponses = [priorResponseData];
       }
     }
-    const components = new Array(maxResponsesForMultiResponsePerUser)
+
+    const components = new Array(multipleQuestions.length)
       .fill(null)
       .map((_, i) => {
         const responseInput = new TextInputBuilder()
           .setCustomId(`responseInput-${i}`)
-          .setLabel(i === 0 ? `${label}:` : `Response ${i + 1}:`)
+          .setLabel(multipleQuestions[i])
           .setStyle(TextInputStyle.Paragraph)
+          .setPlaceholder(`Survey Description: ${description}`)
           .setValue(priorResponses[i])
           .setRequired(i === 0);
         return new ActionRowBuilder().addComponents(responseInput);

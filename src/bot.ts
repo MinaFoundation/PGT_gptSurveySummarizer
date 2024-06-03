@@ -4,6 +4,7 @@ import {
   handleAutoPost,
   handleCreate,
   handleInfo,
+  handleEdit,
   handleCreateModal,
   handleDeleteModal,
   handleDelete,
@@ -12,6 +13,7 @@ import {
   handleRespond,
   handleRespondButton,
   handleView,
+  handleEditModal,
 } from "@commands/index";
 
 import {
@@ -84,6 +86,9 @@ process.on("uncaughtException", (error) => {
         case "respond":
           await handleRespond(redisClient, interaction, surveyName);
           break;
+        case "edit":
+          await handleEdit(interaction, redisClient, surveyName);
+          break;
         case "view":
           await handleView(interaction, surveyName, redisClient);
           break;
@@ -121,8 +126,13 @@ process.on("uncaughtException", (error) => {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
+<<<<<<< HEAD
       } else if (interaction.customId.startsWith("deleteModal")) {
         await handleDeleteModal(interaction, username, redisClient);
+=======
+      } else if (interaction.customId.startsWith("editModal")) {
+        await handleEditModal(interaction, username, redisClient)
+>>>>>>> add-edit-command
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
@@ -130,9 +140,14 @@ process.on("uncaughtException", (error) => {
       const filtered = surveys.filter((choice) =>
         choice.startsWith(focusedValue),
       );
+<<<<<<< HEAD
       const start = Math.max(filtered.length - 25, 0);
       const limitedChoices = filtered.slice(start);
 
+=======
+      const start = Math.max(filtered.length - 25, 0); // Calculate starting index for slicing from the end
+      const limitedChoices = filtered.slice(start);
+>>>>>>> add-edit-command
       await interaction.respond(
         limitedChoices.map((choice) => ({ name: choice, value: choice })),
       );
