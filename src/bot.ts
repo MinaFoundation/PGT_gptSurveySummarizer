@@ -114,8 +114,6 @@ process.on("uncaughtException", (error) => {
         await handleDeleteButton(
           interaction,
           surveyName,
-          redisClient,
-          username,
         );
       }
     } else if (interaction.isModalSubmit()) {
@@ -124,7 +122,7 @@ process.on("uncaughtException", (error) => {
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
-        await handleDeleteModal(interaction, username, redisClient)
+        await handleDeleteModal(interaction, username, redisClient);
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");

@@ -64,4 +64,9 @@ export const handleDeleteModal = async (
   const surveyName = interaction.customId.split("-").slice(1).join("-");
 
   await deleteSurvey(redisClient, surveyName);
+
+  await interaction.reply({
+    content: `The survey ${surveyName} has successfully deleted!`,
+    ephemeral: true,
+  });
 };
