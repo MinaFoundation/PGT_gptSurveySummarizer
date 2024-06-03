@@ -22,7 +22,7 @@
 ## C. Redis Setup
 
 - Go to [Redis](https://redis.io/) and create an account.
-- Create a db and click ```connect``` copy and paste your password, socket and port into .env.local file
+- Create a db and click `connect` copy and paste your password, socket and port into .env.local file
 
 # Step 2: Project Initialization
 

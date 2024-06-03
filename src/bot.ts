@@ -5,6 +5,9 @@ import {
   handleCreate,
   handleInfo,
   handleCreateModal,
+  handleDeleteModal,
+  handleDelete,
+  handleDeleteButton,
   handleRespondModal,
   handleRespond,
   handleRespondButton,
@@ -75,6 +78,9 @@ process.on("uncaughtException", (error) => {
         case create_multi_cmd:
           await handleCreate(interaction, subcommand, create_multi_cmd);
           break;
+        case "delete":
+          await handleDelete(redisClient, interaction, surveyName);
+          break;
         case "respond":
           await handleRespond(redisClient, interaction, surveyName);
           break;
@@ -103,12 +109,22 @@ process.on("uncaughtException", (error) => {
           username,
           maxResponsesForMultiResponsePerUser,
         );
+      } else if (interaction.customId.startsWith("deleteButton")) {
+        const surveyName = interaction.customId.split("-").slice(1).join("-");
+        await handleDeleteButton(
+          interaction,
+          surveyName,
+          redisClient,
+          username,
+        );
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
+      } else if (interaction.customId.startsWith("deleteModal")) {
+        await handleDeleteModal(interaction, username, redisClient)
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
@@ -118,7 +134,7 @@ process.on("uncaughtException", (error) => {
       );
       const start = Math.max(filtered.length - 25, 0);
       const limitedChoices = filtered.slice(start);
-      
+
       await interaction.respond(
         limitedChoices.map((choice) => ({ name: choice, value: choice })),
       );

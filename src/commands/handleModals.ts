@@ -1,6 +1,7 @@
 import { createSurvey } from "../lib/createSurvey.js";
 import { respond } from "./handleRespond.js";
 import { maxResponsesForMultiResponsePerUser } from "../constants.js";
+import { deleteSurvey } from "./handleDelete.js";
 
 export const handleCreateModal = async (
   interaction: any,
@@ -53,4 +54,14 @@ export const handleRespondModal = async (
     content: `Your Response was ${hadResponse ? "updated" : "added"} successfully!`,
     ephemeral: true,
   });
+};
+
+export const handleDeleteModal = async (
+  interaction: any,
+  username: any,
+  redisClient: any,
+) => {
+  const surveyName = interaction.customId.split("-").slice(1).join("-");
+
+  await deleteSurvey(redisClient, surveyName);
 };
