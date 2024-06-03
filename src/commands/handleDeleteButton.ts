@@ -13,13 +13,13 @@ export const handleDeleteButton = async (
 ) => {
   const modal = new ModalBuilder()
     .setCustomId(`deleteModal-${surveyName}`)
-    .setTitle(`Delete Survey: ${surveyName}`)
+    .setTitle(`Delete Survey`)
 
   const yesInput = new TextInputBuilder()
     .setCustomId(`confirmDelete-${surveyName}`)
     .setLabel("Please rewrite the surveyName to delete.")
     .setStyle(TextInputStyle.Paragraph)
-    .setPlaceholder("This action cannot be undone!")
+    .setPlaceholder(`Survey ${surveyName} will be deleted. This action cannot be undone!`)
   modal.addComponents(new ActionRowBuilder().addComponents(yesInput));
 
   await interaction.showModal(modal);
