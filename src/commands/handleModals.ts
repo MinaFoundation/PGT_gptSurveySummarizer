@@ -144,7 +144,9 @@ export const handleDeleteModal = async (
   redisClient: any,
 ) => {
   const surveyName = interaction.customId.split("-").slice(1).join("-");
-  const input = interaction.fields.getTextInputValue(`confirmDelete-${surveyName}`);
+  const input = interaction.fields.getTextInputValue(
+    `confirmDelete-${surveyName}`,
+  );
 
   if (input == surveyName) {
     await deleteSurvey(redisClient, surveyName);
@@ -158,5 +160,4 @@ export const handleDeleteModal = async (
       ephemeral: true,
     });
   }
-  
 };

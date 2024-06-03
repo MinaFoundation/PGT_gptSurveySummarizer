@@ -4,7 +4,8 @@ import { handleCreate } from "./handleCreate";
 import { handleInfo } from "./handleInfo";
 import {
   handleCreateModal,
-  handleRespondModal, handleEditModal,
+  handleRespondModal,
+  handleEditModal,
   handleDeleteModal,
 } from "./handleModals";
 import { handleRespond } from "./handleRespond";

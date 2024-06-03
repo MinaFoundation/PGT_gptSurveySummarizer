@@ -116,23 +116,17 @@ process.on("uncaughtException", (error) => {
         );
       } else if (interaction.customId.startsWith("deleteButton")) {
         const surveyName = interaction.customId.split("-").slice(1).join("-");
-        await handleDeleteButton(
-          interaction,
-          surveyName,
-        );
+        await handleDeleteButton(interaction, surveyName);
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
         await handleCreateModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
-<<<<<<< HEAD
       } else if (interaction.customId.startsWith("deleteModal")) {
         await handleDeleteModal(interaction, username, redisClient);
-=======
       } else if (interaction.customId.startsWith("editModal")) {
-        await handleEditModal(interaction, username, redisClient)
->>>>>>> add-edit-command
+        await handleEditModal(interaction, username, redisClient);
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");
@@ -140,14 +134,9 @@ process.on("uncaughtException", (error) => {
       const filtered = surveys.filter((choice) =>
         choice.startsWith(focusedValue),
       );
-<<<<<<< HEAD
       const start = Math.max(filtered.length - 25, 0);
       const limitedChoices = filtered.slice(start);
 
-=======
-      const start = Math.max(filtered.length - 25, 0); // Calculate starting index for slicing from the end
-      const limitedChoices = filtered.slice(start);
->>>>>>> add-edit-command
       await interaction.respond(
         limitedChoices.map((choice) => ({ name: choice, value: choice })),
       );

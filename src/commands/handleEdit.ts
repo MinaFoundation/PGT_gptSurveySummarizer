@@ -91,24 +91,57 @@ export const editSurvey = async (
   username: string,
 ) => {
   if (surveyName !== updatedSurveyName) {
-    await redisClient.rename(`survey:${surveyName}:summary`, `survey:${updatedSurveyName}:summary`);
-    await redisClient.rename(`survey:${surveyName}:type`, `survey:${updatedSurveyName}:type`);
-    await redisClient.rename(`survey:${surveyName}:title`, `survey:${updatedSurveyName}:title`);
-    await redisClient.rename(`survey:${surveyName}:description`, `survey:${updatedSurveyName}:description`);
-    await redisClient.rename(`survey:${surveyName}:fields`, `survey:${updatedSurveyName}:fields`);
-    await redisClient.rename(`survey:${surveyName}:username`, `survey:${updatedSurveyName}:username`);
-    await redisClient.rename(`survey:${surveyName}:last-edit-time`, `survey:${updatedSurveyName}:last-edit-time`);
-    await redisClient.rename(`survey:${surveyName}:last-summary-time`, `survey:${updatedSurveyName}:last-summary-time`);
+    await redisClient.rename(
+      `survey:${surveyName}:summary`,
+      `survey:${updatedSurveyName}:summary`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:type`,
+      `survey:${updatedSurveyName}:type`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:title`,
+      `survey:${updatedSurveyName}:title`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:description`,
+      `survey:${updatedSurveyName}:description`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:fields`,
+      `survey:${updatedSurveyName}:fields`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:username`,
+      `survey:${updatedSurveyName}:username`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:last-edit-time`,
+      `survey:${updatedSurveyName}:last-edit-time`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:last-summary-time`,
+      `survey:${updatedSurveyName}:last-summary-time`,
+    );
 
     await redisClient.sRem("surveys", surveyName);
     await redisClient.sAdd("surveys", updatedSurveyName);
 
     await redisClient.set(`survey:${updatedSurveyName}:type`, surveyType);
-    await redisClient.set(`survey:${updatedSurveyName}:title`, updatedSurveyName);
-    await redisClient.set(`survey:${updatedSurveyName}:description`, description);
+    await redisClient.set(
+      `survey:${updatedSurveyName}:title`,
+      updatedSurveyName,
+    );
+    await redisClient.set(
+      `survey:${updatedSurveyName}:description`,
+      description,
+    );
     await redisClient.set(`survey:${updatedSurveyName}:fields`, fields);
     await redisClient.set(`survey:${updatedSurveyName}:username`, username);
-    await redisClient.set(`survey:${updatedSurveyName}:last-edit-time`, Date.now());
+    await redisClient.set(
+      `survey:${updatedSurveyName}:last-edit-time`,
+      Date.now(),
+    );
   } else {
     await redisClient.set(`survey:${surveyName}:type`, surveyType);
     await redisClient.set(`survey:${surveyName}:description`, description);
