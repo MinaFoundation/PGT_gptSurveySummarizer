@@ -72,7 +72,7 @@ export const handleDeleteModal = async (
     });
   } else {
     await interaction.reply({
-      content: `You wrote the name of survey. It could not be deleted!`,
+      content: `Sorry, the survey name you entered does not match any existing surveys and could not be deleted. Please check the name and try again!`,
       ephemeral: true,
     });
   }
