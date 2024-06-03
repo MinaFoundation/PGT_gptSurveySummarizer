@@ -36,6 +36,8 @@ export const deleteSurvey = async (redisClient: any, surveyName: any) => {
   await redisClient.del(`survey:${surveyName}:type`);
   await redisClient.del(`survey:${surveyName}:title`);
   await redisClient.del(`survey:${surveyName}:description`);
+  // Add this when branch changed to multiple respons thing:
+  // await redisClient.set(`survey:${surveyName}:fields`);
   await redisClient.del(`survey:${surveyName}:username`);
   await redisClient.del(`survey:${surveyName}:last-edit-time`);
   await redisClient.del(`survey:${surveyName}:last-summary-time`);
