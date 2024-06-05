@@ -13,6 +13,14 @@ export const handleRespond = async (
     return;
   }
 
+  if (!(await redisClient.get((`survey:${surveyName}:is-active`)))){
+    await interaction.reply({
+      content: "The survey is currently inactive, so you can't submit any answers.",
+      ephemeral: true,
+    });
+    return;
+  }
+
   const surveyDescription = await redisClient.get(
     `survey:${surveyName}:description`,
   );
