@@ -15,6 +15,7 @@ import { handleView } from "./handleView";
 import { handleDelete } from "./handleDelete";
 import { handleEdit } from "./handleEdit";
 import { editSurvey } from "./handleEdit";
+import { handleSetStatus } from "./handleSetStatus";
 
 export {
   command,
@@ -30,6 +31,7 @@ export {
   handleRespondButton,
   handleEdit,
   handleEditModal,
+  handleSetStatus,
   editSurvey,
   handleView,
 };

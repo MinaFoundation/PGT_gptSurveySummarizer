@@ -14,6 +14,7 @@ import {
   handleRespondButton,
   handleView,
   handleEditModal,
+  handleSetStatus,
 } from "@commands/index";
 
 import {
@@ -91,6 +92,10 @@ process.on("uncaughtException", (error) => {
           break;
         case "view":
           await handleView(interaction, surveyName, redisClient);
+          break;
+        case "set-status":
+          const status = options.getString("status");
+          await handleSetStatus(interaction, surveyName, status, redisClient);
           break;
         case "start-auto-post":
           await handleAutoPost(interaction, "start", client, redisClient);

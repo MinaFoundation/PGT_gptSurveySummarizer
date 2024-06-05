@@ -65,7 +65,7 @@ export const handleRespondButton = async (
           .setLabel(multipleQuestions[i])
           .setStyle(TextInputStyle.Paragraph)
           .setPlaceholder(`Survey Description: ${description}`)
-          .setValue(priorResponses[i])
+          .setValue(priorResponses[i] || "")
           .setRequired(i === 0);
         return new ActionRowBuilder().addComponents(responseInput);
       });

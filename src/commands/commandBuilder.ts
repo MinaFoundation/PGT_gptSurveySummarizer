@@ -24,6 +24,20 @@ const createSubcommand = (name: string, description: string, options = []) => {
   return subcommand;
 };
 
+const createChoiceOption = (
+  name: string,
+  description: string,
+  choices: { name: string; value: string }[],
+  required = true,
+) => {
+  const option = new SlashCommandStringOption()
+    .setName(name)
+    .setDescription(description)
+    .setRequired(required);
+  choices.forEach((choice) => option.addChoices(choice));
+  return option;
+};
+
 const is_dev = process.argv[2] == "--dev";
 const prefix = is_dev ? "dev_" : "";
 
@@ -63,6 +77,19 @@ export const command = new SlashCommandBuilder()
     createSubcommand("view", "View the summary and responses for a survey", [
       createStringOption("survey", "Survey name"),
     ]),
+  )
+  .addSubcommand(
+    createSubcommand(
+      "set-status",
+      "Set status of survey, activate or deactivate",
+      [
+        createStringOption("survey", "Survey name"),
+        createChoiceOption("status", "Choose status", [
+          { name: "Active", value: "active" },
+          { name: "Deactivate", value: "deactivate" },
+        ]),
+      ],
+    ),
   )
   .addSubcommand(
     createSubcommand(
