@@ -129,17 +129,38 @@ process.on("uncaughtException", (error) => {
         await handleEditModal(interaction, username, redisClient);
       }
     } else if (interaction.isAutocomplete()) {
-      const surveys = await redisClient.sMembers("surveys");
-      const focusedValue = interaction.options.getFocused();
-      const filtered = surveys.filter((choice) =>
-        choice.startsWith(focusedValue),
-      );
-      const start = Math.max(filtered.length - 25, 0);
-      const limitedChoices = filtered.slice(start);
+      const commandName = interaction.options.getSubcommand();
+      if (commandName === "respond") {
+        const surveys = await redisClient.sMembers("surveys");
+        const focusedValue = interaction.options.getFocused();
+        const filtered = [];
 
-      await interaction.respond(
-        limitedChoices.map((choice) => ({ name: choice, value: choice })),
-      );
+        for (const survey of surveys) {
+          const isActive = await redisClient.get(`survey:${survey}:is-active`);
+          if (isActive === "true" && survey.startsWith(focusedValue)) {
+            filtered.push(survey);
+          }
+        }
+
+        const start = Math.max(filtered.length - 25, 0);
+        const limitedChoices = filtered.slice(start);
+
+        await interaction.respond(
+          limitedChoices.map((choice) => ({ name: choice, value: choice })),
+        );
+      } else {
+        const surveys = await redisClient.sMembers("surveys");
+        const focusedValue = interaction.options.getFocused();
+        const filtered = surveys.filter((choice) =>
+          choice.startsWith(focusedValue),
+        );
+        const start = Math.max(filtered.length - 25, 0);
+        const limitedChoices = filtered.slice(start);
+
+        await interaction.respond(
+          limitedChoices.map((choice) => ({ name: choice, value: choice })),
+        );
+      }
     }
   });
 
