@@ -134,38 +134,39 @@ process.on("uncaughtException", (error) => {
         await handleEditModal(interaction, username, redisClient);
       }
     } else if (interaction.isAutocomplete()) {
+      const surveys = await redisClient.sMembers("surveys");
+      const focusedValue = interaction.options.getFocused();
       const commandName = interaction.options.getSubcommand();
-      if (commandName === "respond") {
-        const surveys = await redisClient.sMembers("surveys");
-        const focusedValue = interaction.options.getFocused();
-        const filtered = [];
+      const filtered = [];
 
-        for (const survey of surveys) {
-          const isActive = await redisClient.get(`survey:${survey}:is-active`);
-          if (isActive === "true" && survey.startsWith(focusedValue)) {
+      if (commandName === "respond") {
+        const activeKeys = surveys.map(
+          (survey) => `survey:${survey}:is-active`,
+        );
+        const activeStatuses = await redisClient.mGet(activeKeys);
+
+        surveys.forEach((survey, index) => {
+          if (
+            activeStatuses[index] === "true" &&
+            survey.startsWith(focusedValue)
+          ) {
             filtered.push(survey);
           }
-        }
-
-        const start = Math.max(filtered.length - 25, 0);
-        const limitedChoices = filtered.slice(start);
-
-        await interaction.respond(
-          limitedChoices.map((choice) => ({ name: choice, value: choice })),
-        );
+        });
       } else {
-        const surveys = await redisClient.sMembers("surveys");
-        const focusedValue = interaction.options.getFocused();
-        const filtered = surveys.filter((choice) =>
-          choice.startsWith(focusedValue),
-        );
-        const start = Math.max(filtered.length - 25, 0);
-        const limitedChoices = filtered.slice(start);
-
-        await interaction.respond(
-          limitedChoices.map((choice) => ({ name: choice, value: choice })),
-        );
+        surveys.forEach((survey) => {
+          if (survey.startsWith(focusedValue)) {
+            filtered.push(survey);
+          }
+        });
       }
+
+      const start = Math.max(filtered.length - 25, 0);
+      const limitedChoices = filtered.slice(start);
+
+      await interaction.respond(
+        limitedChoices.map((choice) => ({ name: choice, value: choice })),
+      );
     }
   });
 
