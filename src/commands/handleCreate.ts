@@ -20,7 +20,7 @@ const createModal = async (
     .setCustomId("titleInput")
     .setLabel("What is your survey title?")
     .setStyle(TextInputStyle.Short)
-    .setMaxLength(80)
+    .setMaxLength(45)
     .setRequired(true);
 
   const descriptionInput = new TextInputBuilder()

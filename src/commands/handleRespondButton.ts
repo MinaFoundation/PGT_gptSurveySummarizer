@@ -22,7 +22,7 @@ export const handleRespondButton = async (
   const plural = surveyType === "single" ? "" : "s";
   const modal = new ModalBuilder()
     .setCustomId(`respondModal-${surveyName}`)
-    .setTitle(`Respond: ${surveyName}`);
+    .setTitle(`${surveyName}`);
 
   const label = hadResponse
     ? `Please update your response${plural} here`
