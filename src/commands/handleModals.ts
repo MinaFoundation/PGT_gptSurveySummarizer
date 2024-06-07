@@ -186,7 +186,7 @@ export const handleDeleteModal = async (
   }
 };
 
-function convertToTimestamp(dateString: string): number {
+export function convertToTimestamp(dateString: string): number {
   const dateFormat = /^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
 
   if (!dateString.match(dateFormat)) {
@@ -200,6 +200,19 @@ function convertToTimestamp(dateString: string): number {
   const day = parseInt(dateParts[2], 10);
   const hour = parseInt(dateParts[3], 10);
   const minute = parseInt(dateParts[4], 10);
+
+  if (
+    month < 0 ||
+    month > 11 ||
+    day < 1 ||
+    day > 31 ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return MAX_TIMESTAMP;
+  }
 
   const date = new Date(year, month, day, hour, minute);
 

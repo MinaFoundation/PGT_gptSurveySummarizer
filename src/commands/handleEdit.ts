@@ -1,4 +1,4 @@
-import { maxResponsesForMultiResponsePerUser } from "@constants";
+import { MAX_TIMESTAMP, maxResponsesForMultiResponsePerUser } from "@constants";
 import {
   ModalBuilder,
   TextInputBuilder,
@@ -27,6 +27,7 @@ const editModal = async (
   );
 
   const surveyFields = await redisClient.get(`survey:${surveyName}:fields`);
+  const surveyEndTime = await redisClient.get(`survey:${surveyName}:endtime`);
 
   const modal = new ModalBuilder()
     .setCustomId(`editModal-${type}-${surveyName}`)
@@ -66,7 +67,7 @@ const editModal = async (
     .setLabel("Enter Survey Expire Time: YYYY-MM-DD-HH-MM")
     .setStyle(TextInputStyle.Short)
     .setMaxLength(16)
-    .setValue("inf");
+    .setValue(convertFromTimestamp(surveyEndTime));
 
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
   const secondActionRow = new ActionRowBuilder().addComponents(
@@ -185,4 +186,22 @@ function trimString(input: string): string {
   }
 
   return input;
+}
+
+function convertFromTimestamp(timestamp: string): string {
+  if (timestamp == MAX_TIMESTAMP.toString()) {
+    return "inf"
+  }
+  const date = new Date(parseInt(timestamp));
+  console.log(date)
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  const converted = `${year}-${month}-${day}-${hours}-${minutes}`;
+  console.log(converted)
+  return converted;
 }
