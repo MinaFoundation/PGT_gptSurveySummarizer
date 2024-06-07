@@ -172,7 +172,7 @@ export const editSurvey = async (
     await redisClient.set(`survey:${surveyName}:fields`, fields);
     await redisClient.set(`survey:${surveyName}:username`, username);
     await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
-    await redisClient.set(`survey:${surveyName}:username`, endTime);
+    await redisClient.set(`survey:${surveyName}:endtime`, endTime);
   }
 };
 
@@ -193,7 +193,6 @@ function convertFromTimestamp(timestamp: string): string {
     return "inf"
   }
   const date = new Date(parseInt(timestamp));
-  console.log(date)
 
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
@@ -202,6 +201,5 @@ function convertFromTimestamp(timestamp: string): string {
   const minutes = String(date.getMinutes()).padStart(2, '0');
 
   const converted = `${year}-${month}-${day}-${hours}-${minutes}`;
-  console.log(converted)
   return converted;
 }
