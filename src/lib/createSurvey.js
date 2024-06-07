@@ -5,6 +5,7 @@ export const createSurvey = async (
   description,
   fields,
   username,
+  endTime,
 ) => {
   await redisClient.sAdd("surveys", surveyName);
   const initialSummaryJSON = JSON.stringify({});
@@ -16,5 +17,11 @@ export const createSurvey = async (
   await redisClient.set(`survey:${surveyName}:username`, username);
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
-  await redisClient.set(`survey:${surveyName}:is-active`, "true");
+  await redisClient.set(`survey:${surveyName}:endtime`, endTime);
+
+  if (endTime >= Date.now()) {
+    await redisClient.set(`survey:${surveyName}:is-active`, "true");
+  } else {
+    await redisClient.set(`survey:${surveyName}:is-active`, "false");
+  }
 };

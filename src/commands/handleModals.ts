@@ -1,7 +1,7 @@
 import { createSurvey } from "../lib/createSurvey.js";
 import { editSurvey } from "./handleEdit.js";
 import { respond } from "./handleRespond.js";
-import { maxResponsesForMultiResponsePerUser } from "../constants.js";
+import { MAX_TIMESTAMP } from "../constants.js";
 import { deleteSurvey } from "./handleDelete.js";
 
 export const handleCreateModal = async (
@@ -13,6 +13,13 @@ export const handleCreateModal = async (
   const title = interaction.fields.getTextInputValue("titleInput");
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
+  let endTime = interaction.fields.getTextInputValue("endTimeInput");
+
+  if (!(endTime == "inf" || endTime == "" || endTime == "INF")) {
+    endTime = convertToTimestamp(endTime);
+  } else {
+    endTime = MAX_TIMESTAMP;
+  }
 
   if (await redisClient.sIsMember("surveys", surveyName)) {
     await interaction.reply({
@@ -27,6 +34,7 @@ export const handleCreateModal = async (
       description,
       fields,
       username,
+      endTime,
     );
     await interaction.reply({
       content: "Your Survey was created successfully!",
@@ -44,6 +52,13 @@ export const handleEditModal = async (
   const title = interaction.fields.getTextInputValue("titleInput");
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
+  let endTime = interaction.fields.getTextInputValue("endTimeInput");
+
+  if (!(endTime == "inf" || endTime == "" || endTime == "INF")) {
+    endTime = convertToTimestamp(endTime);
+  } else {
+    endTime = MAX_TIMESTAMP;
+  }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     await interaction.reply({
@@ -58,10 +73,13 @@ export const handleEditModal = async (
     `survey:${surveyName}:description`,
   );
   const surveyFields = await redisClient.get(`survey:${surveyName}:fields`);
+  const surveyEndTime = await redisClient.get(`survey:${surveyName}:endtime`);
 
   let updatedTitle = surveyTitle;
   let updatedDescription = surveyDescription;
   let updatedFields = surveyFields;
+  let updatedEndTime = surveyEndTime;
+
   let updated = false;
 
   if (title && title !== surveyTitle) {
@@ -79,6 +97,11 @@ export const handleEditModal = async (
     updated = true;
   }
 
+  if (endTime && endTime !== surveyEndTime) {
+    updatedEndTime = endTime;
+    updated = true;
+  }
+
   if (updated) {
     await editSurvey(
       redisClient,
@@ -88,6 +111,7 @@ export const handleEditModal = async (
       updatedDescription,
       updatedFields,
       username,
+      updatedEndTime,
     );
     await interaction.reply({
       content: "Your Survey was updated successfully!",
@@ -161,3 +185,23 @@ export const handleDeleteModal = async (
     });
   }
 };
+
+function convertToTimestamp(dateString: string): number {
+  const dateFormat = /^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
+
+  if (!dateString.match(dateFormat)) {
+    return MAX_TIMESTAMP;
+  }
+
+  const dateParts = dateString.split("-");
+
+  const year = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10) - 1; // Month is zero-based
+  const day = parseInt(dateParts[2], 10);
+  const hour = parseInt(dateParts[3], 10);
+  const minute = parseInt(dateParts[4], 10);
+
+  const date = new Date(year, month, day, hour, minute);
+
+  return date.getTime();
+}

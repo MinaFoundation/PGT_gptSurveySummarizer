@@ -73,7 +73,6 @@ process.on("uncaughtException", (error) => {
     if (interaction.isChatInputCommand()) {
       const { commandName, options } = interaction;
       const surveyName = options.getString("survey");
-
       const subcommand = interaction.options.getSubcommand();
 
       switch (subcommand) {

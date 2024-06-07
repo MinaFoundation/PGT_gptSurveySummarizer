@@ -45,13 +45,26 @@ const createModal = async (
         : `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each field(line) up to 45 chars.`,
     );
 
+  const endTimeInput = new TextInputBuilder()
+    .setCustomId("endTimeInput")
+    .setLabel("Enter Survey Expire Time: YYYY-MM-DD-HH-MM")
+    .setStyle(TextInputStyle.Short)
+    .setMaxLength(16)
+    .setValue("inf");
+
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
   const secondActionRow = new ActionRowBuilder().addComponents(
     descriptionInput,
   );
   const thirdActionRow = new ActionRowBuilder().addComponents(fieldsInput);
+  const fourthActionRow = new ActionRowBuilder().addComponents(endTimeInput);
 
-  modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
+  modal.addComponents(
+    firstActionRow,
+    secondActionRow,
+    thirdActionRow,
+    fourthActionRow,
+  );
 
   await interaction.showModal(modal);
 };
@@ -63,5 +76,6 @@ export const handleCreate = async (
 ) => {
   const type = subcommand === createMultiCmd ? "multi" : "single";
   const surveyName = interaction.options.getString("survey");
+
   await createModal(interaction, type, surveyName);
 };

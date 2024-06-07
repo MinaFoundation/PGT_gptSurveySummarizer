@@ -61,13 +61,26 @@ const editModal = async (
     .setPlaceholder(trimString(surveyFields))
     .setRequired(false);
 
+  const endTimeInput = new TextInputBuilder()
+    .setCustomId("endTimeInput")
+    .setLabel("Enter Survey Expire Time: YYYY-MM-DD-HH-MM")
+    .setStyle(TextInputStyle.Short)
+    .setMaxLength(16)
+    .setValue("inf");
+
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
   const secondActionRow = new ActionRowBuilder().addComponents(
     descriptionInput,
   );
   const thirdActionRow = new ActionRowBuilder().addComponents(fieldsInput);
+  const fourthActionRow = new ActionRowBuilder().addComponents(endTimeInput);
 
-  modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
+  modal.addComponents(
+    firstActionRow,
+    secondActionRow,
+    thirdActionRow,
+    fourthActionRow,
+  );
 
   await interaction.showModal(modal);
 };
@@ -89,6 +102,7 @@ export const editSurvey = async (
   description: string,
   fields: any,
   username: string,
+  endTime: string,
 ) => {
   if (surveyName !== updatedSurveyName) {
     await redisClient.rename(
@@ -123,6 +137,14 @@ export const editSurvey = async (
       `survey:${surveyName}:last-summary-time`,
       `survey:${updatedSurveyName}:last-summary-time`,
     );
+    await redisClient.rename(
+      `survey:${surveyName}:is-active`,
+      `survey:${updatedSurveyName}:is-active`,
+    );
+    await redisClient.rename(
+      `survey:${surveyName}:endtime`,
+      `survey:${updatedSurveyName}:endtime`,
+    );
 
     await redisClient.sRem("surveys", surveyName);
     await redisClient.sAdd("surveys", updatedSurveyName);
@@ -142,12 +164,14 @@ export const editSurvey = async (
       `survey:${updatedSurveyName}:last-edit-time`,
       Date.now(),
     );
+    await redisClient.set(`survey:${updatedSurveyName}:endtime`, endTime);
   } else {
     await redisClient.set(`survey:${surveyName}:type`, surveyType);
     await redisClient.set(`survey:${surveyName}:description`, description);
     await redisClient.set(`survey:${surveyName}:fields`, fields);
     await redisClient.set(`survey:${surveyName}:username`, username);
     await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
+    await redisClient.set(`survey:${surveyName}:username`, endTime);
   }
 };
 
