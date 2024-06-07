@@ -181,20 +181,34 @@ process.on("uncaughtException", (error) => {
   client.login(discordConfig.token);
 })();
 
+
 const checkAndUpdateSurveyStatus = async (redisClient: any) => {
   try {
     const surveys = await redisClient.sMembers("surveys");
     const currentTime = Date.now();
 
+    const multi = redisClient.multi();
+
     for (const survey of surveys) {
-      const endTime = await redisClient.get(`survey:${survey}:endtime`);
-      const isActive = await redisClient.get(`survey:${survey}:is-active`);
+      multi.get(`survey:${survey}:endtime`);
+      multi.get(`survey:${survey}:is-active`);
+    }
+
+    const results = await multi.exec();
+
+    const updateMulti = redisClient.multi();
+
+    for (let i = 0; i < surveys.length; i++) {
+      const endTime = results[i * 2]; // Results of the endtime
+      const isActive = results[i * 2 + 1]; // Results of the is-active
 
       if (endTime && isActive === "true" && currentTime >= parseInt(endTime)) {
-        await redisClient.set(`survey:${survey}:is-active`, "false");
-        console.log(`Survey ${survey} is now inactive.`);
+        updateMulti.set(`survey:${surveys[i]}:is-active`, "false");
+        console.log(`Survey ${surveys[i]} is now inactive.`);
       }
     }
+
+    await updateMulti.exec();
   } catch (error) {
     console.error("Error checking and updating survey status:", error);
   }
