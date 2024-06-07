@@ -1,3 +1,4 @@
+import { setIntervalAsync } from 'set-interval-async/dynamic';
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import {
   command,
@@ -20,6 +21,7 @@ import {
 import {
   maxResponsesForMultiResponsePerUser,
   create_multi_cmd,
+  EXPIRE_STATUS_LOOP_MINUTE,
 } from "@constants";
 
 import { discordConfig, redisConfig, version } from "@config";
@@ -60,6 +62,7 @@ process.on("uncaughtException", (error) => {
   client.once("ready", () => {
     console.log("Ready as ", client.user.username);
     startAutoPosting(client, redisClient);
+    startSurveyStatusChecker(redisClient);
   });
 
   client.on("interactionCreate", async (interaction) => {
@@ -169,5 +172,30 @@ process.on("uncaughtException", (error) => {
     }
   });
 
+  const startSurveyStatusChecker = (redisClient) => {
+    setIntervalAsync(async () => {
+      await checkAndUpdateSurveyStatus(redisClient);
+    }, 60 * 1000 * EXPIRE_STATUS_LOOP_MINUTE); // 60 * 1000 ms = 1 minute
+  };
+
   client.login(discordConfig.token);
 })();
+
+const checkAndUpdateSurveyStatus = async (redisClient: any) => {
+  try {
+    const surveys = await redisClient.sMembers("surveys");
+    const currentTime = Date.now();
+
+    for (const survey of surveys) {
+      const endTime = await redisClient.get(`survey:${survey}:endtime`);
+      const isActive = await redisClient.get(`survey:${survey}:is-active`);
+
+      if (endTime && isActive === "true" && currentTime >= parseInt(endTime)) {
+        await redisClient.set(`survey:${survey}:is-active`, "false");
+        console.log(`Survey ${survey} is now inactive.`);
+      }
+    }
+  } catch (error) {
+    console.error("Error checking and updating survey status:", error);
+  }
+};
