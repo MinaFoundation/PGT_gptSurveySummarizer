@@ -1,4 +1,4 @@
-import { setIntervalAsync } from 'set-interval-async/dynamic';
+import { setIntervalAsync } from "set-interval-async/dynamic";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import {
   command,
@@ -173,14 +173,16 @@ process.on("uncaughtException", (error) => {
   });
 
   const startSurveyStatusChecker = (redisClient) => {
-    setIntervalAsync(async () => {
-      await checkAndUpdateSurveyStatus(redisClient);
-    }, 60 * 1000 * EXPIRE_STATUS_LOOP_MINUTE); // 60 * 1000 ms = 1 minute
+    setIntervalAsync(
+      async () => {
+        await checkAndUpdateSurveyStatus(redisClient);
+      },
+      60 * 1000 * EXPIRE_STATUS_LOOP_MINUTE,
+    ); // 60 * 1000 ms = 1 minute
   };
 
   client.login(discordConfig.token);
 })();
-
 
 const checkAndUpdateSurveyStatus = async (redisClient: any) => {
   try {

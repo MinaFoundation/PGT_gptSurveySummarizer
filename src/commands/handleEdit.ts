@@ -190,15 +190,15 @@ function trimString(input: string): string {
 
 function convertFromTimestamp(timestamp: string): string {
   if (timestamp == MAX_TIMESTAMP.toString()) {
-    return "inf"
+    return "inf";
   }
   const date = new Date(parseInt(timestamp));
 
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based, so add 1
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
 
   const converted = `${year}-${month}-${day}-${hours}-${minutes}`;
   return converted;
