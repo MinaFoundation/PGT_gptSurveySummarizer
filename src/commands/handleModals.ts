@@ -15,6 +15,15 @@ export const handleCreateModal = async (
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
 
+  if (!checkTitle(title)) {
+    console.log("Title includes -, it is not verified");
+    await interaction.reply({
+      content: `Survey name cannot include "-"`,
+      ephemeral: true,
+    });
+    return;
+  }
+
   if (!verifyFields(fields)) {
     console.log("Fields input is not verified");
     await interaction.reply({
@@ -63,6 +72,15 @@ export const handleEditModal = async (
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
 
+  if (!checkTitle(title)) {
+    console.log("Title includes -, it is not verified");
+    await interaction.reply({
+      content: `Survey name cannot include "-"`,
+      ephemeral: true,
+    });
+    return;
+  }
+
   if (!verifyFields(fields)) {
     console.log("Fields input is not verified");
     await interaction.reply({
@@ -79,6 +97,7 @@ export const handleEditModal = async (
   }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
+    console.log(surveyName)
     await interaction.reply({
       content: "There is no survey with that name",
       ephemeral: true,
@@ -152,7 +171,7 @@ export const handleRespondModal = async (
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";
   let response: any;
-  
+
   if ((await redisClient.get(`survey:${surveyName}:is-active`)) == "false") {
     await interaction.reply({
       content:
@@ -253,6 +272,13 @@ export function verifyFields(fields: string): boolean {
     if (line.length > 45) {
       return false;
     }
+  }
+  return true;
+}
+
+function checkTitle(input: string): boolean {
+  if (input.includes('-')) {
+      return false;
   }
   return true;
 }

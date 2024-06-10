@@ -37,14 +37,14 @@ const editModal = async (
     .setCustomId("titleInput")
     .setLabel("Edit your survey title?")
     .setStyle(TextInputStyle.Short)
-    .setPlaceholder(surveyTitle)
+    .setValue(surveyTitle || "")
     .setMaxLength(45)
     .setRequired(false);
 
   const descriptionInput = new TextInputBuilder()
     .setCustomId("descriptionInput")
     .setLabel("Write a short description for your survey")
-    .setPlaceholder(trimString(surveyDescription))
+    .setValue(surveyDescription || "")
     .setStyle(TextInputStyle.Paragraph)
     .setRequired(false);
 
