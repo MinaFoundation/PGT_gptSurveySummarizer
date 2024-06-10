@@ -1,3 +1,5 @@
+import log from './logger';
+
 import { setIntervalAsync } from "set-interval-async/dynamic";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import {
@@ -31,11 +33,11 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 
 process.on("unhandledRejection", (error) => {
-  console.error("Unhandled promise rejection:", error);
+  log.error("Unhandled promise rejection:", error);
 });
 
 process.on("uncaughtException", (error) => {
-  console.error("Unhandled exception:", error);
+  log.error("Unhandled exception:", error);
 });
 
 (async () => {
@@ -54,13 +56,13 @@ process.on("uncaughtException", (error) => {
       ),
       { body: [command.toJSON()] },
     );
-    console.log("Successfully registered commands.");
+    log.info("Successfully registered commands.");
   } catch (error) {
-    console.error("Error registering commands", error);
+    log.error("Error registering commands", error);
   }
 
   client.once("ready", () => {
-    console.log("Ready as ", client.user.username);
+    log.info("Ready as ", client.user.username);
     startAutoPosting(client, redisClient);
     startSurveyStatusChecker(redisClient);
   });
@@ -109,7 +111,7 @@ process.on("uncaughtException", (error) => {
           await handleInfo(interaction, version);
           break;
         default:
-          console.error("unknown subcommand");
+          log.error("unknown subcommand");
       }
     } else if (interaction.isButton()) {
       if (interaction.customId.startsWith("respondButton")) {
@@ -206,12 +208,12 @@ const checkAndUpdateSurveyStatus = async (redisClient: any) => {
 
       if (endTime && isActive === "true" && currentTime >= parseInt(endTime)) {
         updateMulti.set(`survey:${surveys[i]}:is-active`, "false");
-        console.log(`Survey ${surveys[i]} is now inactive.`);
+        log.info(`Survey ${surveys[i]} is now inactive.`);
       }
     }
 
     await updateMulti.exec();
   } catch (error) {
-    console.error("Error checking and updating survey status:", error);
+    log.error("Error checking and updating survey status:", error);
   }
 };

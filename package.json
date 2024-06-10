@@ -20,6 +20,8 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "eslint-import-resolver-typescript": "^3.6.1",
+    "loglevel": "^1.9.1",
+    "loglevel-plugin-prefix": "^0.8.4",
     "mocha": "^10.4.0",
     "openai": "^4.31.0",
     "path": "^0.12.7",

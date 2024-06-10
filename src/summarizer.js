@@ -1,21 +1,22 @@
+import log from "./logger";
 import { createClient } from "redis";
 import { checkUpdateSurveys } from "./lib/checkUpdateSurveys.js";
 import { redisConfig } from "./config.js";
 
 const subscribeRedisClient = createClient(redisConfig);
 subscribeRedisClient.on("error", (err) =>
-  console.log("Redis Client Error", err),
+  log.error("Redis Client Error", err),
 );
 
 const redisClient = createClient(redisConfig);
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
+redisClient.on("error", (err) => log.error("Redis Client Error", err));
 
 process.on("unhandledRejection", (error) => {
-  console.error("Unhandled promise rejection:", error);
+  log.error("Unhandled promise rejection:", error);
 });
 
 process.on("uncaughtException", (error) => {
-  console.error("Unhandled exception:", error);
+  log.error("Unhandled exception:", error);
 });
 
 const main = async () => {
@@ -23,13 +24,13 @@ const main = async () => {
   await redisClient.connect();
 
   while (true) {
-    console.log("checking surveys for updates...");
+    log.info("checking surveys for updates...");
     try {
       await checkUpdateSurveys(redisClient);
     } catch (e) {
-      console.error("error while processing surveys:", e);
+      log.error("error while processing surveys:", e);
     }
-    console.log("done checking surveys for updates.");
+    log.info("done checking surveys for updates.");
     await new Promise((r) => setTimeout(r, 1 * 1000));
   }
 
