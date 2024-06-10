@@ -59,6 +59,7 @@ export const handleCreateModal = async (
       content: "Your Survey was created successfully!",
       ephemeral: true,
     });
+    return [title, description];
   }
 };
 
