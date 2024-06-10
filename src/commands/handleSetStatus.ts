@@ -21,6 +21,8 @@ export const handleSetStatus = async (
       status === "active" ? "true" : "false",
     );
 
+    console.log(`Survey "${surveyName}" status has been set to ${status}.`);
+
     await interaction.reply({
       content: `Survey "${surveyName}" status has been set to ${status}.`,
       ephemeral: true,

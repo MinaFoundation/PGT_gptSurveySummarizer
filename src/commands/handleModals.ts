@@ -97,7 +97,7 @@ export const handleEditModal = async (
   }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
-    console.log(surveyName)
+    console.log(surveyName);
     await interaction.reply({
       content: "There is no survey with that name",
       ephemeral: true,
@@ -277,8 +277,8 @@ export function verifyFields(fields: string): boolean {
 }
 
 function checkTitle(input: string): boolean {
-  if (input.includes('-')) {
-      return false;
+  if (input.includes("-")) {
+    return false;
   }
   return true;
 }
