@@ -43,7 +43,8 @@ const createModal = async (
       type === "single"
         ? "Enter your question Max 45 character."
         : `Enter up to ${maxResponsesForMultiResponsePerUser} fields, each field(line) up to 45 chars.`,
-    );
+    )
+    .setRequired(true);
 
   const endTimeInput = new TextInputBuilder()
     .setCustomId("endTimeInput")

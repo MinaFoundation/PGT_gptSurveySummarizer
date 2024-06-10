@@ -59,7 +59,7 @@ const editModal = async (
     .setMaxLength(
       type === "single" ? 45 : 45 * maxResponsesForMultiResponsePerUser * 2,
     )
-    .setPlaceholder(trimString(surveyFields))
+    .setValue(surveyFields || "")
     .setRequired(false);
 
   const endTimeInput = new TextInputBuilder()

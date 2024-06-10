@@ -15,6 +15,15 @@ export const handleCreateModal = async (
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
 
+  if (!verifyFields(fields)) {
+    console.log("Fields input is not verified");
+    await interaction.reply({
+      content: "Each question must be at most 45 characters long.",
+      ephemeral: true,
+    });
+    return;
+  }
+
   if (!(endTime == "inf" || endTime == "" || endTime == "INF")) {
     endTime = convertToTimestamp(endTime);
   } else {
@@ -53,6 +62,15 @@ export const handleEditModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
+
+  if (!verifyFields(fields)) {
+    console.log("Fields input is not verified");
+    await interaction.reply({
+      content: "Each question must be at most 45 characters long.",
+      ephemeral: true,
+    });
+    return;
+  }
 
   if (!(endTime == "inf" || endTime == "" || endTime == "INF")) {
     endTime = convertToTimestamp(endTime);
@@ -217,4 +235,14 @@ export function convertToTimestamp(dateString: string): number {
   const date = new Date(year, month, day, hour, minute);
 
   return date.getTime();
+}
+
+export function verifyFields(fields: string): boolean {
+  const lines = fields.split("\n");
+  for (const line of lines) {
+    if (line.length > 45) {
+      return false;
+    }
+  }
+  return true;
 }
