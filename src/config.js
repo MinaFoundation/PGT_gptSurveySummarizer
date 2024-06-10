@@ -21,3 +21,5 @@ export const discordConfig = {
 };
 
 export const version = package_json.version;
+
+export const POST_CHANNEL_ID = "1245319554201157724"

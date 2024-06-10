@@ -135,7 +135,7 @@ process.on("uncaughtException", (error) => {
           username,
           redisClient,
         );
-        console.log(sn);
+        log.debug(sn);
         await threadPost(client, redisClient, sn, desc);
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);

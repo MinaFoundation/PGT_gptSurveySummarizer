@@ -1,5 +1,7 @@
+import log from '../logger'
 import { makeSurveyPost } from "./makeSurveyPost.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { POST_CHANNEL_ID } from '@config';
 
 export const threadPost = async (
   client,
@@ -7,8 +9,8 @@ export const threadPost = async (
   surveyName,
   description,
 ) => {
-  const channelId = "1245319554201157724";
-  console.log("posting", surveyName, "to", channelId);
+  const channelId = POST_CHANNEL_ID;
+  log.info("Posting", surveyName, "to", channelId);
 
   const messagesToSend = await makeSurveyPost(redisClient, surveyName);
   const channel = await client.channels.fetch(channelId);
