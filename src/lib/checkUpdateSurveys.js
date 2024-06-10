@@ -1,3 +1,4 @@
+import log from '../logger'
 import { updateSurvey } from "./updateSurvey.js";
 import { summarizeFrequency } from "../config.js";
 
@@ -19,8 +20,8 @@ const checkUpdateSurveys = async (redisClient) => {
     );
     const currentEpoch = Math.floor(Date.now() / (summarizeFrequency * 1000));
 
-    console.log(surveyName);
-    console.log(
+    log.debug(surveyName);
+    log.debug(
       "\t",
       lastSummaryTime - lastEditTime,
       lastSummaryUpdateEpoch,

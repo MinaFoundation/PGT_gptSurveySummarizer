@@ -1,3 +1,4 @@
+import log from "../logger"
 import { createSurvey } from "../lib/createSurvey.js";
 import { editSurvey } from "./handleEdit.js";
 import { respond } from "./handleRespond.js";
@@ -16,7 +17,7 @@ export const handleCreateModal = async (
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
 
   if (!checkTitle(title)) {
-    console.log("Title includes -, it is not verified");
+    log.warn("Title includes -, it is not verified");
     await interaction.reply({
       content: `Survey name cannot include "-"`,
       ephemeral: true,
@@ -25,7 +26,7 @@ export const handleCreateModal = async (
   }
 
   if (!verifyFields(fields)) {
-    console.log("Fields input is not verified");
+    log.warn("Fields input is not verified");
     await interaction.reply({
       content: "Each question must be at most 45 characters long.",
       ephemeral: true,
@@ -73,7 +74,7 @@ export const handleEditModal = async (
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
 
   if (!checkTitle(title)) {
-    console.log("Title includes -, it is not verified");
+    log.warn("Title includes -, it is not verified");
     await interaction.reply({
       content: `Survey name cannot include "-"`,
       ephemeral: true,
@@ -82,7 +83,7 @@ export const handleEditModal = async (
   }
 
   if (!verifyFields(fields)) {
-    console.log("Fields input is not verified");
+    log.warn("Fields input is not verified");
     await interaction.reply({
       content: "Each question must be at most 45 characters long.",
       ephemeral: true,
@@ -97,7 +98,7 @@ export const handleEditModal = async (
   }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
-    console.log(surveyName);
+   log.debug(surveyName);
     await interaction.reply({
       content: "There is no survey with that name",
       ephemeral: true,

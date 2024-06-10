@@ -1,3 +1,5 @@
+import log from '../logger'
+
 import { AttachmentBuilder } from "discord.js";
 import { summarizeFrequency } from "../config.js";
 
@@ -147,7 +149,7 @@ export default async function surveyToText(redisClient, surveyName) {
       try {
         userResponses = JSON.parse(response);
       } catch (e) {
-        console.error("error processing multi-response", e);
+        log.error("error processing multi-response", e);
         userResponses = [response];
       }
       userResponses = userResponses.filter((r) => r != "");
@@ -226,7 +228,7 @@ function formatResponse(surveyType, response, responses) {
     try {
       userResponses = JSON.parse(responses[baseUsername]);
     } catch (e) {
-      console.error("error processing multi-response", e);
+      log.error("error processing multi-response", e);
       userResponses = [responses[response.username]];
     }
     responseIsLatest = userResponses.some((r) => r == response.response);

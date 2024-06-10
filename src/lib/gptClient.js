@@ -1,3 +1,4 @@
+import log from '../logger'
 import OpenAI from "openai";
 
 const gpt = async (apikey, system, user, maxTries = 5) => {
@@ -17,12 +18,12 @@ const gpt = async (apikey, system, user, maxTries = 5) => {
   try {
     result = JSON.parse(message.content);
   } catch (e) {
-    console.error("error while processing gpt response:", e);
-    console.error("gpt response:", message.content);
+    log.error("error while processing gpt response:", e);
+    log.error("gpt response:", message.content);
     if (maxTries == 1) {
       throw e;
     } else {
-      console.log("trying again; tries remaining", maxTries - 1);
+      log.warn("trying again; tries remaining", maxTries - 1);
       return await gpt(apikey, system, user, maxTries - 1);
     }
   }

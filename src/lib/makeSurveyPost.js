@@ -1,4 +1,6 @@
+import log from '../logger'
 import surveyToText from "./surveyToText.js";
+
 export const makeSurveyPost = async (redisClient, surveyName) => {
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     return [{ content: "There is no survey with that name", ephemeral: true }];
@@ -19,7 +21,7 @@ export const makeSurveyPost = async (redisClient, surveyName) => {
     chunks.push(chunk);
 
     return chunks.map((chunk, i) => {
-      console.log("making chunk", i, chunk.length);
+      log.info("making chunk", i, chunk.length);
       const toSend = { content: chunk };
       if (i == chunks.length - 1) {
         toSend.files = files;

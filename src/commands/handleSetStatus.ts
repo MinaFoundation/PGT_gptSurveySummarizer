@@ -1,3 +1,4 @@
+import log from '../logger'
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const handleSetStatus = async (
@@ -21,14 +22,14 @@ export const handleSetStatus = async (
       status === "active" ? "true" : "false",
     );
 
-    console.log(`Survey "${surveyName}" status has been set to ${status}.`);
+    log.info(`Survey "${surveyName}" status has been set to ${status}.`);
 
     await interaction.reply({
       content: `Survey "${surveyName}" status has been set to ${status}.`,
       ephemeral: true,
     });
   } catch (error) {
-    console.error("Error setting survey status:", error);
+    log.error("Error setting survey status:", error);
     await interaction.reply({
       content: "There was an error setting the survey status.",
       ephemeral: true,

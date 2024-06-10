@@ -1,3 +1,4 @@
+import log from '../logger'
 import {
   ModalBuilder,
   TextInputBuilder,
@@ -61,7 +62,7 @@ export const handleRespondButton = async (
       try {
         priorResponses = JSON.parse(priorResponseData);
       } catch (e) {
-        console.error("error processing multi-response priorResponseData", e);
+        log.error("error processing multi-response priorResponseData", e);
         priorResponses = [priorResponseData];
       }
     }

@@ -1,3 +1,5 @@
+import log from '../logger'
+
 import { summarizeFrequency } from "../config.js";
 import { makeSurveyPost } from "./makeSurveyPost.js";
 
@@ -10,12 +12,12 @@ export const startAutoPosting = async (client, redisClient) => {
     const timeOfNextAutoPosting = timeOfNextUpdate + fiveMinutes;
     const timeTilNextAutoPosting = timeOfNextAutoPosting - Date.now();
 
-    console.log(
+    log.info(
       `${timeTilNextAutoPosting / 1000 / 60} minutes until the next auto-posting`,
     );
     await new Promise((r) => setTimeout(r, timeTilNextAutoPosting));
 
-    console.log("starting auto posting");
+    log.info("Starting auto posting");
 
     const autoPostSurveys = await redisClient.sMembers("auto-post-surveys");
 
@@ -25,7 +27,7 @@ export const startAutoPosting = async (client, redisClient) => {
       const channelId = channelIdWithBrackets.slice(2, -1);
       const surveyName = parts.slice(1).join(":");
 
-      console.log("posting", surveyName, "to", channelId);
+      log.info("Posting", surveyName, "to", channelId);
 
       const messagesToSend = await makeSurveyPost(redisClient, surveyName);
       const channel = await client.channels.fetch(channelId);

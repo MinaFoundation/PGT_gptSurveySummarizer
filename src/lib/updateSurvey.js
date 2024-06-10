@@ -1,3 +1,5 @@
+import log from '../logger'
+
 import { gpt } from "./gptClient.js";
 import { apikey } from "../config.js";
 import {
@@ -26,7 +28,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
   if (!matchedTopic) {
-    console.log(
+    log.warn(
       "Topic mismatch, skipping response " + JSON.stringify(response),
     );
     unmatchedResponses.push(response);
@@ -36,7 +38,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
     (subtopic) => subtopic.subtopicName === subtopicName,
   );
   if (!subtopic) {
-    console.log(
+    log.warn(
       "Subtopic mismatch, skipping response " + JSON.stringify(response),
     );
     unmatchedResponses.push(response);
@@ -55,7 +57,7 @@ function cleanupTaxonomy(taxonomy) {
 }
 
 const updateSurvey = async (redisClient, surveyName) => {
-  console.log("creating survey summary");
+  log.info("Creating survey summary");
 
   const responseData = await redisClient.hGetAll(
     `survey:${surveyName}:responses`,
@@ -64,15 +66,15 @@ const updateSurvey = async (redisClient, surveyName) => {
   const description = await redisClient.get(`survey:${surveyName}:description`);
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
 
-  console.log("title", title);
-  console.log("description", description);
+  log.debug("title", title);
+  log.debug("description", description);
 
   let responses;
   if (surveyType == "single") {
     responses = responseData;
   } else {
     responses = {};
-    console.log(responseData);
+    log.debug(responseData);
     Object.entries(responseData).forEach(([username, response]) => {
       try {
         let userResponses = JSON.parse(response);
@@ -81,13 +83,13 @@ const updateSurvey = async (redisClient, surveyName) => {
           responses[username + `[${i}]`] = r;
         });
       } catch (e) {
-        console.error("error processing multi-response", e);
+        log.error("error processing multi-response", e);
         responses[username] = response;
       }
     });
   }
 
-  console.log("responses", responses);
+  log.debug("responses", responses);
 
   let { taxonomy } = await gpt(
     apikey,
@@ -152,7 +154,7 @@ const updateSurvey = async (redisClient, surveyName) => {
     unmatchedResponses,
   };
 
-  console.log(JSON.stringify(summary, null, 2));
+  log.debug(JSON.stringify(summary, null, 2));
 
   await redisClient.set(
     `survey:${surveyName}:summary`,
