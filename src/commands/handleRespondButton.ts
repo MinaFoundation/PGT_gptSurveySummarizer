@@ -19,6 +19,15 @@ export const handleRespondButton = async (
     `survey:${surveyName}:responses`,
     username,
   );
+  if ((await redisClient.get(`survey:${surveyName}:is-active`)) == "false") {
+    await interaction.reply({
+      content:
+        "The survey is currently inactive, so you can't submit any answers.",
+      ephemeral: true,
+    });
+    return;
+  }
+  
   const plural = surveyType === "single" ? "" : "s";
   const modal = new ModalBuilder()
     .setCustomId(`respondModal-${surveyName}`)

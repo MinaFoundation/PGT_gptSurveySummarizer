@@ -152,6 +152,16 @@ export const handleRespondModal = async (
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";
   let response: any;
+  
+  if ((await redisClient.get(`survey:${surveyName}:is-active`)) == "false") {
+    await interaction.reply({
+      content:
+        "The survey is currently inactive, so you can't submit any answers.",
+      ephemeral: true,
+    });
+    return;
+  }
+
   if (surveyType === "single") {
     response = interaction.fields.getTextInputValue("responseInput");
   } else {
