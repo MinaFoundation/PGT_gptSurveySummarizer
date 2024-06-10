@@ -21,7 +21,7 @@ export const makeSurveyPost = async (redisClient, surveyName) => {
     chunks.push(chunk);
 
     return chunks.map((chunk, i) => {
-      log.info("making chunk", i, chunk.length);
+      log.debug("Making chunk", i, chunk.length);
       const toSend = { content: chunk };
       if (i == chunks.length - 1) {
         toSend.files = files;
