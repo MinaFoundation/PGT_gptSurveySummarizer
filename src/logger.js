@@ -12,6 +12,16 @@ prefix.apply(log, {
   },
 });
 
-log.setLevel(log.levels.INFO);
+const logLevelMap = {
+  TRACE: log.levels.TRACE,
+  DEBUG: log.levels.DEBUG,
+  INFO: log.levels.INFO,
+  WARN: log.levels.WARN,
+  ERROR: log.levels.ERROR,
+  SILENT: log.levels.SILENT,
+};
+
+const currentLogLevel = logLevelMap[GSS_LOG_LEVEL.toUpperCase()] || log.levels.INFO;
+log.setLevel(currentLogLevel);
 
 export default log;
