@@ -1,5 +1,6 @@
 import log from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
+import { GSS_LOG_LEVEL } from '@config';
 
 prefix.reg(log);
 prefix.apply(log, {
@@ -11,6 +12,6 @@ prefix.apply(log, {
   },
 });
 
-log.setLevel(log.levels.INFO); // Set the desired log level
+log.setLevel(log.levels.GSS_LOG_LEVEL);
 
 export default log;
