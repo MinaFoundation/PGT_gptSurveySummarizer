@@ -5,8 +5,7 @@ import {
   ButtonStyle,
 } from "discord.js";
 import { ActionRowBuilder, ModalBuilder } from "@discordjs/builders";
-// import package_json from '../../package.json' with { type: 'json' };
-import package_json from "../../package.json";
+import package_json from '../../package.json' with { type: 'json' };
 const version = package_json.version;
 const maxResponsesForMultiResponsePerUser = 5;
 
