@@ -1,0 +1,3 @@
+"draw.folder.structure.exclude": [
+    "node_modules",
+]
