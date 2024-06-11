@@ -11,6 +11,6 @@ prefix.apply(log, {
   },
 });
 
-log.setLevel(log.levels.TRACE); // Set the desired log level
+log.setLevel(log.levels.INFO); // Set the desired log level
 
 export default log;
