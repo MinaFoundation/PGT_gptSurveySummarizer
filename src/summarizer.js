@@ -24,13 +24,13 @@ const main = async () => {
   await redisClient.connect();
 
   while (true) {
-    log.info("checking surveys for updates...");
+    log.debug("checking surveys for updates...");
     try {
       await checkUpdateSurveys(redisClient);
     } catch (e) {
       log.error("error while processing surveys:", e);
     }
-    log.info("done checking surveys for updates.");
+    log.debug("done checking surveys for updates.");
     await new Promise((r) => setTimeout(r, 1 * 1000));
   }
 
