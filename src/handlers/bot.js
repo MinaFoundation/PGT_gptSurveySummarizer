@@ -2,6 +2,7 @@ import { TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle} from 'dis
 import { ActionRowBuilder, ModalBuilder } from '@discordjs/builders';
 import package_json from '../../package.json' with { type: 'json' };
 const version = package_json.version;
+const maxResponsesForMultiResponsePerUser = 5;
 
 export const interactionCreateHandler = async (interaction) => {
   const { user } = interaction;
