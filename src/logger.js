@@ -12,6 +12,6 @@ prefix.apply(log, {
   },
 });
 
-log.setLevel(log.levels.GSS_LOG_LEVEL);
+log.setLevel(log.levels.INFO);
 
 export default log;
