@@ -1,4 +1,4 @@
-import log from '../logger'
+import log from '../logger.js'
 
 import { AttachmentBuilder } from "discord.js";
 import { summarizeFrequency } from "../config.js";

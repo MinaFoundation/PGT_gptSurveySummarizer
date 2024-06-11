@@ -1,6 +1,6 @@
 import log from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import { GSS_LOG_LEVEL } from '@config';
+import { GSS_LOG_LEVEL } from './config.js';
 
 prefix.reg(log);
 prefix.apply(log, {

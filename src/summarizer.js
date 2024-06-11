@@ -1,4 +1,4 @@
-import log from "./logger";
+import log from "./logger.js";
 import { createClient } from "redis";
 import { checkUpdateSurveys } from "./lib/checkUpdateSurveys.js";
 import { redisConfig } from "./config.js";

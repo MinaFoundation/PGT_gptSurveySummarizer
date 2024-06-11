@@ -1,4 +1,4 @@
-import log from '../logger'
+import log from '../logger.js'
 import { makeSurveyPost } from "./makeSurveyPost.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { POST_CHANNEL_ID } from '@config';
