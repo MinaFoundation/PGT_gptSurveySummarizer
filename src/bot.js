@@ -1,7 +1,5 @@
 import 'dotenv/config'
-import { interactionCreateHandler } from './handlers/bot.js';
-
-
+import { interactionCreateHandler } from "./handlers/bot.js"
 import { Client, GatewayIntentBits, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle, AttachmentBuilder } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';

@@ -1,4 +1,9 @@
-const interactionCreateHandler = async (interaction) => {
+import { TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle} from 'discord.js';
+import { ActionRowBuilder, ModalBuilder } from '@discordjs/builders';
+import package_json from '../../package.json' with { type: 'json' };
+const version = package_json.version;
+
+export const interactionCreateHandler = async (interaction) => {
   const { user } = interaction;
 
   // TODO check that for discord, usernames are
@@ -268,4 +273,4 @@ const interactionCreateHandler = async (interaction) => {
   }
 };
 
-module.exports = { interactionCreateHandler };
+
