@@ -23,4 +23,4 @@ export const discordConfig = {
 export const version = package_json.version;
 
 export const POST_CHANNEL_ID = "1245319554201157724"
-export const GSS_LOG_LEVEL = process.env.GSS_LOG_LEVEL
+export const GSS_LOG_LEVEL = process.env.GSS_LOG_LEVEL || "INFO"
