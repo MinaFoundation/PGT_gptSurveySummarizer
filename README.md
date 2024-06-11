@@ -6,21 +6,27 @@ Join the discord server for discussing and developing this tool [here](https://d
 
 ## Usage
 
-1. Create a .env file with the following variables: 
+1. Create a .env.local file with the following variables:
 
-    ```shell
-    DISCORD_TOKEN=
-    OPENAI_API_KEY=
-    REDIS_URL=
-    CLIENT_ID=
-    GUILD_ID=
-    SUMMARIZE_FREQUENCY_SECONDS=3600
-    ```
+   ```shell
+   DISCORD_TOKEN=XXXXXXXXX
+   OPENAI_API_KEY=XXXXXXXXX
+   REDIS_HOST=XXXXXX without port
+   REDIS_PORT=XXXXX
+   REDIS_PASSWORD=XXXXXXX
+   CLIENT_ID=XXXXXXXXX
+   GUILD_ID=XXXXXXXXXX
+   SUMMARIZE_FREQUENCY_SECONDS=3600
+   ```
 
 1. Run `npm install`
-2. Start redis with `redis-server`
-3. Start the main bot script with `npm run bot`
-4. Start the gpt summarization script with `npm run summarizer`
+1. Fill the REDIS_HOST, REDIS_PORT and REDIS_PASSWORD for connecting your Redis DB
+   - Go to [Redis](https://redis.io/) and create an account.
+   - Create a db and click ```connect``` copy and paste your password, socket and port into .env.local file
+   - You can see the redis configuration in ```config.js```
+1. Start the main bot script with `npm run bot`
+1. Or Start the main bot script with `npm run dev` to use nodemon in development phase.
+1. Start the gpt summarization script with `npm run summarizer`
 
 ## Docker image
 

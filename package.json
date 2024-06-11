@@ -5,18 +5,32 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "bot": "node src/bot.js",
-    "summarizer": "node src/summarizer.js"
+    "test": "mocha",
+    "bot": "npx tsx src/bot.ts",
+    "dev": "nodemon --exec npx tsx src/bot.ts",
+    "summarizer": "node src/summarizer.js",
+    "prettier": "npx prettier . --write"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "@discordjs/rest": "^2.2.0",
+    "chai": "^5.1.1",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "mocha": "^10.4.0",
     "openai": "^4.31.0",
+    "path": "^0.12.7",
     "redis": "^4.6.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "prettier": "3.2.5",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
   }
 }
