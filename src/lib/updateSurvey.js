@@ -1,4 +1,4 @@
-import log from '../logger'
+import log from '../logger.js'
 
 import { gpt } from "./gptClient.js";
 import { apikey } from "../config.js";

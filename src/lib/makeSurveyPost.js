@@ -1,4 +1,4 @@
-import log from '../logger'
+import log from '../logger.js'
 import surveyToText from "./surveyToText.js";
 
 export const makeSurveyPost = async (redisClient, surveyName) => {
