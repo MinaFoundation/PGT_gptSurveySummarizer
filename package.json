@@ -9,6 +9,12 @@
     "bot": "node src/bot.js",
     "summarizer": "node src/summarizer.js"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|ts)$": "babel-jest"
+    },
+    "transformIgnorePatterns": []
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -20,6 +26,8 @@
     "redis": "^4.6.13"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.24.7",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0"
   }
 }

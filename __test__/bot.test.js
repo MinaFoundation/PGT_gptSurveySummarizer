@@ -1,4 +1,4 @@
-const { interactionCreateHandler } = require("../src/handlers/bot");
+import { interactionCreateHandler } from "../src/handlers/bot.js";
 
 describe("interactionCreateHandler", () => {
   const interaction = {

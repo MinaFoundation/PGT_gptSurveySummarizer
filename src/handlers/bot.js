@@ -1,6 +1,12 @@
-import { TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle} from 'discord.js';
-import { ActionRowBuilder, ModalBuilder } from '@discordjs/builders';
-import package_json from '../../package.json' with { type: 'json' };
+import {
+  TextInputBuilder,
+  TextInputStyle,
+  ButtonBuilder,
+  ButtonStyle,
+} from "discord.js";
+import { ActionRowBuilder, ModalBuilder } from "@discordjs/builders";
+// import package_json from '../../package.json' with { type: 'json' };
+import package_json from "../../package.json";
 const version = package_json.version;
 const maxResponsesForMultiResponsePerUser = 5;
 
@@ -11,7 +17,6 @@ export const interactionCreateHandler = async (interaction) => {
   // TODO check that for discord, users can't change this.
   //      If they aren't unique, maps should probably use ids to avoid users making multiple comments.
   const username = user.username;
-
   // ------------------------------------------------
 
   if (interaction.isChatInputCommand()) {
@@ -273,5 +278,3 @@ export const interactionCreateHandler = async (interaction) => {
     );
   }
 };
-
-
