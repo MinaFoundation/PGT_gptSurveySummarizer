@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 import OpenAI from "openai";
 
 const gpt = async (apikey, system, user, maxTries = 5) => {

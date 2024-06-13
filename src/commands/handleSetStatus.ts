@@ -1,4 +1,4 @@
-import log from '../logger'
+import log from "../logger";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const handleSetStatus = async (

@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { summarizeFrequency } from "../config.js";
 import { makeSurveyPost } from "./makeSurveyPost.js";

@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { gpt } from "./gptClient.js";
 import { apikey } from "../config.js";
@@ -28,9 +28,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
   if (!matchedTopic) {
-    log.warn(
-      "Topic mismatch, skipping response " + JSON.stringify(response),
-    );
+    log.warn("Topic mismatch, skipping response " + JSON.stringify(response));
     unmatchedResponses.push(response);
     return;
   }

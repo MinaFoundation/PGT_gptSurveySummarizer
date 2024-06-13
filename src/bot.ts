@@ -1,4 +1,4 @@
-import log from './logger';
+import log from "./logger";
 
 import { setIntervalAsync } from "set-interval-async/dynamic";
 import { startAutoPosting } from "./lib/startAutoPosting.js";

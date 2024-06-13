@@ -1,6 +1,6 @@
-import log from 'loglevel';
-import prefix from 'loglevel-plugin-prefix';
-import { GSS_LOG_LEVEL } from './config.js';
+import log from "loglevel";
+import prefix from "loglevel-plugin-prefix";
+import { GSS_LOG_LEVEL } from "./config.js";
 
 prefix.reg(log);
 prefix.apply(log, {
@@ -21,7 +21,8 @@ const logLevelMap = {
   SILENT: log.levels.SILENT,
 };
 
-const currentLogLevel = logLevelMap[GSS_LOG_LEVEL.toUpperCase()] || log.levels.INFO;
+const currentLogLevel =
+  logLevelMap[GSS_LOG_LEVEL.toUpperCase()] || log.levels.INFO;
 log.setLevel(currentLogLevel);
 
 export default log;

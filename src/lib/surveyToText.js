@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { AttachmentBuilder } from "discord.js";
 import { summarizeFrequency } from "../config.js";
@@ -117,7 +117,7 @@ export default async function surveyToText(redisClient, surveyName) {
   ) {
     msg += divider;
     msg += `### Unmatched Responses\n`;
-    msg += `:speech_balloon: Responses not matched with any topic: ${summary.unmatchedResponses.length}\n`
+    msg += `:speech_balloon: Responses not matched with any topic: ${summary.unmatchedResponses.length}\n`;
 
     const responseMessages = summary.unmatchedResponses.map((response) => {
       summarizedResponses.push(response);

@@ -4,9 +4,7 @@ import { checkUpdateSurveys } from "./lib/checkUpdateSurveys.js";
 import { redisConfig } from "./config.js";
 
 const subscribeRedisClient = createClient(redisConfig);
-subscribeRedisClient.on("error", (err) =>
-  log.error("Redis Client Error", err),
-);
+subscribeRedisClient.on("error", (err) => log.error("Redis Client Error", err));
 
 const redisClient = createClient(redisConfig);
 redisClient.on("error", (err) => log.error("Redis Client Error", err));

@@ -1,4 +1,4 @@
-import log from "../logger"
+import log from "../logger";
 import { createSurvey } from "../lib/createSurvey.js";
 import { editSurvey } from "./handleEdit.js";
 import { respond } from "./handleRespond.js";
@@ -99,7 +99,7 @@ export const handleEditModal = async (
   }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
-   log.debug(surveyName);
+    log.debug(surveyName);
     await interaction.reply({
       content: "There is no survey with that name",
       ephemeral: true,
