@@ -53,18 +53,28 @@ const createModal = async (
     .setMaxLength(16)
     .setValue("inf");
 
+  const setThreadPostInput = new TextInputBuilder()
+    .setCustomId("setThreadPostInput")
+    .setLabel("The survey should be posted to forum channel")
+    .setStyle(TextInputStyle.Short)
+    .setMaxLength(5)
+    .setValue("false");
+
   const firstActionRow = new ActionRowBuilder().addComponents(titleInput);
   const secondActionRow = new ActionRowBuilder().addComponents(
     descriptionInput,
   );
   const thirdActionRow = new ActionRowBuilder().addComponents(fieldsInput);
   const fourthActionRow = new ActionRowBuilder().addComponents(endTimeInput);
+  const fifthActionRow = new ActionRowBuilder().addComponents(setThreadPostInput);
+
 
   modal.addComponents(
     firstActionRow,
     secondActionRow,
     thirdActionRow,
     fourthActionRow,
+    fifthActionRow
   );
 
   await interaction.showModal(modal);

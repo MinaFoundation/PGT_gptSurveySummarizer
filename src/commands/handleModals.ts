@@ -15,6 +15,9 @@ export const handleCreateModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
+  const isThreadPost = interaction.fields.getTextInputValue("setThreadPostInput");
+
+  let isTp = isThreadPost == 'true' ? true : false
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -59,7 +62,7 @@ export const handleCreateModal = async (
       content: "Your Survey was created successfully!",
       ephemeral: true,
     });
-    return [title, description, fields];
+    return [title, description, fields, isTp];
   }
 };
 
