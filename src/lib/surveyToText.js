@@ -170,7 +170,7 @@ export default async function surveyToText(redisClient, surveyName) {
   if (unsummarizedResponses.length > 0) {
     msg += `## :new: Responses Not Yet Categorized\n`;
     const unsummarizedResponseCount = unsummarizedResponses.length;
-    msg += `:speech_balloon: Responses not included in the current summary: ${unsummarizedResponseCount}\n`;
+    msg += `:speech_balloon: Responses not included in the current summary: ${unsummarizedResponseCount}\n`
     const timeSinceLastUpdate = Date.now() % (summarizeFrequency * 1000);
     const timeOfLastUpdate = Date.now() - timeSinceLastUpdate;
     const timeOfNextUpdate = timeOfLastUpdate + summarizeFrequency * 1000;
