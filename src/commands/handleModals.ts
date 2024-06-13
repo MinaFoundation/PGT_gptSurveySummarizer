@@ -164,7 +164,14 @@ export const handleEditModal = async (
       content: "Your Survey was updated successfully!",
       ephemeral: true,
     });
-    return [surveyName, updatedTitle, updatedDescription, updatedFields, isTp, true];
+    return [
+      surveyName,
+      updatedTitle,
+      updatedDescription,
+      updatedFields,
+      isTp,
+      true,
+    ];
   } else {
     await interaction.reply({
       content: "No changes were made as the input values were the same.",
@@ -237,7 +244,7 @@ export const handleDeleteModal = async (
       content: `The survey ${surveyName} has successfully deleted!`,
       ephemeral: true,
     });
-    return [true, surveyName]
+    return [true, surveyName];
   } else {
     await interaction.reply({
       content: `Sorry, the survey name you entered does not match any existing surveys and could not be deleted. Please check the name and try again!`,

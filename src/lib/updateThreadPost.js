@@ -20,11 +20,11 @@ export const updateThreadPost = async (
   const channel = await client.channels.fetch(channelId);
 
   const guild = client.guilds.cache.get(discordConfig.guildId);
-  const threads = guild.channels.cache.filter(x => x.isThread());
-  const thread = threads.find(info => info.name == surveyName)
-  
-  console.log(thread)
-  const threadMessage = await thread.fetchStarterMessage()
+  const threads = guild.channels.cache.filter((x) => x.isThread());
+  const thread = threads.find((info) => info.name == surveyName);
+  console.log(thread);
+
+  const threadMessage = await thread.fetchStarterMessage();
 
   const fieldArray = fields.split("\n").map((field, index) => {
     return { name: `Question ${index + 1}:`, value: field, inline: false };

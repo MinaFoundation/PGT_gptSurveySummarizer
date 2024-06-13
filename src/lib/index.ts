@@ -19,5 +19,5 @@ export {
   updateSurvey,
   threadPost,
   updateThreadPost,
-  deleteThreadPost
+  deleteThreadPost,
 };

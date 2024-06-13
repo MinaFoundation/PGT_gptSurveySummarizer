@@ -144,16 +144,17 @@ process.on("uncaughtException", (error) => {
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
-        const [isDeleted, sn] = await handleDeleteModal(interaction, username, redisClient);
-        if (isDeleted) {
-          await deleteThreadPost(client, sn)
-        }
-      } else if (interaction.customId.startsWith("editModal")) {
-        const [sn, upSn, desc, fields, shouldPosted, isUpdated] = await handleEditModal(
+        const [isDeleted, sn] = await handleDeleteModal(
           interaction,
           username,
           redisClient,
         );
+        if (isDeleted) {
+          await deleteThreadPost(client, sn);
+        }
+      } else if (interaction.customId.startsWith("editModal")) {
+        const [sn, upSn, desc, fields, shouldPosted, isUpdated] =
+          await handleEditModal(interaction, username, redisClient);
 
         if (isUpdated) {
           await updateThreadPost(
@@ -163,18 +164,12 @@ process.on("uncaughtException", (error) => {
             sn,
             upSn,
             desc,
-            fields
-          )
+            fields,
+          );
         }
 
         if (isUpdated && shouldPosted) {
-          await threadPost(
-            client,
-            redisClient,
-            sn,
-            desc,
-            fields,
-          );
+          await threadPost(client, redisClient, sn, desc, fields);
         }
       }
     } else if (interaction.isAutocomplete()) {
