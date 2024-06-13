@@ -7,6 +7,7 @@ import surveyToText from "./surveyToText";
 import { updateSurvey } from "./updateSurvey";
 import { threadPost } from "./threadPost";
 import { updateThreadPost } from "./updateThreadPost";
+import { deleteThreadPost } from "./deleteThreadPost";
 
 export {
   checkUpdateSurveys,
@@ -18,4 +19,5 @@ export {
   updateSurvey,
   threadPost,
   updateThreadPost,
+  deleteThreadPost
 };

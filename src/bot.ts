@@ -33,6 +33,7 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { threadPost } from "@lib/threadPost.js";
 import { updateThreadPost } from "@lib/updateThreadPost";
+import { deleteThreadPost } from "./lib";
 
 process.on("unhandledRejection", (error) => {
   log.error("Unhandled promise rejection:", error);
@@ -143,7 +144,10 @@ process.on("uncaughtException", (error) => {
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
-        await handleDeleteModal(interaction, username, redisClient);
+        const [isDeleted, sn] = await handleDeleteModal(interaction, username, redisClient);
+        if (isDeleted) {
+          await deleteThreadPost(client, sn)
+        }
       } else if (interaction.customId.startsWith("editModal")) {
         const [sn, upSn, desc, fields, shouldPosted, isUpdated] = await handleEditModal(
           interaction,
@@ -152,7 +156,7 @@ process.on("uncaughtException", (error) => {
         );
 
         if (isUpdated) {
-          updateThreadPost(
+          await updateThreadPost(
             interaction,
             client,
             redisClient,

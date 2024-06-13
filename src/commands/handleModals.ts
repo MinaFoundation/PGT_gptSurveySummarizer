@@ -237,6 +237,7 @@ export const handleDeleteModal = async (
       content: `The survey ${surveyName} has successfully deleted!`,
       ephemeral: true,
     });
+    return [true, surveyName]
   } else {
     await interaction.reply({
       content: `Sorry, the survey name you entered does not match any existing surveys and could not be deleted. Please check the name and try again!`,
