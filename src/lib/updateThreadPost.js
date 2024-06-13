@@ -32,13 +32,13 @@ export const updateThreadPost = async (
 
   const embed = new EmbedBuilder()
     .setColor(0x70b8ff)
-    .setTitle(surveyName)
+    .setTitle(updatedSurveyName)
     .setDescription(description)
     .setAuthor({ name: "Survey Bot", iconURL: "https://imgur.com/a/ffiT36c" })
     .addFields(...fieldArray);
 
   const reply = new ButtonBuilder()
-    .setCustomId(`respondButton-${surveyName}`)
+    .setCustomId(`respondButton-${updatedSurveyName}`)
     .setLabel("Respond")
     .setStyle(ButtonStyle.Primary);
 
