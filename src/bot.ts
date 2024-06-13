@@ -32,6 +32,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { threadPost } from "@lib/threadPost.js";
+import { updateThreadPost } from "@lib/updateThreadPost";
 
 process.on("unhandledRejection", (error) => {
   log.error("Unhandled promise rejection:", error);
@@ -144,7 +145,33 @@ process.on("uncaughtException", (error) => {
       } else if (interaction.customId.startsWith("deleteModal")) {
         await handleDeleteModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("editModal")) {
-        await handleEditModal(interaction, username, redisClient);
+        const [sn, upSn, desc, fields, shouldPosted, isUpdated] = await handleEditModal(
+          interaction,
+          username,
+          redisClient,
+        );
+
+        if (isUpdated) {
+          updateThreadPost(
+            interaction,
+            client,
+            redisClient,
+            sn,
+            upSn,
+            desc,
+            fields
+          )
+        }
+
+        if (isUpdated && shouldPosted) {
+          await threadPost(
+            client,
+            redisClient,
+            sn,
+            desc,
+            fields,
+          );
+        }
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");

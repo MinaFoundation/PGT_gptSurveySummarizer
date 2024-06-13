@@ -15,9 +15,10 @@ export const handleCreateModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
-  const isThreadPost = interaction.fields.getTextInputValue("setThreadPostInput");
+  const isThreadPost =
+    interaction.fields.getTextInputValue("setThreadPostInput");
 
-  let isTp = isThreadPost == 'true' ? true : false
+  let isTp = isThreadPost == "true" ? true : false;
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -76,6 +77,10 @@ export const handleEditModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
+  const isThreadPost =
+    interaction.fields.getTextInputValue("setThreadPostInput");
+
+  let isTp = isThreadPost == "true" ? true : false;
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -159,11 +164,13 @@ export const handleEditModal = async (
       content: "Your Survey was updated successfully!",
       ephemeral: true,
     });
+    return [surveyName, updatedTitle, updatedDescription, updatedFields, isTp, true];
   } else {
     await interaction.reply({
       content: "No changes were made as the input values were the same.",
       ephemeral: true,
     });
+    return [updatedTitle, updatedDescription, updatedFields, isTp, false];
   }
 };
 

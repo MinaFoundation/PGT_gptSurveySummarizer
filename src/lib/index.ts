@@ -6,6 +6,7 @@ import { startAutoPosting } from "./startAutoPosting";
 import surveyToText from "./surveyToText";
 import { updateSurvey } from "./updateSurvey";
 import { threadPost } from "./threadPost";
+import { updateThreadPost } from "./updateThreadPost";
 
 export {
   checkUpdateSurveys,
@@ -16,4 +17,5 @@ export {
   surveyToText,
   updateSurvey,
   threadPost,
+  updateThreadPost,
 };

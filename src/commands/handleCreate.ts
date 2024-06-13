@@ -66,15 +66,16 @@ const createModal = async (
   );
   const thirdActionRow = new ActionRowBuilder().addComponents(fieldsInput);
   const fourthActionRow = new ActionRowBuilder().addComponents(endTimeInput);
-  const fifthActionRow = new ActionRowBuilder().addComponents(setThreadPostInput);
-
+  const fifthActionRow = new ActionRowBuilder().addComponents(
+    setThreadPostInput,
+  );
 
   modal.addComponents(
     firstActionRow,
     secondActionRow,
     thirdActionRow,
     fourthActionRow,
-    fifthActionRow
+    fifthActionRow,
   );
 
   await interaction.showModal(modal);
