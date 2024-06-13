@@ -156,7 +156,7 @@ process.on("uncaughtException", (error) => {
         const [sn, upSn, desc, fields, shouldPosted, isUpdated] =
           await handleEditModal(interaction, username, redisClient);
 
-        if (isUpdated) {
+        if (isUpdated && !shouldPosted) {
           await updateThreadPost(
             interaction,
             client,
@@ -166,9 +166,17 @@ process.on("uncaughtException", (error) => {
             desc,
             fields,
           );
-        }
-
-        if (isUpdated && shouldPosted) {
+        } else if (isUpdated && shouldPosted) {
+          await updateThreadPost(
+            interaction,
+            client,
+            redisClient,
+            sn,
+            upSn,
+            desc,
+            fields,
+          );
+        } else if (!isUpdated && shouldPosted) {
           await threadPost(client, redisClient, sn, desc, fields);
         }
       }

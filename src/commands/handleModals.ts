@@ -80,7 +80,7 @@ export const handleEditModal = async (
   const isThreadPost =
     interaction.fields.getTextInputValue("setThreadPostInput");
 
-  let isTp = isThreadPost == "true" ? true : false;
+  let isTp = Boolean(isThreadPost === "true");
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -144,7 +144,7 @@ export const handleEditModal = async (
     updated = true;
   }
 
-  if (endTime && endTime !== surveyEndTime) {
+  if (endTime !== parseInt(surveyEndTime)) {
     updatedEndTime = endTime;
     updated = true;
   }
@@ -177,7 +177,7 @@ export const handleEditModal = async (
       content: "No changes were made as the input values were the same.",
       ephemeral: true,
     });
-    return [updatedTitle, updatedDescription, updatedFields, isTp, false];
+    return [surveyName, title, description, fields, isTp, false];
   }
 };
 
