@@ -25,7 +25,7 @@ export const handleSummary = async (
       await interaction.reply(formatExecutiveSummaryForDiscord(executiveSummary))
     } else {
       log.debug("Summary type is general summary.");
-      const messagesToSend = await makeSurveyPost(redisClient, surveyName);
+      const messagesToSend = await makeSurveyPost(redisClient, surveyName, true);
       for (const [i, toSend] of messagesToSend.entries()) {
         if (i === 0) {
           await interaction.reply(toSend);
