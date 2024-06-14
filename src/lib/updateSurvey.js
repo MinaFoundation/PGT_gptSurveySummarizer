@@ -78,7 +78,6 @@ const updateSurvey = async (redisClient, surveyName) => {
   const usernames = Object.keys(responseData);
   const anonymizedMapping = createAnonymizedMapping(usernames);
 
-
   let responses;
   if (surveyType == "single") {
     responses = {};

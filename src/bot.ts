@@ -18,6 +18,7 @@ import {
   handleView,
   handleEditModal,
   handleSetStatus,
+  handleSummary,
 } from "@commands/index";
 
 import {
@@ -100,6 +101,15 @@ process.on("uncaughtException", (error) => {
         case "view":
           await handleView(interaction, surveyName, redisClient);
           break;
+        case "summary":
+          const summaryType = options.getString("summarytype");
+          await handleSummary(
+            interaction,
+            surveyName,
+            redisClient,
+            summaryType,
+          );
+          break;
         case "set-status":
           const status = options.getString("status");
           await handleSetStatus(interaction, surveyName, status, redisClient);
@@ -177,7 +187,7 @@ process.on("uncaughtException", (error) => {
             fields,
           );
         } else if (!isUpdated && shouldPosted) {
-          await deleteThreadPost(client, sn)
+          await deleteThreadPost(client, sn);
           await threadPost(client, redisClient, sn, desc, fields);
         }
       }
