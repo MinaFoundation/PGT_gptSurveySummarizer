@@ -20,12 +20,20 @@ export const handleSummary = async (
     if (summaryType == "yes") {
       // High level summary
       log.debug("Summary type is high level summary.");
-      const executiveSummary = await redisClient.get(`survey:${surveyName}:executive-summary`)
-      console.log(executiveSummary)
-      await interaction.reply(formatExecutiveSummaryForDiscord(executiveSummary))
+      const executiveSummary = await redisClient.get(
+        `survey:${surveyName}:executive-summary`,
+      );
+      console.log(executiveSummary);
+      await interaction.reply(
+        formatExecutiveSummaryForDiscord(executiveSummary),
+      );
     } else {
       log.debug("Summary type is general summary.");
-      const messagesToSend = await makeSurveyPost(redisClient, surveyName, true);
+      const messagesToSend = await makeSurveyPost(
+        redisClient,
+        surveyName,
+        true,
+      );
       for (const [i, toSend] of messagesToSend.entries()) {
         if (i === 0) {
           await interaction.reply(toSend);
@@ -44,7 +52,7 @@ export const handleSummary = async (
 };
 
 function formatExecutiveSummaryForDiscord(summary: string): string {
-  const formattedSummary = summary.trim()
+  const formattedSummary = summary.trim();
 
   return `**Executive Summary:**\n\n${formattedSummary}`;
 }

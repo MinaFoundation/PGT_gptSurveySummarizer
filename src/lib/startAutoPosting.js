@@ -29,14 +29,18 @@ export const startAutoPosting = async (client, redisClient) => {
 
       log.info("Posting", surveyName, "to", channelId);
 
-      const messagesToSend = await makeSurveyPost(redisClient, surveyName, true);
+      const messagesToSend = await makeSurveyPost(
+        redisClient,
+        surveyName,
+        true,
+      );
 
       let channel;
 
       try {
         channel = await client.channels.fetch(channelId);
       } catch (error) {
-        log.error(`Channel ${channelId} cannot found`)
+        log.error(`Channel ${channelId} cannot found`);
         continue;
       }
 
@@ -44,7 +48,9 @@ export const startAutoPosting = async (client, redisClient) => {
         if (channel.isThread()) {
           const messages = await channel.messages.fetch();
 
-          const surveyMessage = messages.find(msg => msg.content.startsWith(`# :ballot_box:`));
+          const surveyMessage = messages.find((msg) =>
+            msg.content.startsWith(`# :ballot_box:`),
+          );
           if (surveyMessage) {
             await surveyMessage.delete();
             log.debug(`Deleted survey message: ${surveyMessage.id}`);
@@ -53,10 +59,9 @@ export const startAutoPosting = async (client, redisClient) => {
           }
         }
       } catch (error) {
-        log.error(`Error removing survey message: ${error.message}`)
+        log.error(`Error removing survey message: ${error.message}`);
         continue;
       }
-      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {

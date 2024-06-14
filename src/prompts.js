@@ -80,11 +80,7 @@ Subtopic Description: ${subtopicDescription}
 Responses: ${responses}
 `;
 
-export const executiveSummarizePrompt = (
-  title,
-  description,
-  summary
-) => `
+export const executiveSummarizePrompt = (title, description, summary) => `
 I'm going to give you a survey title, survey description, and summary of the survey. I want you to produce an very short high level executive summary of the summary for executive directors and stakeholders to have a quick read, highlight the main ideas in bullet points for discord message.
 
 Return a JSON object of the form {
@@ -97,4 +93,4 @@ The survey description: ${description}
 
 And here is the summary.
 Summary: ${summary}
-`
+`;

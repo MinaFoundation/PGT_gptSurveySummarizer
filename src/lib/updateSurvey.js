@@ -184,7 +184,7 @@ const updateSurvey = async (redisClient, surveyName) => {
     executiveSummarizePrompt(title, description, JSON.stringify(summary)),
   );
 
-  log.debug(executiveSummary)
+  log.debug(executiveSummary);
 
   await redisClient.set(
     `survey:${surveyName}:executive-summary`,

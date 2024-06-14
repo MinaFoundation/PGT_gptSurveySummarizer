@@ -10,7 +10,10 @@ export const createSurvey = async (
   await redisClient.sAdd("surveys", surveyName);
   const initialSummaryJSON = JSON.stringify({});
   await redisClient.set(`survey:${surveyName}:summary`, initialSummaryJSON);
-  await redisClient.set(`survey:${surveyName}:executive-summary`, initialSummaryJSON);
+  await redisClient.set(
+    `survey:${surveyName}:executive-summary`,
+    initialSummaryJSON,
+  );
 
   await redisClient.set(`survey:${surveyName}:type`, surveyType);
   await redisClient.set(`survey:${surveyName}:title`, surveyName);
