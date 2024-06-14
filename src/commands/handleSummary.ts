@@ -16,25 +16,26 @@ export const handleSummary = async (
       });
       return;
     }
+    
+    if (summaryType == "yes") {
+        // High level summary
+        log.debug("Summary type is high level summary.");
+      } else {
+        log.debug("Summary type is general summary.");
+        const messagesToSend = await makeSurveyPost(redisClient, surveyName);
+        for (const [i, toSend] of messagesToSend.entries()) {
+          if (i === 0) {
+            await interaction.reply(toSend);
+          } else {
+            await interaction.followUp(toSend);
+          }
+        }
+      }
   } catch (error) {
     log.error("Error setting summary type:", error);
     await interaction.reply({
       content: "There was an error setting the summary type.",
       ephemeral: true,
     });
-    if (summaryType == "yes") {
-      // High level summary
-      log.debug("Summary type is high level summary.");
-    } else {
-      log.debug("Summary type is general summary.");
-      const messagesToSend = await makeSurveyPost(redisClient, surveyName);
-      for (const [i, toSend] of messagesToSend.entries()) {
-        if (i === 0) {
-          await interaction.reply(toSend);
-        } else {
-          await interaction.followUp(toSend);
-        }
-      }
-    }
   }
 };
