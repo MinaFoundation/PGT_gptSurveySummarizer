@@ -9,7 +9,8 @@
     "bot": "npx tsx src/bot.ts",
     "dev": "nodemon --exec npx tsx src/bot.ts",
     "summarizer": "node src/summarizer.js",
-    "prettier": "npx prettier . --write"
+    "prettier": "npx prettier . --write",
+    "reset": "npx tsx src/redisReset.ts"
   },
   "author": "",
   "license": "ISC",
