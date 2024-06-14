@@ -15,7 +15,7 @@ export const startAutoPosting = async (client, redisClient) => {
     log.info(
       `${timeTilNextAutoPosting / 1000 / 60} minutes until the next auto-posting`,
     );
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, timeTilNextAutoPosting));
 
     log.info("Starting auto posting");
 
