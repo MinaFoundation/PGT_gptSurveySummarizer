@@ -7,6 +7,7 @@ import {
   clusteringPrompt,
   assignmentPrompt,
   summarizePrompt,
+  executiveSummarizePrompt,
 } from "../prompts.js";
 
 function filterEmptySubtopics(taxonomy) {
@@ -176,6 +177,19 @@ const updateSurvey = async (redisClient, surveyName) => {
     JSON.stringify(summary),
   );
   await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
+
+  const executiveSummary = await gpt(
+    apikey,
+    systemMessage(),
+    executiveSummarizePrompt(title, description, JSON.stringify(summary)),
+  );
+
+  log.debug(executiveSummary)
+
+  await redisClient.set(
+    `survey:${surveyName}:executive-summary`,
+    JSON.stringify(executiveSummary.executivesummary),
+  );
 };
 
 export { updateSurvey };

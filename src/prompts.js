@@ -79,3 +79,22 @@ Subtopic: ${subtopic}
 Subtopic Description: ${subtopicDescription}
 Responses: ${responses}
 `;
+
+export const executiveSummarizePrompt = (
+  title,
+  description,
+  summary
+) => `
+I'm going to give you a survey title, survey description, and summary of the survey. I want you to produce an very short high level executive summary of the summary for executive directors and stakeholders , to have a quick read, highlighting the main ideas in bullet points.
+
+Return a JSON object of the form {
+  "executivesummary": string
+}
+
+Now here is the survey title: ${title}
+
+The survey description: ${description}
+
+And here is the summary.
+Summary: ${summary}
+`
