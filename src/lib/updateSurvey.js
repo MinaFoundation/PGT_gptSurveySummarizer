@@ -54,6 +54,14 @@ function cleanupTaxonomy(taxonomy) {
   return taxonomy;
 }
 
+const createAnonymizedMapping = (usernames) => {
+  const mapping = {};
+  usernames.forEach((username, index) => {
+    mapping[username] = `User${index + 1}`;
+  });
+  return mapping;
+};
+
 const updateSurvey = async (redisClient, surveyName) => {
   log.info("Creating survey summary");
 
@@ -67,9 +75,17 @@ const updateSurvey = async (redisClient, surveyName) => {
   log.debug("title", title);
   log.debug("description", description);
 
+  const usernames = Object.keys(responseData);
+  const anonymizedMapping = createAnonymizedMapping(usernames);
+
+
   let responses;
   if (surveyType == "single") {
-    responses = responseData;
+    responses = {};
+    Object.entries(responseData).forEach(([username, response]) => {
+      const anonUsername = anonymizedMapping[username];
+      responses[anonUsername] = response;
+    });
   } else {
     responses = {};
     log.debug(responseData);
@@ -78,11 +94,13 @@ const updateSurvey = async (redisClient, surveyName) => {
         let userResponses = JSON.parse(response);
         userResponses = userResponses.filter((r) => r != "");
         userResponses.forEach((r, i) => {
-          responses[username + `[${i}]`] = r;
+          const anonUsername = anonymizedMapping[username];
+          responses[anonUsername + `[${i}]`] = r;
         });
       } catch (e) {
         log.error("error processing multi-response", e);
-        responses[username] = response;
+        const anonUsername = anonymizedMapping[username];
+        responses[anonUsername] = response;
       }
     });
   }
