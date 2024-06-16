@@ -8,7 +8,7 @@ export const deleteThreadPost = async (client, surveyName) => {
   const threads = guild.channels.cache.filter((x) => x.isThread());
   const thread = threads.find((info) => info.name == surveyName);
 
-  console.log(thread);
+  log.debug(thread);
 
   if (thread) {
     await thread.delete(surveyName);

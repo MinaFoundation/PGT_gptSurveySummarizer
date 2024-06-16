@@ -23,7 +23,7 @@ export const handleSummary = async (
       const executiveSummary = await redisClient.get(
         `survey:${surveyName}:executive-summary`,
       );
-      console.log(executiveSummary);
+      log.debug(executiveSummary);
       await interaction.reply(
         formatExecutiveSummaryForDiscord(executiveSummary),
       );
