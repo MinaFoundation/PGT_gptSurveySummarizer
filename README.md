@@ -114,6 +114,8 @@ The project includes several scripts to facilitate development and operations. H
 
   Same restrictions in `/create` command.
 
+  And if your survey in the forum channel. Do not change the title more than 2 times in 10 Minutes because of rate limit.
+
 ### /gptsurvey set-status 
   To activate or deactivate a survey.
 
