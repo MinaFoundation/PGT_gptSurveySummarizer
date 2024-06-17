@@ -27,7 +27,6 @@ export const updateThreadPost = async (
 
     if (thread) {
       threadMessage = await thread.fetchStarterMessage({force: true});
-      console.log(threadMessage)
     } else {
       log.debug('Thread not found');
     }
