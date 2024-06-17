@@ -16,14 +16,24 @@ export const updateThreadPost = async (
   const channelId = POST_CHANNEL_ID;
   log.info("Updating", surveyName, "to", channelId);
 
-  const messagesToSend = await makeSurveyPost(redisClient, surveyName);
-  const channel = await client.channels.fetch(channelId);
+  let thread;
+  let threadMessage;
 
-  const guild = client.guilds.cache.get(discordConfig.guildId);
-  const threads = guild.channels.cache.filter((x) => x.isThread());
-  const thread = threads.find((info) => info.name == surveyName);
+  try {
+    const guild = await client.guilds.fetch(discordConfig.guildId);
+    const channel = await guild.channels.fetch(POST_CHANNEL_ID);
+    const threads = await channel.threads.fetch({force: true})
+    thread = threads.threads.find(channel => channel.name === surveyName);
 
-  const threadMessage = await thread.fetchStarterMessage();
+    if (thread) {
+      threadMessage = await thread.fetchStarterMessage({force: true});
+      console.log(threadMessage)
+    } else {
+      log.debug('Thread not found');
+    }
+  } catch (error) {
+    log.error('Error fetching thread:', error);
+  }
 
   const fieldArray = fields.split("\n").map((field, index) => {
     return { name: `Question ${index + 1}:`, value: field, inline: false };
@@ -33,7 +43,7 @@ export const updateThreadPost = async (
     .setColor(0x70b8ff)
     .setTitle(updatedSurveyName)
     .setDescription(description)
-    .setAuthor({ name: "Survey Bot", iconURL: "https://imgur.com/a/ffiT36c" })
+    .setAuthor({ name: " ", iconURL: "https://imgur.com/a/ffiT36c" })
     .addFields(...fieldArray);
 
   const reply = new ButtonBuilder()

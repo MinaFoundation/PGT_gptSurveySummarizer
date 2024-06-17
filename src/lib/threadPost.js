@@ -25,7 +25,7 @@ export const threadPost = async (
     .setColor(0x70b8ff)
     .setTitle(surveyName)
     .setDescription(description)
-    .setAuthor({ name: "Survey Bot", iconURL: "https://imgur.com/a/ffiT36c" })
+    .setAuthor({ name: " ", iconURL: "https://imgur.com/a/ffiT36c" })
     .addFields(...fieldArray);
 
   const reply = new ButtonBuilder()
