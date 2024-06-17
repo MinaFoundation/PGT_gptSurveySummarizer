@@ -81,7 +81,7 @@ Responses: ${responses}
 `;
 
 export const executiveSummarizePrompt = (title, description, summary) => `
-I'm going to give you a survey title, survey description, and summary of the survey. I want you to produce an very short high level executive summary of the summary for executive directors and stakeholders to have a quick read, highlight the main ideas in bullet points for discord message.
+I'm going to give you a survey title, survey description, and summary of the survey. I want you to produce a short high level executive summary from the summary for executive directors and stakeholders to have a quick read, highlight the main ideas and critical points. Your message will be posted to Discord Channel.
 
 Return a JSON object of the form {
   "executivesummary": string
