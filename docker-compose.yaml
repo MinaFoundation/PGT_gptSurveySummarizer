@@ -10,6 +10,8 @@ services:
       REDIS_PASSWORD: ""
       CLIENT_ID: ""
       GUILD_ID: ""
+      POST_CHANNEL_ID: ""
+      GSS_LOG_LEVEL: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
   summarizer:
     image: gpt-survey-summarizer
@@ -20,6 +22,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
+      GSS_LOG_LEVEL: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
   redis:
     image: redis
