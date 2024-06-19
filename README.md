@@ -251,7 +251,7 @@ To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Di
 
 ---
 
-## Project Structure
+## Project Structure
 - ```commands``` folder for command related codes. can be used by importing ```@command/index```
 - ```lib``` folder for other functional codes.
 
