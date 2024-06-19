@@ -11,7 +11,7 @@ Join the Discord server for discussing and developing this tool [here](https://d
    ```shell
    DISCORD_TOKEN=XXXXXXXXX
    OPENAI_API_KEY=XXXXXXXXX
-   
+
    # Redis host without port
    REDIS_HOST=XXXXXX
    REDIS_PORT=XXXXX
@@ -42,42 +42,42 @@ Here is the section for the scripts in the README file:
 
 The project includes several scripts to facilitate development and operations. Here is a brief explanation of each:
 
-- **test**  
+#### **test**  
   Runs the tests.
 
   ```shell
   npm run test
   ```
 
-- **bot**  
+#### **bot**  
   Starts the main bot script.
 
   ```shell
   npm run bot
   ```
 
-- **dev**  
+#### **dev**  
   Starts the main bot script in development mode using Nodemon to automatically restart the bot when changes are detected.
 
   ```shell
   npm run dev
   ```
 
-- **summarizer**  
+#### **summarizer**  
   Starts the GPT summarization script.
 
   ```shell
   npm run summarizer
   ```
 
-- **prettier**  
+#### **prettier**  
   Formats the codebase using Prettier.
 
   ```shell
   npm run prettier
   ```
 
-- **reset**  
+#### **reset**  
   Resets the Redis database.
   ```shell
   npm run reset
