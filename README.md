@@ -123,13 +123,13 @@ The project includes several scripts to facilitate development and operations. H
 ### /gptsurvey delete 
   To delete the survey.
 
-### /gptsurvey info
+### /gptsurvey info
   To check the version.
 
 ### /gptsurvey start-auto-post
   To start auto-posting the responses view. It is working which channel that you used. For example, if you use it in forum channel, it will be activated in that channel.
 
-### /gptsurvey stop-auto-post 
+### /gptsurvey stop-auto-post 
   To stop auto-posting the responses view. For example, if you use it in forum channel, it will be activated in that channel.
 
 ## Docker Image
