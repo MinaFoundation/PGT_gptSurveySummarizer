@@ -11,6 +11,7 @@ Join the Discord server for discussing and developing this tool [here](https://d
    ```shell
    DISCORD_TOKEN=XXXXXXXXX
    OPENAI_API_KEY=XXXXXXXXX
+   
    # Redis host without port
    REDIS_HOST=XXXXXX
    REDIS_PORT=XXXXX
