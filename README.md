@@ -196,33 +196,6 @@ TODO
 1. Go to [Redis](https://redis.io/) and create an account.
 2. Create a DB and click `connect`. Copy and paste your password, socket, and port into the `.env.local` file.
 
-## Step 4: Project Initialization
-
-### A. Node.js and NPM
-
-1. Install Node.js: Download and install Node.js (including NPM) from the official Node.js website.
-
-### B. Initialize Your Project
-
-1. Create a project directory: Choose a location for your project and create a directory for it.
-2. Open a terminal/command prompt: Navigate to your project directory.
-3. Initialize NPM:
-   - Run `npm init` and follow the prompts to create a `package.json` file.
-4. Install Dependencies:
-   - Run `npm install discord.js @discordjs/rest @discordjs/builders redis openai dotenv`.
-
-## Step 5: Environment Variables
-
-1. Create a `.env` file in your project root.
-2. Add your Discord Bot Token, OpenAI API Key, and Redis connection details (if applicable). Example:
-
-   ```shell
-   DISCORD_TOKEN=<Your Discord Bot Token>
-   OPENAI_API_KEY=<Your OpenAI API Key>
-   CLIENT_ID=<Your Discord Application Client ID> (It's available in the [Discord Developer Portal](https://discord.com/developers/applications/))
-   GUILD_ID=<Your Discord Server (Guild) ID> (To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings)
-   REDIS_URL=redis://localhost:6379
-   ```
 
 ### Finding the Client ID
 
