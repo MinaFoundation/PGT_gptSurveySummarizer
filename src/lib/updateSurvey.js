@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { gpt } from "./gptClient.js";
 import { apikey } from "../config.js";
@@ -7,6 +7,7 @@ import {
   clusteringPrompt,
   assignmentPrompt,
   summarizePrompt,
+  executiveSummarizePrompt,
 } from "../prompts.js";
 
 function filterEmptySubtopics(taxonomy) {
@@ -28,9 +29,7 @@ function insertResponse(taxonomy, assignment, response, unmatchedResponses) {
   const { topicName, subtopicName } = assignment;
   const matchedTopic = taxonomy.find((topic) => topic.topicName === topicName);
   if (!matchedTopic) {
-    log.warn(
-      "Topic mismatch, skipping response " + JSON.stringify(response),
-    );
+    log.warn("Topic mismatch, skipping response " + JSON.stringify(response));
     unmatchedResponses.push(response);
     return;
   }
@@ -56,6 +55,14 @@ function cleanupTaxonomy(taxonomy) {
   return taxonomy;
 }
 
+const createAnonymizedMapping = (usernames) => {
+  const mapping = {};
+  usernames.forEach((username, index) => {
+    mapping[username] = `User${index + 1}`;
+  });
+  return mapping;
+};
+
 const updateSurvey = async (redisClient, surveyName) => {
   log.info("Creating survey summary");
 
@@ -69,9 +76,16 @@ const updateSurvey = async (redisClient, surveyName) => {
   log.debug("title", title);
   log.debug("description", description);
 
+  const usernames = Object.keys(responseData);
+  const anonymizedMapping = createAnonymizedMapping(usernames);
+
   let responses;
   if (surveyType == "single") {
-    responses = responseData;
+    responses = {};
+    Object.entries(responseData).forEach(([username, response]) => {
+      const anonUsername = anonymizedMapping[username];
+      responses[anonUsername] = response;
+    });
   } else {
     responses = {};
     log.debug(responseData);
@@ -80,11 +94,13 @@ const updateSurvey = async (redisClient, surveyName) => {
         let userResponses = JSON.parse(response);
         userResponses = userResponses.filter((r) => r != "");
         userResponses.forEach((r, i) => {
-          responses[username + `[${i}]`] = r;
+          const anonUsername = anonymizedMapping[username];
+          responses[anonUsername + `[${i}]`] = r;
         });
       } catch (e) {
         log.error("error processing multi-response", e);
-        responses[username] = response;
+        const anonUsername = anonymizedMapping[username];
+        responses[anonUsername] = response;
       }
     });
   }
@@ -161,6 +177,19 @@ const updateSurvey = async (redisClient, surveyName) => {
     JSON.stringify(summary),
   );
   await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
+
+  const executiveSummary = await gpt(
+    apikey,
+    systemMessage(),
+    executiveSummarizePrompt(title, description, JSON.stringify(summary)),
+  );
+
+  log.debug(executiveSummary);
+
+  await redisClient.set(
+    `survey:${surveyName}:executive-summary`,
+    JSON.stringify(executiveSummary.executivesummary),
+  );
 };
 
 export { updateSurvey };

@@ -1,7 +1,15 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { AttachmentBuilder } from "discord.js";
 import { summarizeFrequency } from "../config.js";
+
+const createAnonymizedMapping = (usernames) => {
+  const mapping = {};
+  usernames.forEach((username, index) => {
+    mapping[username] = `User${index + 1}`;
+  });
+  return mapping;
+};
 
 export default async function surveyToText(redisClient, surveyName) {
   const summaryJSON = await redisClient.get(`survey:${surveyName}:summary`);
@@ -61,6 +69,15 @@ export default async function surveyToText(redisClient, surveyName) {
     9: "J",
   };
 
+  const usernames = Object.keys(responses);
+  const anonymizedMapping = createAnonymizedMapping(usernames);
+
+  const anonymizedResponses = {};
+  Object.entries(responses).forEach(([username, response]) => {
+    const anonUsername = anonymizedMapping[username];
+    anonymizedResponses[anonUsername] = response;
+  });
+
   let msg = "";
   msg += `# :ballot_box: ${surveyName}\n`;
   msg += divider;
@@ -72,6 +89,34 @@ export default async function surveyToText(redisClient, surveyName) {
   }
 
   const threads = [];
+
+  const formatResponse = (surveyType, response, responses) => {
+    let responseIsLatest;
+    if (surveyType == "single") {
+      const latestResponse = anonymizedResponses[response.username];
+      responseIsLatest = latestResponse == response.response;
+    } else {
+      const baseUsername = response.username.split("[")[0];
+      let userResponses;
+      try {
+        userResponses = JSON.parse(anonymizedResponses[baseUsername]);
+      } catch (e) {
+        log.error("error processing multi-response", e);
+        userResponses = [anonymizedResponses[response.username]];
+      }
+      responseIsLatest = userResponses.some((r) => r == response.response);
+    }
+    if (responseIsLatest) {
+      return response.username + ' said "' + response.response + '"';
+    } else {
+      return (
+        response.username +
+        ' previously said "' +
+        response.response +
+        '". The next update will include their latest response.'
+      );
+    }
+  };
 
   if (summary.taxonomy != null) {
     for (const [index, topic] of summary.taxonomy.entries()) {
@@ -135,7 +180,7 @@ export default async function surveyToText(redisClient, surveyName) {
   const unsummarizedResponses = [];
 
   if (surveyType == "single") {
-    for (let [username, response] of Object.entries(responses)) {
+    for (let [username, response] of Object.entries(anonymizedResponses)) {
       const responseIncluded = summarizedResponses.some(
         (sr) => sr.username == username && sr.response == response,
       );
@@ -144,7 +189,7 @@ export default async function surveyToText(redisClient, surveyName) {
       }
     }
   } else {
-    for (let [username, response] of Object.entries(responses)) {
+    for (let [username, response] of Object.entries(anonymizedResponses)) {
       let userResponses;
       try {
         userResponses = JSON.parse(response);
@@ -217,19 +262,19 @@ export default async function surveyToText(redisClient, surveyName) {
   return [msg, files];
 }
 
-function formatResponse(surveyType, response, responses) {
+function formatResponse(surveyType, response, anonymizedResponses) {
   let responseIsLatest;
   if (surveyType == "single") {
-    const latestResponse = responses[response.username];
+    const latestResponse = anonymizedResponses[response.username];
     responseIsLatest = latestResponse == response.response;
   } else {
     const baseUsername = response.username.split("[")[0];
     let userResponses;
     try {
-      userResponses = JSON.parse(responses[baseUsername]);
+      userResponses = JSON.parse(anonymizedResponses[baseUsername]);
     } catch (e) {
       log.error("error processing multi-response", e);
-      userResponses = [responses[response.username]];
+      userResponses = [anonymizedResponses[response.username]];
     }
     responseIsLatest = userResponses.some((r) => r == response.response);
   }

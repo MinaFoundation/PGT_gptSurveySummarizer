@@ -1,4 +1,4 @@
-import log from "../logger"
+import log from "../logger";
 import { createSurvey } from "../lib/createSurvey.js";
 import { editSurvey } from "./handleEdit.js";
 import { respond } from "./handleRespond.js";
@@ -15,6 +15,10 @@ export const handleCreateModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
+  const isThreadPost =
+    interaction.fields.getTextInputValue("setThreadPostInput");
+
+  let isTp = isThreadPost == "true" ? true : false;
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -59,7 +63,7 @@ export const handleCreateModal = async (
       content: "Your Survey was created successfully!",
       ephemeral: true,
     });
-    return [title, description];
+    return [title, description, fields, isTp];
   }
 };
 
@@ -73,6 +77,10 @@ export const handleEditModal = async (
   const description = interaction.fields.getTextInputValue("descriptionInput");
   const fields = interaction.fields.getTextInputValue("fieldsInput");
   let endTime = interaction.fields.getTextInputValue("endTimeInput");
+  const isThreadPost =
+    interaction.fields.getTextInputValue("setThreadPostInput");
+
+  let isTp = Boolean(isThreadPost === "true");
 
   if (!checkTitle(title)) {
     log.warn("Title includes -, it is not verified");
@@ -99,7 +107,7 @@ export const handleEditModal = async (
   }
 
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
-   log.debug(surveyName);
+    log.debug(surveyName);
     await interaction.reply({
       content: "There is no survey with that name",
       ephemeral: true,
@@ -136,7 +144,7 @@ export const handleEditModal = async (
     updated = true;
   }
 
-  if (endTime && endTime !== surveyEndTime) {
+  if (endTime !== parseInt(surveyEndTime)) {
     updatedEndTime = endTime;
     updated = true;
   }
@@ -156,11 +164,20 @@ export const handleEditModal = async (
       content: "Your Survey was updated successfully!",
       ephemeral: true,
     });
+    return [
+      surveyName,
+      updatedTitle,
+      updatedDescription,
+      updatedFields,
+      isTp,
+      true,
+    ];
   } else {
     await interaction.reply({
       content: "No changes were made as the input values were the same.",
       ephemeral: true,
     });
+    return [surveyName, title, description, fields, isTp, false];
   }
 };
 
@@ -227,6 +244,7 @@ export const handleDeleteModal = async (
       content: `The survey ${surveyName} has successfully deleted!`,
       ephemeral: true,
     });
+    return [true, surveyName];
   } else {
     await interaction.reply({
       content: `Sorry, the survey name you entered does not match any existing surveys and could not be deleted. Please check the name and try again!`,

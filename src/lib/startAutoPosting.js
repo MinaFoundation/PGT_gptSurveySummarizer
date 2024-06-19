@@ -1,4 +1,4 @@
-import log from '../logger.js'
+import log from "../logger.js";
 
 import { summarizeFrequency } from "../config.js";
 import { makeSurveyPost } from "./makeSurveyPost.js";
@@ -29,8 +29,39 @@ export const startAutoPosting = async (client, redisClient) => {
 
       log.info("Posting", surveyName, "to", channelId);
 
-      const messagesToSend = await makeSurveyPost(redisClient, surveyName);
-      const channel = await client.channels.fetch(channelId);
+      const messagesToSend = await makeSurveyPost(
+        redisClient,
+        surveyName,
+        true,
+      );
+
+      let channel;
+
+      try {
+        channel = await client.channels.fetch(channelId);
+      } catch (error) {
+        log.error(`Channel ${channelId} cannot found`);
+        continue;
+      }
+
+      try {
+        if (channel.isThread()) {
+          const messages = await channel.messages.fetch();
+
+          const surveyMessage = messages.find((msg) =>
+            msg.content.startsWith(`# :ballot_box:`),
+          );
+          if (surveyMessage) {
+            await surveyMessage.delete();
+            log.debug(`Deleted survey message: ${surveyMessage.id}`);
+          } else {
+            log.debug(`No message starting with :ballot_box: found.`);
+          }
+        }
+      } catch (error) {
+        log.error(`Error removing survey message: ${error.message}`);
+        continue;
+      }
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {

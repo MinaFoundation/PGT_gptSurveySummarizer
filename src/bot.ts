@@ -1,4 +1,4 @@
-import log from './logger';
+import log from "./logger";
 
 import { setIntervalAsync } from "set-interval-async/dynamic";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
@@ -18,6 +18,7 @@ import {
   handleView,
   handleEditModal,
   handleSetStatus,
+  handleSummary,
 } from "@commands/index";
 
 import {
@@ -32,6 +33,8 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { threadPost } from "@lib/threadPost.js";
+import { updateThreadPost } from "@lib/updateThreadPost";
+import { deleteThreadPost } from "./lib";
 
 process.on("unhandledRejection", (error) => {
   log.error("Unhandled promise rejection:", error);
@@ -98,6 +101,15 @@ process.on("uncaughtException", (error) => {
         case "view":
           await handleView(interaction, surveyName, redisClient);
           break;
+        case "summary":
+          const summaryType = options.getString("summarytype");
+          await handleSummary(
+            interaction,
+            surveyName,
+            redisClient,
+            summaryType,
+          );
+          break;
         case "set-status":
           const status = options.getString("status");
           await handleSetStatus(interaction, surveyName, status, redisClient);
@@ -130,19 +142,54 @@ process.on("uncaughtException", (error) => {
       }
     } else if (interaction.isModalSubmit()) {
       if (interaction.customId.startsWith("createModal")) {
-        const [sn, desc] = await handleCreateModal(
+        const [sn, desc, fields, isPosted] = await handleCreateModal(
           interaction,
           username,
           redisClient,
         );
         log.debug(sn);
-        await threadPost(client, redisClient, sn, desc);
+        if (isPosted) {
+          await threadPost(client, redisClient, sn, desc, fields);
+        }
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
-        await handleDeleteModal(interaction, username, redisClient);
+        const [isDeleted, sn] = await handleDeleteModal(
+          interaction,
+          username,
+          redisClient,
+        );
+        if (isDeleted) {
+          await deleteThreadPost(client, sn);
+        }
       } else if (interaction.customId.startsWith("editModal")) {
-        await handleEditModal(interaction, username, redisClient);
+        const [sn, upSn, desc, fields, shouldPosted, isUpdated] =
+          await handleEditModal(interaction, username, redisClient);
+
+        if (isUpdated && shouldPosted) {
+          await updateThreadPost(
+            interaction,
+            client,
+            redisClient,
+            sn,
+            upSn,
+            desc,
+            fields,
+          );
+        } else if (isUpdated && !shouldPosted) {
+          await updateThreadPost(
+            interaction,
+            client,
+            redisClient,
+            sn,
+            upSn,
+            desc,
+            fields,
+          );
+        } else if (!isUpdated && shouldPosted) {
+          await deleteThreadPost(client, sn);
+          await threadPost(client, redisClient, sn, desc, fields);
+        }
       }
     } else if (interaction.isAutocomplete()) {
       const surveys = await redisClient.sMembers("surveys");

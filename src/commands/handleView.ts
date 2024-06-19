@@ -5,7 +5,7 @@ export const handleView = async (
   surveyName: any,
   redisClient: any,
 ) => {
-  const messagesToSend = await makeSurveyPost(redisClient, surveyName);
+  const messagesToSend = await makeSurveyPost(redisClient, surveyName, false);
   for (const [i, toSend] of messagesToSend.entries()) {
     if (i === 0) {
       await interaction.reply(toSend);

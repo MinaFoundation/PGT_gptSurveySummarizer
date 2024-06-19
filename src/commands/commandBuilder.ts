@@ -80,6 +80,23 @@ export const command = new SlashCommandBuilder()
   )
   .addSubcommand(
     createSubcommand(
+      "summary",
+      "View the summary and responses for a survey without raw data",
+      [
+        createStringOption("survey", "Survey name"),
+        createChoiceOption(
+          "summarytype",
+          "Would you like to have high level summary?",
+          [
+            { name: "Yes", value: "yes" },
+            { name: "No", value: "no" },
+          ],
+        ),
+      ],
+    ),
+  )
+  .addSubcommand(
+    createSubcommand(
       "set-status",
       "Set status of survey, activate or deactivate",
       [
