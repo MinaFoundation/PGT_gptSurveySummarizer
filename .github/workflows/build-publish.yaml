@@ -20,7 +20,6 @@ jobs:
     name: Build and Publish Docker Image
     runs-on: minafoundation-default-runners
     steps:
-
       - name: 📥 Checkout
         uses: actions/checkout@v4
 

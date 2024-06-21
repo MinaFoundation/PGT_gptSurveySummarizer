@@ -16,9 +16,7 @@ export const handleDeleteButton = async (interaction: any, surveyName: any) => {
     .setCustomId(`confirmDelete-${surveyName}`)
     .setLabel("Please rewrite the surveyName to delete.")
     .setStyle(TextInputStyle.Paragraph)
-    .setValue(
-      `Survey ${surveyName} will be deleted.`,
-    );
+    .setValue(`Survey ${surveyName} will be deleted.`);
   modal.addComponents(new ActionRowBuilder().addComponents(yesInput));
 
   await interaction.showModal(modal);
