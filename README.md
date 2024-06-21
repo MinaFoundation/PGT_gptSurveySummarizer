@@ -42,95 +42,115 @@ Here is the section for the scripts in the README file:
 
 The project includes several scripts to facilitate development and operations. Here is a brief explanation of each:
 
-#### **test**  
-  Runs the tests.
+#### **test**
 
-  ```shell
-  npm run test
-  ```
+Runs the tests.
 
-#### **bot**  
-  Starts the main bot script.
+```shell
+npm run test
+```
 
-  ```shell
-  npm run bot
-  ```
+#### **bot**
 
-#### **dev**  
-  Starts the main bot script in development mode using Nodemon to automatically restart the bot when changes are detected.
+Starts the main bot script.
 
-  ```shell
-  npm run dev
-  ```
+```shell
+npm run bot
+```
 
-#### **summarizer**  
-  Starts the GPT summarization script.
+#### **dev**
 
-  ```shell
-  npm run summarizer
-  ```
+Starts the main bot script in development mode using Nodemon to automatically restart the bot when changes are detected.
 
-#### **prettier**  
-  Formats the codebase using Prettier.
+```shell
+npm run dev
+```
 
-  ```shell
-  npm run prettier
-  ```
+#### **summarizer**
 
-#### **reset**  
-  Resets the Redis database.
-  ```shell
-  npm run reset
-  ```
+Starts the GPT summarization script.
+
+```shell
+npm run summarizer
+```
+
+#### **prettier**
+
+Formats the codebase using Prettier.
+
+```shell
+npm run prettier
+```
+
+#### **reset**
+
+Resets the Redis database.
+
+```shell
+npm run reset
+```
 
 ## Commands
 
 ### /gptsurvey create
-  Use it to create single question surveys.
 
-  - **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
-  - **SURVEY DESCRIPTION**:
-  - **QUESTION:** _Max 45 Char_
-  - **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
-  - **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
+Use it to create single question surveys.
+
+- **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
+- **SURVEY DESCRIPTION**:
+- **QUESTION:** _Max 45 Char_
+- **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
+- **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
 
 ### /gptsurvey create-multi-response
-  Use it to create multiple question surveys.
-  - **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
-  - **SURVEY DESCRIPTION**:
-  - **QUESTIONS:** Each line separated "\n" or `enter` is one question. Each question must be maximum 45 Char for each line. Maximum question number is `maxResponsesForMultiResponsePerUser` in constants.ts. _**However it is strongly recommended to set is maximum 5 to prevent Modal UI based problems.**_
-  - **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
-  - **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
-### /gptsurvey respond 
-  You can use this if you want to post an active survey in another channel (bot must have access to post anything on that channel).
+
+Use it to create multiple question surveys.
+
+- **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
+- **SURVEY DESCRIPTION**:
+- **QUESTIONS:** Each line separated "\n" or `enter` is one question. Each question must be maximum 45 Char for each line. Maximum question number is `maxResponsesForMultiResponsePerUser` in constants.ts. _**However it is strongly recommended to set is maximum 5 to prevent Modal UI based problems.**_
+- **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
+- **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
+
+### /gptsurvey respond
+
+You can use this if you want to post an active survey in another channel (bot must have access to post anything on that channel).
 
 ### /gptsurvey view
-  To view the responses with raw data txt file.
+
+To view the responses with raw data txt file.
 
 ### /gptsurvey summary
-  You can use this command to show people summaries of surveys. You can select summary type optionally: If "Yes", it will show high level summary of the survey. If "No", it will show general summary.
+
+You can use this command to show people summaries of surveys. You can select summary type optionally: If "Yes", it will show high level summary of the survey. If "No", it will show general summary.
 
 ### /gptsurvey edit
-  Edit survey name or questions, delete questions or add questions. Once submitted, if the survey was answered, the responses will be deleted. You can also set/edit a survey start and end date, or leave it infinite. Also, you can post the survey to forum channel making ``true` the last section.
 
-  Same restrictions in `/create` command.
+Edit survey name or questions, delete questions or add questions. Once submitted, if the survey was answered, the responses will be deleted. You can also set/edit a survey start and end date, or leave it infinite. Also, you can post the survey to forum channel making ``true` the last section.
 
-  And if your survey in the forum channel. Do not change the title more than 2 times in 10 Minutes because of rate limit.
+Same restrictions in `/create` command.
 
-### /gptsurvey set-status 
-  To activate or deactivate a survey.
+And if your survey in the forum channel. Do not change the title more than 2 times in 10 Minutes because of rate limit.
 
-### /gptsurvey delete 
-  To delete the survey.
+### /gptsurvey set-status
+
+To activate or deactivate a survey.
+
+### /gptsurvey delete
+
+To delete the survey.
 
 ### /gptsurvey info
-  To check the version.
+
+To check the version.
 
 ### /gptsurvey start-auto-post
-  To start auto-posting the responses view. It is working which channel that you used. For example, if you use it in forum channel, it will be activated in that channel.
 
-### /gptsurvey stop-auto-post 
-  To stop auto-posting the responses view. For example, if you use it in forum channel, it will be activated in that channel.
+To start auto-posting the responses view. It is working which channel that you used. For example, if you use it in forum channel, it will be activated in that channel.
+
+### /gptsurvey stop-auto-post
+
+To stop auto-posting the responses view. For example, if you use it in forum channel, it will be activated in that channel.
 
 ## Docker Image
 
@@ -196,7 +216,6 @@ TODO
 1. Go to [Redis](https://redis.io/) and create an account.
 2. Create a DB and click `connect`. Copy and paste your password, socket, and port into the `.env.local` file.
 
-
 ### Finding the Client ID
 
 1. Navigate to the [Discord Developer Portal](https://discord.com/developers/applications/).
@@ -252,8 +271,9 @@ To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Di
 ---
 
 ## Project Structure
-- ```commands``` folder for command related codes. can be used by importing ```@command/index```
-- ```lib``` folder for other functional codes.
+
+- `commands` folder for command related codes. can be used by importing `@command/index`
+- `lib` folder for other functional codes.
 
 ```
 └── 📁gptSurveySummarizer

@@ -22,16 +22,16 @@ export const updateThreadPost = async (
   try {
     const guild = await client.guilds.fetch(discordConfig.guildId);
     const channel = await guild.channels.fetch(POST_CHANNEL_ID);
-    const threads = await channel.threads.fetch({force: true})
-    thread = threads.threads.find(channel => channel.name === surveyName);
+    const threads = await channel.threads.fetch({ force: true });
+    thread = threads.threads.find((channel) => channel.name === surveyName);
 
     if (thread) {
-      threadMessage = await thread.fetchStarterMessage({force: true});
+      threadMessage = await thread.fetchStarterMessage({ force: true });
     } else {
-      log.debug('Thread not found');
+      log.debug("Thread not found");
     }
   } catch (error) {
-    log.error('Error fetching thread:', error);
+    log.error("Error fetching thread:", error);
   }
 
   const fieldArray = fields.split("\n").map((field, index) => {
