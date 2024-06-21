@@ -174,7 +174,7 @@ export default async function surveyToText(
     ) {
       msg += divider;
       msg += `### Unmatched Responses\n`;
-      msg += `:speech_balloon: Responses not matched with any topic: ${summary.unmatchedResponses.length}\n`;
+      msg += `:speech_balloon: Responses not matched with any topic: ${summary.unmatchedResponses.length}\n`
 
       const responseMessages = summary.unmatchedResponses.map((response) => {
         summarizedResponses.push(response);
