@@ -1,4 +1,5 @@
 import package_json from "../package.json" with { type: "json" };
+import log from "./logger";
 import dotenv from "dotenv";
 
 dotenv.config({ path: `.env.local`, override: true });
@@ -10,6 +11,16 @@ export const redisConfig = {
   socket: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+    reconnectStrategy: function (retries) {
+      if (retries >= 20) {
+        log.error("Unable to reconnect to Redis reconnectStrategy");
+        process.exit(1);
+      }
+      return Math.max(retries * 500, 4000);
+    },
+    connectTimeout: 10000,
+    keepAlive: true,
+    keepAliveInterval: 5000,
   },
   tls: true,
 };

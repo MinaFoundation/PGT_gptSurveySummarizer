@@ -48,7 +48,11 @@ process.on("uncaughtException", (error) => {
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
   const redisClient = createClient(redisConfig);
+
+  redisClient.on("error", (err) => log.error("Redis Client Error", err));
+
   await redisClient.connect();
+  redisClient.on("connect", () => log.info("Connected to Redis server"));
 
   const rest = new REST({ version: "10" }).setToken(discordConfig.token);
 

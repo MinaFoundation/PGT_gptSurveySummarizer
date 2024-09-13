@@ -9,7 +9,11 @@ export const makeSurveyPost = async (
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     return [{ content: "There is no survey with that name", ephemeral: true }];
   } else {
-    const [msg, files] = await surveyToText(redisClient, surveyName, isSummaryCommand);
+    const [msg, files] = await surveyToText(
+      redisClient,
+      surveyName,
+      isSummaryCommand,
+    );
 
     const lines = msg.split("\n");
     const chunks = [];
