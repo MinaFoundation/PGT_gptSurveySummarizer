@@ -1,5 +1,5 @@
 import package_json from "../package.json" with { type: "json" };
-import log from "./logger";
+import log from "./logger.js";
 import dotenv from "dotenv";
 
 dotenv.config({ path: `.env.local`, override: true });
