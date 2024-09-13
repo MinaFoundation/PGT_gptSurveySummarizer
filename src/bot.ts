@@ -49,10 +49,10 @@ process.on("uncaughtException", (error) => {
 
   const redisClient = createClient(redisConfig);
 
-  redisClient.on('error', err => log.error('Redis Client Error', err));
+  redisClient.on("error", (err) => log.error("Redis Client Error", err));
 
   await redisClient.connect();
-  redisClient.on('connect', () => log.info('Connected to Redis server'));
+  redisClient.on("connect", () => log.info("Connected to Redis server"));
 
   const rest = new REST({ version: "10" }).setToken(discordConfig.token);
 

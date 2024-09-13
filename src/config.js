@@ -11,10 +11,10 @@ export const redisConfig = {
   socket: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
-    reconnectStrategy: function(retries) {
+    reconnectStrategy: function (retries) {
       if (retries >= 20) {
-        log.error("Unable to reconnect to Redis reconnectStrategy")
-        return new Error("Unable to reconnect to Redis reconnectStrategy");
+        log.error("Unable to reconnect to Redis reconnectStrategy");
+        process.exit(1);
       }
       return Math.max(retries * 500, 4000);
     },
