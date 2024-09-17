@@ -51,7 +51,7 @@ export const startAutoPosting = async (client, redisClient) => {
           const surveyMessage = messages.find(
             (msg) =>
               msg.content.startsWith("# :ballot_box:") ||
-              msg.content.startsWith("# :new:"),
+              msg.content.startsWith("## :new:"),
           );
           if (surveyMessage) {
             await surveyMessage.delete();
