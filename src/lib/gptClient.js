@@ -10,7 +10,7 @@ const gpt = async (apikey, system, user, maxTries = 5) => {
       { role: "user", content: user },
     ],
 
-    model: "gpt-4-turbo",
+    model: "gpt-4o-mini",
     response_format: { type: "json_object" },
   });
   const { finish_reason, message } = completion.choices[0];
