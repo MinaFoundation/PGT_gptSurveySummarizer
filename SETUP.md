@@ -11,7 +11,7 @@
 - In your application settings, navigate to the "Bot" tab and click "Add Bot".
 - Customize your bot as needed (username, icon).
 - Copy Your Bot Token:
-- Still under the "Bot" tab, find your Token and click "Copy". Keep this safe; you'll need it later.
+- Still under the "Bot" tab, find your Token and click "Copy". Keep this safe; you'll need it later
 
 ## B. OpenAI Account
 
