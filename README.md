@@ -4,7 +4,19 @@ A Discord bot for natural language surveys, inspired by and in the style of [tal
 
 Join the Discord server for discussing and developing this tool [here](https://discord.gg/2cmxYYMyHN).
 
-## Usage
+## Quick Start
+For detailed setup instructions, please refer to our [Setup Guide](SETUP.md).
+
+1. Clone the repository 
+   ```bash
+   git clone git@github.com:MinaFoundation/PGT_gptSurveySummarizer.git
+   ```
+2. Create a .env.local file with the necessary environment variables see [Environment Setup](#environment-setup)
+3. Run `npm install`
+4. Start the main bot script with `npm run bot`
+5. Start the GPT summarization script with `npm run summarizer`
+
+## Environmental Setup
 
 1. Create a `.env.local` file with the following variables:
 
@@ -26,6 +38,8 @@ Join the Discord server for discussing and developing this tool [here](https://d
    # Discord forum channel id for posting channels.
    POST_CHANNEL_ID=XXXXX
    ```
+For detailed instructions on obtaining these values, please refer to the [Setup Guide](SETUP.md).
+
 
 2. Run `npm install`
 3. Fill in the REDIS_HOST, REDIS_PORT, and REDIS_PASSWORD for connecting your Redis DB:
@@ -182,91 +196,7 @@ docker-compose up --build
 
 TODO
 
-# Environment Setup
 
-## Step 1: Discord Developer Portal
-
-### A. Create a Discord Account
-
-- Sign up for a Discord account at [Discord](https://discord.com/).
-
-### B. Create a New Application
-
-1. Visit the Discord Developer Portal.
-2. Click on the "New Application" button.
-3. Name your application and create it.
-
-### C. Create a Bot User
-
-1. In your application settings, navigate to the "Bot" tab and click "Add Bot".
-2. Customize your bot as needed (username, icon).
-
-### D. Copy Your Bot Token
-
-1. Still under the "Bot" tab, find your Token and click "Copy". Keep this safe; you'll need it later.
-
-## Step 2: OpenAI Account
-
-1. Sign up with OpenAI: Create an account at OpenAI if you don't have one.
-2. Access your API key:
-   - Navigate to the API section and copy your API key for later use.
-
-## Step 3: Redis Setup
-
-1. Go to [Redis](https://redis.io/) and create an account.
-2. Create a DB and click `connect`. Copy and paste your password, socket, and port into the `.env.local` file.
-
-### Finding the Client ID
-
-1. Navigate to the [Discord Developer Portal](https://discord.com/developers/applications/).
-2. Select your application: Click on the application you created for your bot.
-3. Locate the Client ID:
-   - Under the "Application" section (usually the first page you land on after selecting your application), you will find your Client ID. It's a long string of numbers.
-   - Click the "Copy" button next to the Client ID to copy it to your clipboard.
-
-### Finding the Guild ID (Server ID)
-
-To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings.
-
-#### Enabling Developer Mode
-
-1. Open Discord Settings: Click on the gear icon next to your username at the bottom left corner of the Discord interface.
-2. Access Advanced Settings: In the left sidebar, scroll down and select "Advanced" under the "App Settings" section.
-3. Enable Developer Mode: Toggle the "Developer Mode" switch to the on position.
-
-#### Copying the Guild ID
-
-1. Right-click your server icon:
-   - After enabling Developer Mode, go back to the server list on the left side of the Discord interface.
-   - Right-click the server (guild) where you intend to use the bot.
-2. Select 'Copy ID': At the bottom of the context menu, click "Copy ID" to copy the Guild ID to your clipboard.
-
-## Step 6: Registering Slash Commands
-
-- Use the Discord.js guide to register your slash commands either globally or to a specific guild for testing. The command registration can be part of your bot startup process or a separate script.
-
-## Step 7: Running Your Bot
-
-1. Start your bot:
-   - In your terminal/command prompt, navigate to your project directory.
-   - Run `npm run bot` to start your bot.
-2. Invite your bot to your server:
-   - In the Discord Developer Portal, under your application's "OAuth2" settings, generate an invite link with the necessary bot permissions.
-   - Use the generated link to invite your bot to your server.
-
-## Step 8: Set Up Redis
-
-- Ensure Redis is running and accessible. If you installed Redis locally, it should be available at `redis://localhost:6379`. For remote instances, configure according to your provider's instructions.
-
-## Step 9: Testing Your Setup
-
-- Test your bot on your Discord server by using the registered slash commands to create, list, and respond to surveys.
-- Monitor the Redis database to ensure data is being saved and retrieved correctly.
-
-## Step 10: Final Checks
-
-- Ensure all environment variables are correctly set.
-- Confirm that your bot has the necessary permissions on your Discord server to read messages, send messages, and manage interactions.
 
 ---
 
