@@ -16,7 +16,7 @@ For detailed setup instructions, please refer to our [Setup Guide](SETUP.md).
 4. Start the main bot script with `npm run bot`
 5. Start the GPT summarization script with `npm run summarizer`
 
-## Environmental Setup
+## Setup Environment Variables
 
 1. Create a `.env.local` file with the following variables:
 

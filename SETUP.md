@@ -49,6 +49,25 @@
   GUILD_ID=<Your Discord Server (Guild) ID> (To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings)
   REDIS_URL=redis://localhost:6379
 
+     ```shell
+   DISCORD_TOKEN=XXXXXXXXX
+   OPENAI_API_KEY=XXXXXXXXX
+
+   # Redis host without port
+   REDIS_HOST=XXXXXX
+   REDIS_PORT=XXXXX
+   REDIS_PASSWORD=XXXXXXX
+   CLIENT_ID=XXXXXXXXX
+   GUILD_ID=XXXXXXXXXX
+
+   # Log Level, DEBUG, INFO, WARN etc.
+   GSS_LOG_LEVEL=XXXXX
+   SUMMARIZE_FREQUENCY_SECONDS=3600
+
+   # Discord forum channel id for posting channels.
+   POST_CHANNEL_ID=XXXXX
+   ```
+
 ## Finding the Client ID
 
 - Navigate to the [Discord Developer Portal](https://discord.com/developers/applications/)
