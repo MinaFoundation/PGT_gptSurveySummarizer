@@ -74,6 +74,7 @@ export const startAutoPosting = async (client, redisClient) => {
         ':regional_indicator_h:',
         ':regional_indicator_i:',
         ':regional_indicator_j:',
+        '▬▬▬▬'
       ];
       
 
