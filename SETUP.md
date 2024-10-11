@@ -1,121 +1,106 @@
-# Step 1: Environment Setup
+# Setup Guide for gptSurveySummarizer
 
-## A. Discord Developer Portal
+This guide will walk you through the process of setting up the gptSurveySummarizer Discord bot.
 
-- Create a Discord Account: If you haven’t already, sign up for a Discord account at [Discord](https://discord.com/).
-- Create a New Application:
-- Visit the Discord Developer Portal.
-- Click on the "New Application" button.
-- Name your application and create it.
-- Create a Bot User:
-- In your application settings, navigate to the "Bot" tab and click "Add Bot".
-- Customize your bot as needed (username, icon).
-- Copy Your Bot Token:
-- Still under the "Bot" tab, find your Token and click "Copy". Keep this safe; you'll need it later.
+## Prerequisites
 
-## B. OpenAI Account
+- Node.js (v14 or later)
+- npm (usually comes with Node.js)
+- Redis server (local or cloud-hosted)
+- Discord account
+- OpenAI account
 
-- Sign Up with OpenAI: Create an account at OpenAI if you don't have one.
-- Access Your API Key:
-- Navigate to the API section and copy your API key for later use.
+## Step 1: Discord Developer Portal Setup
 
-## C. Redis Setup
+1. Create a Discord account if you don't have one at [Discord](https://discord.com/).
+2. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+3. Click "New Application" and give it a name.
+4. Navigate to the "Bot" tab and click "Add Bot".
+5. Customize your bot (username, icon).
+6. Under the "Token" section, click "Copy" to copy your bot token.
 
-- Go to [Redis](https://redis.io/) and create an account.
-- Create a db and click `connect` copy and paste your password, socket and port into .env.local file
+## Step 2: OpenAI API Setup
 
-# Step 2: Project Initialization
+1. Sign up for an OpenAI account at [OpenAI](https://openai.com/).
+2. Navigate to the API section and create a new API key.
+3. Copy the API key for later use.
 
-## A. Node.js and NPM
+## Step 3: Redis Setup
 
-- Install Node.js: Download and install Node.js (including NPM) from Node.js official website.
+1. Sign up for a Redis account at [Redis](https://redis.io/) (or set up a local Redis server).
+2. Create a new database.
+3. Note down the connection details (host, port, password).
 
-## B. Initialize Your Project
+## Step 4: Project Setup
 
-- Create a Project Directory: Choose a location for your project and create a directory for it.
-- Open a Terminal/Command Prompt: Navigate to your project directory.
-- Initialize NPM:
-- Run `npm init` and follow the prompts to create a package.json file.
-- Install Dependencies:
-- Run `npm install discord.js @discordjs/rest @discordjs/builders redis openai dotenv`.
-
-# Step 3: Environment Variables:
-
-- Create a .env file in your project root.
-- Add your Discord Bot Token, OpenAI API Key, and Redis connection details (if applicable). Example:
-  DISCORD_TOKEN=<Your Discord Bot Token>
-  OPENAI_API_KEY=<Your OpenAI API Key>
-  CLIENT_ID=<Your Discord Application Client ID> (It's available in the [Discord Developer Portal](https://discord.com/developers/applications/)
-  GUILD_ID=<Your Discord Server (Guild) ID> (To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings)
-  REDIS_URL=redis://localhost:6379
-
-     ```shell
-   DISCORD_TOKEN=XXXXXXXXX
-   OPENAI_API_KEY=XXXXXXXXX
-
-   # Redis host without port
-   REDIS_HOST=XXXXXX
-   REDIS_PORT=XXXXX
-   REDIS_PASSWORD=XXXXXXX
-   CLIENT_ID=XXXXXXXXX
-   GUILD_ID=XXXXXXXXXX
-
-   # Log Level, DEBUG, INFO, WARN etc.
-   GSS_LOG_LEVEL=XXXXX
-   SUMMARIZE_FREQUENCY_SECONDS=3600
-
-   # Discord forum channel id for posting channels.
-   POST_CHANNEL_ID=XXXXX
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MinaFoundation/PGT_gptSurveySummarizer.git
+   cd PGT_gptSurveySummarizer
    ```
 
-## Finding the Client ID
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- Navigate to the [Discord Developer Portal](https://discord.com/developers/applications/)
-- Select Your Application: Click on the application you created for your bot.
-- Locate the Client ID:
-- Under the "Application" section (usually the first page you land on after selecting your application), you will find your Client ID. It's a long string of numbers.
-- Click the "Copy" button next to the Client ID to copy it to your clipboard.
+3. Create a `.env.local` file in the project root with the following content:
+   ```
+   DISCORD_TOKEN=your_discord_bot_token
+   OPENAI_API_KEY=your_openai_api_key
+   REDIS_HOST=your_redis_host
+   REDIS_PORT=your_redis_port
+   REDIS_PASSWORD=your_redis_password
+   CLIENT_ID=your_discord_client_id
+   GUILD_ID=your_discord_guild_id
+   GSS_LOG_LEVEL=INFO
+   SUMMARIZE_FREQUENCY_SECONDS=3600
+   POST_CHANNEL_ID=your_forum_channel_id
+   ```
 
-## Finding the Guild ID (Server ID)
+   Replace the placeholders with your actual values.
 
-To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Discord client settings.
+## Step 5: Finding Discord IDs
 
-### Enabling Developer Mode
+### Client ID
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications).
+2. Select your application.
+3. Copy the "Client ID" from the "General Information" tab.
 
-- Open Discord Settings: Click on the gear icon next to your username at the bottom left corner of the Discord interface.
-- Access Advanced Settings: In the left sidebar, scroll down and select "Advanced" under the "App Settings" section.
-- Enable Developer Mode: Toggle the "Developer Mode" switch to the on position.
+### Guild ID
+1. Enable Developer Mode in Discord (User Settings > Advanced > Developer Mode).
+2. Right-click on your server and select "Copy ID".
 
-### Copying the Guild ID
+## Step 6: Registering Slash Commands
 
-- Right-Click Your Server Icon:
-- After enabling Developer Mode, go back to the server list on the left side of the Discord interface.
-- Right-click the server (guild) where you intend to use the bot.
-- Select 'Copy ID': At the bottom of the context menu, click "Copy ID" to copy the Guild ID to your clipboard.
+1. Run the command registration script:
+   ```bash
+   node src/registerCommands.js
+   ```
 
-# Step 4: Registering Slash Commands
+## Step 7: Inviting the Bot to Your Server
 
-- Use the Discord.js guide to register your slash commands either globally or to a specific guild for testing. The command registration can be part of your bot startup process or a separate script.
+1. Go to the OAuth2 > URL Generator tab in the Discord Developer Portal.
+2. Select the "bot" and "applications.commands" scopes.
+3. Select the necessary bot permissions.
+4. Copy the generated URL and open it in a browser to invite the bot to your server.
 
-# Step 5: Running Your Bot
+## Step 8: Running the Bot
 
-- Start Your Bot:
-- In your terminal/command prompt, navigate to your project directory.
-- Run `node bot.js` to start your bot.
-- Invite Your Bot to Your Server:
-- In the Discord Developer Portal, under your application's "OAuth2" settings, generate an invite link with the necessary bot permissions.
-- Use the generated link to invite your bot to your server.
+1. Start the main bot:
+   ```bash
+   npm run bot
+   ```
 
-# Step 6: Set Up Redis
+2. Start the summarizer in a separate terminal:
+   ```bash
+   npm run summarizer
+   ```
 
-- Ensure Redis is running and accessible. If you installed Redis locally, it should be available at `redis://localhost:6379`. For remote instances, configure according to your provider's instructions.
+## Troubleshooting
 
-# Step 7: Testing Your Setup
+- Ensure all environment variables are correctly set in the `.env.local` file.
+- Check that your bot has the necessary permissions in your Discord server.
+- Verify that your Redis connection is working properly.
 
-- Test your bot on your Discord server by using the registered slash commands to create, list, and respond to surveys.
-- Monitor the Redis database to ensure data is being saved and retrieved correctly.
-
-# Step 8: Final Checks
-
-- Ensure all environment variables are correctly set.
-- Confirm that your bot has the necessary permissions on your Discord server to read messages, send messages, and manage interactions.
+For additional help, join our [Discord server](https://discord.gg/2cmxYYMyHN).

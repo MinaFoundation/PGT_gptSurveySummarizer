@@ -1,270 +1,141 @@
 # gptSurveySummarizer
 
-A Discord bot for natural language surveys, inspired by and in the style of [talk to the city](https://github.com/AIObjectives/talk-to-the-city-reports).
+A Discord bot for conducting natural language surveys, inspired by and in the style of [talk to the city](https://github.com/AIObjectives/talk-to-the-city-reports).
 
-Join the Discord server for discussing and developing this tool [here](https://discord.gg/2cmxYYMyHN).
+## Features
+
+- Create single and multi-question surveys
+- Automatic summarization using GPT
+- View raw survey data and summaries
+- Edit existing surveys
+- Auto-post survey responses
+- Docker support for easy deployment
 
 ## Quick Start
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MinaFoundation/PGT_gptSurveySummarizer.git
+   cd PGT_gptSurveySummarizer
+   ```
+
+2. Set up environment variables (see [Environment Setup](#environment-setup))
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Start the bot:
+   ```bash
+   npm run bot
+   ```
+
+5. Start the summarizer:
+   ```bash
+   npm run summarizer
+   ```
+
 For detailed setup instructions, please refer to our [Setup Guide](SETUP.md).
 
-1. Clone the repository 
-   ```bash
-   git clone git@github.com:MinaFoundation/PGT_gptSurveySummarizer.git
-   ```
-2. Create a .env.local file with the necessary environment variables see [Environment Setup](#environment-setup)
-3. Run `npm install`
-4. Start the main bot script with `npm run bot`
-5. Start the GPT summarization script with `npm run summarizer`
+## Environment Setup
 
-## Setup Environment Variables
-
-1. Create a `.env.local` file with the following variables:
-
-   ```shell
-   DISCORD_TOKEN=XXXXXXXXX
-   OPENAI_API_KEY=XXXXXXXXX
-
-   # Redis host without port
-   REDIS_HOST=XXXXXX
-   REDIS_PORT=XXXXX
-   REDIS_PASSWORD=XXXXXXX
-   CLIENT_ID=XXXXXXXXX
-   GUILD_ID=XXXXXXXXXX
-
-   # Log Level, DEBUG, INFO, WARN etc.
-   GSS_LOG_LEVEL=XXXXX
-   SUMMARIZE_FREQUENCY_SECONDS=3600
-
-   # Discord forum channel id for posting channels.
-   POST_CHANNEL_ID=XXXXX
-   ```
-For detailed instructions on obtaining these values, please refer to the [Setup Guide](SETUP.md).
-
-
-2. Run `npm install`
-3. Fill in the REDIS_HOST, REDIS_PORT, and REDIS_PASSWORD for connecting your Redis DB:
-   - Go to [Redis](https://redis.io/) and create an account.
-   - Create a DB and click `connect`. Copy and paste your password, socket, and port into the `.env.local` file.
-   - You can see the Redis configuration in `config.js`.
-4. Start the main bot script with `npm run bot`.
-5. Or start the main bot script with `npm run dev` to use nodemon in the development phase.
-6. Start the GPT summarization script with `npm run summarizer`.
-
-## Scripts
-
-Here is the section for the scripts in the README file:
-
-The project includes several scripts to facilitate development and operations. Here is a brief explanation of each:
-
-#### **test**
-
-Runs the tests.
+Create a `.env.local` file with the following variables:
 
 ```shell
-npm run test
+DISCORD_TOKEN=your_discord_token
+OPENAI_API_KEY=your_openai_api_key
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_PASSWORD=your_redis_password
+CLIENT_ID=your_discord_client_id
+GUILD_ID=your_discord_guild_id
+GSS_LOG_LEVEL=INFO
+SUMMARIZE_FREQUENCY_SECONDS=3600
+POST_CHANNEL_ID=your_forum_channel_id
 ```
 
-#### **bot**
+## Available Scripts
 
-Starts the main bot script.
-
-```shell
-npm run bot
-```
-
-#### **dev**
-
-Starts the main bot script in development mode using Nodemon to automatically restart the bot when changes are detected.
-
-```shell
-npm run dev
-```
-
-#### **summarizer**
-
-Starts the GPT summarization script.
-
-```shell
-npm run summarizer
-```
-
-#### **prettier**
-
-Formats the codebase using Prettier.
-
-```shell
-npm run prettier
-```
-
-#### **reset**
-
-Resets the Redis database.
-
-```shell
-npm run reset
-```
+- `npm test`: Run tests
+- `npm run bot`: Start the main bot
+- `npm run dev`: Start the bot in development mode with Nodemon
+- `npm run summarizer`: Start the GPT summarization script
+- `npm run prettier`: Format code using Prettier
+- `npm run reset`: Reset the Redis database
 
 ## Commands
 
-### /gptsurvey create
+- `/gptsurvey create`: Create a single question survey
+- `/gptsurvey create-multi-response`: Create a multi-question survey
+- `/gptsurvey respond`: Post an active survey in another channel
+- `/gptsurvey view`: View raw survey responses
+- `/gptsurvey summary`: Show survey summaries
+- `/gptsurvey edit`: Edit an existing survey
+- `/gptsurvey set-status`: Activate or deactivate a survey
+- `/gptsurvey delete`: Delete a survey
+- `/gptsurvey info`: Check bot version
+- `/gptsurvey start-auto-post`: Start auto-posting responses
+- `/gptsurvey stop-auto-post`: Stop auto-posting responses
 
-Use it to create single question surveys.
+For detailed command usage, refer to the [Commands section](#commands) below.
 
-- **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
-- **SURVEY DESCRIPTION**:
-- **QUESTION:** _Max 45 Char_
-- **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
-- **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
+## Docker Support
 
-### /gptsurvey create-multi-response
-
-Use it to create multiple question surveys.
-
-- **SURVEY TITLE:** _Max 45 Char_, _cannot include "-"_
-- **SURVEY DESCRIPTION**:
-- **QUESTIONS:** Each line separated "\n" or `enter` is one question. Each question must be maximum 45 Char for each line. Maximum question number is `maxResponsesForMultiResponsePerUser` in constants.ts. _**However it is strongly recommended to set is maximum 5 to prevent Modal UI based problems.**_
-- **SURVEY EXPIRE TIME:** Must be `YYYY-MM-DD-HH-MM` format or can be `inf`
-- **SURVEY POSTING TO FORUM CONDITION:** `true`or `false`
-
-### /gptsurvey respond
-
-You can use this if you want to post an active survey in another channel (bot must have access to post anything on that channel).
-
-### /gptsurvey view
-
-To view the responses with raw data txt file.
-
-### /gptsurvey summary
-
-You can use this command to show people summaries of surveys. You can select summary type optionally: If "Yes", it will show high level summary of the survey. If "No", it will show general summary.
-
-### /gptsurvey edit
-
-Edit survey name or questions, delete questions or add questions. Once submitted, if the survey was answered, the responses will be deleted. You can also set/edit a survey start and end date, or leave it infinite. Also, you can post the survey to forum channel making ``true` the last section.
-
-Same restrictions in `/create` command.
-
-And if your survey in the forum channel. Do not change the title more than 2 times in 10 Minutes because of rate limit.
-
-### /gptsurvey set-status
-
-To activate or deactivate a survey.
-
-### /gptsurvey delete
-
-To delete the survey.
-
-### /gptsurvey info
-
-To check the version.
-
-### /gptsurvey start-auto-post
-
-To start auto-posting the responses view. It is working which channel that you used. For example, if you use it in forum channel, it will be activated in that channel.
-
-### /gptsurvey stop-auto-post
-
-To stop auto-posting the responses view. For example, if you use it in forum channel, it will be activated in that channel.
-
-## Docker Image
-
-### Build It
-
-```shell
-docker build -t <your-image-name>:<your-image-tag> .
+Build the image:
+```bash
+docker build -t gptsurveybot:latest .
 ```
 
-### Run It
-
-The image has two operational modes: **bot** by default and **summarizer**.
-
-To run the bot, use the `bot` argument, and to run the summarizer, use `summarizer`.
-
-```shell
-docker run -it -d --env-file ./.env <your-image-name>:<your-image-tag> bot
+Run the bot:
+```bash
+docker run -it -d --env-file ./.env gptsurveybot:latest bot
 ```
 
-The `--env-file` flag takes a filename as an argument and expects each line to be in the VAR=VAL format, mimicking the argument passed to `--env`. Comment lines need only be prefixed with `#`.
+Run the summarizer:
+```bash
+docker run -it -d --env-file ./.env gptsurveybot:latest summarizer
+```
 
-### Test It
-
-```shell
+Test with docker-compose:
+```bash
 docker-compose up --build
 ```
 
-## Example Survey
-
-TODO
-
-
-
----
-
 ## Project Structure
 
-- `commands` folder for command related codes. can be used by importing `@command/index`
-- `lib` folder for other functional codes.
-
 ```
-└── 📁gptSurveySummarizer
-    └── .env.local
-    └── .gitignore
-    └── CODEOWNERS
-    └── Dockerfile
-    └── README.md
-    └── SETUP.md
-    └── docker-compose.yaml
-    └── dump.rdb
-    └── initial_notes.md
-    └── package-lock.json
-    └── package.json
-    └── settings.json
-    └── 📁src
-        └── bot.ts
-        └── 📁commands
-            └── commandBuilder.ts
-            └── handleAutoPost.ts
-            └── handleCreate.ts
-            └── handleDelete.ts
-            └── handleDeleteButton.ts
-            └── handleEdit.ts
-            └── handleInfo.ts
-            └── handleModals.ts
-            └── handleRespond.ts
-            └── handleRespondButton.ts
-            └── handleSetStatus.ts
-            └── handleSummary.ts
-            └── handleView.ts
-            └── index.ts
-        └── config.js
-        └── constants.ts
-        └── 📁lib
-            └── checkUpdateSurveys.js
-            └── createSurvey.js
-            └── deleteThreadPost.js
-            └── gptClient.js
-            └── index.ts
-            └── makeSurveyPost.js
-            └── startAutoPosting.js
-            └── surveyToText.js
-            └── threadPost.js
-            └── updateSurvey.js
-            └── updateThreadPost.js
-        └── logger.js
-        └── prompts.js
-        └── redisReset.ts
-        └── summarizer.js
-    └── 📁test
-        └── bot.test.js
-        └── summarizer.test.js
-    └── tsconfig.json
+gptSurveySummarizer/
+├── src/
+│   ├── commands/
+│   ├── lib/
+│   ├── bot.ts
+│   ├── config.js
+│   ├── constants.ts
+│   ├── logger.js
+│   ├── prompts.js
+│   ├── redisReset.ts
+│   └── summarizer.js
+├── test/
+├── .env.local
+├── Dockerfile
+├── README.md
+├── SETUP.md
+└── package.json
 ```
 
-## Contributions
+## Contributing
 
-To make a contribution, follow these steps:
+1. Create an issue with a user story
+2. Get the issue tested by Cristina Echeverry
+3. Get approval from product owners (es92 or Cristina Echeverry)
+4. Submit a PR corresponding to the approved issue
+5. Get PR approval from code owners and Mina devops
 
-1. Make an issue that includes a user story for what the user should be able to do (e.g., the user should be able to view the survey summary in their local language).
-2. Get that issue tested by: Cristina Echeverry.
-3. Get that issue approved by the product owners: es92 or Cristina Echeverry.
-4. Write a PR and get it approved by the code owners and Mina devops: Es92 (code owner), berkingurcan (developer & codeco-owner), johnmarcou (Mina devops). Each PR must correspond to an approved issue. By default, PRs should be merged by the PR submitter, though in some cases if changes are needed, they can be merged by code owners.
+## License
+
+[MIT License](LICENSE)
+
+## Support
+
+For questions or support, join our [Discord server](https://discord.gg/2cmxYYMyHN).
