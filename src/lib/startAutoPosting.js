@@ -72,7 +72,6 @@ export const startAutoPosting = async (client, redisClient) => {
       } catch (error) {
         log.error(`Error deleting bot messages: ${error.message}`);
       }
-      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {
