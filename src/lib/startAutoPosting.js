@@ -44,40 +44,6 @@ export const startAutoPosting = async (client, redisClient) => {
         continue;
       }
 
-      const surveyPrefixes = [
-        '# :ballot_box:',
-        ':page_facing_up:',
-        ':thought_balloon:',
-        ':speech_balloon:',
-        '## :new:',
-        ':timer:',
-        ':green_circle:',
-        // Number Emojis
-        ':zero:',
-        ':one:',
-        ':two:',
-        ':three:',
-        ':four:',
-        ':five:',
-        ':six:',
-        ':seven:',
-        ':eight:',
-        ':nine:',
-        // Letter Emojis
-        ':regional_indicator_a:',
-        ':regional_indicator_b:',
-        ':regional_indicator_c:',
-        ':regional_indicator_d:',
-        ':regional_indicator_e:',
-        ':regional_indicator_f:',
-        ':regional_indicator_g:',
-        ':regional_indicator_h:',
-        ':regional_indicator_i:',
-        ':regional_indicator_j:',
-        '▬▬▬▬'
-      ];
-      
-
       try {
         if (channel.isThread()) {
           const botUserId = client.user?.id;
