@@ -88,7 +88,7 @@ export const startAutoPosting = async (client, redisClient) => {
           const threadStarterMessage = await channel.fetchStarterMessage();
           const starterMessageId = threadStarterMessage?.id;
       
-          const messages = await channel.messages.fetch({ limit: 1000 });
+          const messages = await channel.messages.fetch({ limit: 100 });
       
           const botMessages = messages.filter((msg) => 
             msg.author.id === botUserId && msg.id !== starterMessageId
@@ -106,6 +106,7 @@ export const startAutoPosting = async (client, redisClient) => {
       } catch (error) {
         log.error(`Error deleting bot messages: ${error.message}`);
       }
+      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {
