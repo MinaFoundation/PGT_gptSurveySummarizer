@@ -93,7 +93,7 @@ export const startAutoPosting = async (client, redisClient) => {
           } else {
             log.debug(`No survey message found with the specified prefixes.`);
 =======
-          const botUserId = client.user?.id; // Get the bot's user ID
+          const botUserId = client.user?.id;
           if (!botUserId) {
             throw new Error("Bot user ID not available.");
           }
