@@ -44,58 +44,33 @@ export const startAutoPosting = async (client, redisClient) => {
         continue;
       }
 
-      const surveyPrefixes = [
-        '# :ballot_box:',
-        ':page_facing_up:',
-        ':thought_balloon:',
-        ':speech_balloon:',
-        '## :new:',
-        ':timer:',
-        ':green_circle:',
-        // Number Emojis
-        ':zero:',
-        ':one:',
-        ':two:',
-        ':three:',
-        ':four:',
-        ':five:',
-        ':six:',
-        ':seven:',
-        ':eight:',
-        ':nine:',
-        // Letter Emojis
-        ':regional_indicator_a:',
-        ':regional_indicator_b:',
-        ':regional_indicator_c:',
-        ':regional_indicator_d:',
-        ':regional_indicator_e:',
-        ':regional_indicator_f:',
-        ':regional_indicator_g:',
-        ':regional_indicator_h:',
-        ':regional_indicator_i:',
-        ':regional_indicator_j:',
-        '▬▬▬▬'
-      ];
-      
-
       try {
         if (channel.isThread()) {
-          const messages = await channel.messages.fetch();
-
-          const surveyMessage = messages.find((msg) =>
-            surveyPrefixes.some((prefix) => msg.content.startsWith(prefix))
+          const botUserId = client.user?.id;
+          if (!botUserId) {
+            throw new Error("Bot user ID not available.");
+          }
+      
+          const threadStarterMessage = await channel.fetchStarterMessage();
+          const starterMessageId = threadStarterMessage?.id;
+      
+          const messages = await channel.messages.fetch({ limit: 100 });
+      
+          const botMessages = messages.filter((msg) => 
+            msg.author.id === botUserId && msg.id !== starterMessageId
           );
-
-          if (surveyMessage) {
-            await surveyMessage.delete();
-            log.debug(`Deleted survey message: ${surveyMessage.id}`);
+      
+          if (botMessages.size > 0) {
+            for (const [messageId, message] of botMessages) {
+              await message.delete();
+              log.debug(`Deleted bot message: ${messageId}`);
+            }
           } else {
-            log.debug(`No survey message found with the specified prefixes.`);
+            log.debug(`No bot messages found in the thread.`);
           }
         }
       } catch (error) {
-        log.error(`Error removing survey message: ${error.message}`);
-        continue;
+        log.error(`Error deleting bot messages: ${error.message}`);
       }
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
