@@ -80,19 +80,6 @@ export const startAutoPosting = async (client, redisClient) => {
 
       try {
         if (channel.isThread()) {
-<<<<<<< Updated upstream
-          const messages = await channel.messages.fetch();
-
-          const surveyMessage = messages.find((msg) =>
-            surveyPrefixes.some((prefix) => msg.content.startsWith(prefix))
-          );
-
-          if (surveyMessage) {
-            await surveyMessage.delete();
-            log.debug(`Deleted survey message: ${surveyMessage.id}`);
-          } else {
-            log.debug(`No survey message found with the specified prefixes.`);
-=======
           const botUserId = client.user?.id;
           if (!botUserId) {
             throw new Error("Bot user ID not available.");
@@ -114,7 +101,6 @@ export const startAutoPosting = async (client, redisClient) => {
             }
           } else {
             log.debug(`No bot messages found in the thread.`);
->>>>>>> Stashed changes
           }
         }
       } catch (error) {
