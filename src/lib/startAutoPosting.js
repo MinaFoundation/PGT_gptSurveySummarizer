@@ -80,6 +80,7 @@ export const startAutoPosting = async (client, redisClient) => {
 
       try {
         if (channel.isThread()) {
+<<<<<<< Updated upstream
           const messages = await channel.messages.fetch();
 
           const surveyMessage = messages.find((msg) =>
@@ -91,12 +92,36 @@ export const startAutoPosting = async (client, redisClient) => {
             log.debug(`Deleted survey message: ${surveyMessage.id}`);
           } else {
             log.debug(`No survey message found with the specified prefixes.`);
+=======
+          const botUserId = client.user?.id; // Get the bot's user ID
+          if (!botUserId) {
+            throw new Error("Bot user ID not available.");
+          }
+      
+          const threadStarterMessage = await channel.fetchStarterMessage();
+          const starterMessageId = threadStarterMessage?.id;
+      
+          const messages = await channel.messages.fetch({ limit: 1000 });
+      
+          const botMessages = messages.filter((msg) => 
+            msg.author.id === botUserId && msg.id !== starterMessageId
+          );
+      
+          if (botMessages.size > 0) {
+            for (const [messageId, message] of botMessages) {
+              await message.delete();
+              log.debug(`Deleted bot message: ${messageId}`);
+            }
+          } else {
+            log.debug(`No bot messages found in the thread.`);
+>>>>>>> Stashed changes
           }
         }
       } catch (error) {
-        log.error(`Error removing survey message: ${error.message}`);
-        continue;
+        log.error(`Error deleting bot messages: ${error.message}`);
       }
+      
+      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {
