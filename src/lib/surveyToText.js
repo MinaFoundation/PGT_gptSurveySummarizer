@@ -373,11 +373,11 @@ export default async function surveyToText(
 
           if (subtopic.responses != null && subtopic.responses.length > 0) {
             let i = 0
-            const responseMessages = subtopic.responses.map((response, i) => {
-              i++
+            const responseMessages = subtopic.responses.map((response) => {
               summarizedResponses.push(response);
-              return formatResponse(surveyType, response, responses, i-1);
+              return formatResponse(surveyType, response, responses);
             });
+            
 
             const title = `${index + 1}${number_to_letter[subindex]} ${topic.topicName} → ${subtopic.subtopicName}`;
 
@@ -495,16 +495,13 @@ export default async function surveyToText(
     return [msg, files];
   }
 
-  function formatResponse(surveyType, response, responses, i) {
-    const responsesKeys = Object.keys(responses)
-    const responsesValues = Object.values(responses)
-
+  function formatResponse(surveyType, response, responses) {
     let responseIsLatest;
     if (surveyType == "single") {
-      const latestResponse = responsesValues[i];
+      const latestResponse = responses[response.username];
       responseIsLatest = latestResponse == response.response;
     } else {
-      const baseUsername = responsesKeys[i];
+      const baseUsername = response.username;
       let userResponses;
       try {
         userResponses = JSON.parse(responses[baseUsername]);
@@ -515,10 +512,10 @@ export default async function surveyToText(
       responseIsLatest = userResponses.some((r) => r == response.response);
     }
     if (responseIsLatest) {
-      return responsesKeys[i] + ' said "' + response.response + '"';
+      return response.username + ' said "' + response.response + '"';
     } else {
       return (
-        responsesKeys[i] +
+        response.username +
         ' previously said "' +
         response.response +
         '". The next update will include their latest response.'
