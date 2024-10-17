@@ -62,8 +62,16 @@ export const startAutoPosting = async (client, redisClient) => {
       
           if (botMessages.size > 0) {
             for (const [messageId, message] of botMessages) {
-              await message.delete();
-              log.debug(`Deleted bot message: ${messageId}`);
+              const hasButtons = message.components.some(row => 
+                row.components.some(component => component.type === 2)
+              );
+      
+              if (!hasButtons) {
+                await message.delete();
+                log.debug(`Deleted bot message: ${messageId}`);
+              } else {
+                log.debug(`Skipped deleting bot message with buttons: ${messageId}`);
+              }
             }
           } else {
             log.debug(`No bot messages found in the thread.`);
@@ -72,6 +80,7 @@ export const startAutoPosting = async (client, redisClient) => {
       } catch (error) {
         log.error(`Error deleting bot messages: ${error.message}`);
       }
+      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {
