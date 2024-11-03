@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 
 export const handleLeaderboard = async (
   interaction: ChatInputCommandInteraction,
@@ -31,7 +31,7 @@ export const handleLeaderboard = async (
 
   entries.sort((a, b) => b.count - a.count);
 
-  const topEntries = entries.slice(0, 10);
+  const topEntries = entries;
 
   const trophyEmojis = ["🥇", "🥈", "🥉"];
   const currentDate = new Date().toLocaleDateString("en-US", {
@@ -42,6 +42,13 @@ export const handleLeaderboard = async (
 
   let leaderboardMessage = `🏆 **Leaderboard | ${currentDate}** 🏆\n\n`;
 
+  const members = interaction.guild?.members.cache;
+  if (members) {
+    const memberList = members.map((member: GuildMember) => ({
+      [member.user.username]: member.user.id,
+    }));
+  }
+
   for (const [index, entry] of topEntries.entries()) {
     const rank = index + 1;
     const username = entry.username;
@@ -50,13 +57,14 @@ export const handleLeaderboard = async (
     const rankStr =
       rank <= trophyEmojis.length ? trophyEmojis[rank - 1] : `${rank}.`;
 
-    let member = interaction.guild.members.cache.find(
-      (m) => m.user.username === username,
+    const member = members.find(
+      (m: GuildMember) =>
+        m.user.username === username || m.user.globalName === username,
     );
 
     const userDisplayName = member ? `<@${member.user.id}>` : username;
 
-    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions*10} Points\n`;
+    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions * 10} Points\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
