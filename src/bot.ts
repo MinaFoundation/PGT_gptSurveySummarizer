@@ -21,6 +21,7 @@ import {
   handleSummary,
   handleEditSurveyCount,
   handleEditSurveyCountModal,
+  handleLeaderboard,
 } from "@commands/index";
 
 import {
@@ -106,6 +107,9 @@ process.on("uncaughtException", (error) => {
           break;
         case "view":
           await handleView(interaction, surveyName, redisClient);
+          break;
+        case "create-survey-leaderboard":
+          await handleLeaderboard(interaction, redisClient);
           break;
         case "edit-survey-count":
           await handleEditSurveyCount(interaction);

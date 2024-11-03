@@ -20,6 +20,7 @@ import { handleEdit } from "./handleEdit";
 import { editSurvey } from "./handleEdit";
 import { handleSetStatus } from "./handleSetStatus";
 import { handleSummary } from "./handleSummary";
+import { handleLeaderboard } from "./handleLeaderboard";
 
 export {
   command,
@@ -40,5 +41,6 @@ export {
   handleSetStatus,
   editSurvey,
   handleView,
+  handleLeaderboard,
   handleSummary,
 };
