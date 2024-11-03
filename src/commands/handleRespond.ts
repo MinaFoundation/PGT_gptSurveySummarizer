@@ -44,7 +44,16 @@ export const respond = async (
   username: any,
   response: any,
 ) => {
+  const hasResponded = await redisClient.hExists(
+    `survey:${surveyName}:responses`,
+    username,
+  );
+
   await redisClient.hSet(`survey:${surveyName}:responses`, username, response);
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.publish("survey-refresh", surveyName);
+
+  if (!hasResponded) {
+    await redisClient.hIncrBy("user:survey_counts", username, 1);
+  }
 };

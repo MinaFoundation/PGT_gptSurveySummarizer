@@ -253,6 +253,15 @@ export const handleDeleteModal = async (
   }
 };
 
+export const handleEditSurveyCountModal = async (
+  interaction: any,
+  username: any,
+  redisClient: any,
+) => {
+  // get username
+  // get + or - number and increase decrease in db redis
+};
+
 export function convertToTimestamp(dateString: string): number {
   const dateFormat = /^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}$/;
 

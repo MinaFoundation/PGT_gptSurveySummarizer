@@ -79,6 +79,9 @@ export const command = new SlashCommandBuilder()
     ]),
   )
   .addSubcommand(
+    createSubcommand("edit-survey-count", "Edit survey count of an user"),
+  )
+  .addSubcommand(
     createSubcommand(
       "summary",
       "View the summary and responses for a survey without raw data",

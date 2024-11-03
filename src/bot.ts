@@ -19,6 +19,7 @@ import {
   handleEditModal,
   handleSetStatus,
   handleSummary,
+  handleEditSurveyCount,
 } from "@commands/index";
 
 import {
@@ -104,6 +105,9 @@ process.on("uncaughtException", (error) => {
           break;
         case "view":
           await handleView(interaction, surveyName, redisClient);
+          break;
+        case "edit-survey-count":
+          await handleEditSurveyCount(interaction);
           break;
         case "summary":
           const summaryType = options.getString("summarytype");

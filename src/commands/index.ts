@@ -2,6 +2,9 @@ import { command } from "./commandBuilder";
 import { handleAutoPost } from "./handleAutoPost";
 import { handleCreate } from "./handleCreate";
 import { handleInfo } from "./handleInfo";
+import { handleEditSurveyCountModal } from "./handleModals";
+import { handleEditSurveyCount } from "./handleEditSurveyCount";
+
 import {
   handleCreateModal,
   handleRespondModal,
@@ -32,6 +35,8 @@ export {
   handleRespondButton,
   handleEdit,
   handleEditModal,
+  handleEditSurveyCount,
+  handleEditSurveyCountModal,
   handleSetStatus,
   editSurvey,
   handleView,
