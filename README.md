@@ -152,6 +152,14 @@ To start auto-posting the responses view. It is working which channel that you u
 
 To stop auto-posting the responses view. For example, if you use it in forum channel, it will be activated in that channel.
 
+### /gptsurvey create-survey-leaderboard
+
+Creates leaderboard by calculating respond counts of the users per survey.
+
+### /gptsurvey edit-survey-count 
+
+To edit survey respond count of users. Username is the discord username, count is + or - count. For example: "+4", "-1", "0"
+
 ## Docker Image
 
 ### Build It
