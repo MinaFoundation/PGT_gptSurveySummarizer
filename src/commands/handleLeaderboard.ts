@@ -7,19 +7,25 @@ export const handleLeaderboard = async (
   const userSurveyCounts = await redisClient.hGetAll("user:survey_counts");
 
   if (!userSurveyCounts || Object.keys(userSurveyCounts).length === 0) {
-    await interaction.reply({content: "No data available for the leaderboard.", ephemeral: true});
+    await interaction.reply({
+      content: "No data available for the leaderboard.",
+      ephemeral: true,
+    });
     return;
   }
 
   const entries = Object.entries(userSurveyCounts)
-    .map(([userId, countStr]) => ({
-      userId,
+    .map(([username, countStr]) => ({
+      username,
       count: parseInt(countStr, 10),
     }))
-    .filter(entry => entry.count > 0);
+    .filter((entry) => entry.count > 0);
 
   if (entries.length === 0) {
-    await interaction.reply({content: "No users have responded to surveys yet.", ephemeral: true});
+    await interaction.reply({
+      content: "No users have responded to surveys yet.",
+      ephemeral: true,
+    });
     return;
   }
 
@@ -28,34 +34,29 @@ export const handleLeaderboard = async (
   const topEntries = entries.slice(0, 10);
 
   const trophyEmojis = ["🥇", "🥈", "🥉"];
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 
   let leaderboardMessage = `🏆 **Leaderboard | ${currentDate}** 🏆\n\n`;
 
   for (const [index, entry] of topEntries.entries()) {
     const rank = index + 1;
-    const userId = entry.userId;
+    const username = entry.username;
     const contributions = entry.count;
 
-    const rankStr = rank <= trophyEmojis.length ? trophyEmojis[rank - 1] : `${rank}.`;
+    const rankStr =
+      rank <= trophyEmojis.length ? trophyEmojis[rank - 1] : `${rank}.`;
 
-    let member = interaction.guild.members.cache.get(userId);
-    if (!member) {
-      try {
-        member = await interaction.guild.members.fetch(userId);
-      } catch (error) {
-        console.error(`Failed to fetch member with ID ${userId}:`, error);
-      }
-    }
+    let member = interaction.guild.members.cache.find(
+      (m) => m.user.username === username,
+    );
 
-    const memberName = member ? member.displayName : `(${userId})`;
-    const userMention = member ? `<@${member.id}>` : `(${userId})`;
+    const userDisplayName = member ? `<@${member.user.id}>` : username;
 
-    leaderboardMessage += `${rankStr} **${memberName}** ${userMention} **|** ${contributions} responds\n`;
+    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions} responses\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
@@ -71,15 +72,15 @@ export const handleLeaderboard = async (
 
 function splitMessage(message: string, maxLength = 2000): string[] {
   const messages = [];
-  let currentMessage = '';
+  let currentMessage = "";
 
-  const lines = message.split('\n');
+  const lines = message.split("\n");
   for (const line of lines) {
-    if ((currentMessage + line + '\n').length > maxLength) {
+    if ((currentMessage + line + "\n").length > maxLength) {
       messages.push(currentMessage);
-      currentMessage = line + '\n';
+      currentMessage = line + "\n";
     } else {
-      currentMessage += line + '\n';
+      currentMessage += line + "\n";
     }
   }
   if (currentMessage) {
