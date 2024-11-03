@@ -7,7 +7,7 @@ export const handleLeaderboard = async (
   const userSurveyCounts = await redisClient.hGetAll("user:survey_counts");
 
   if (!userSurveyCounts || Object.keys(userSurveyCounts).length === 0) {
-    await interaction.reply("No data available for the leaderboard.");
+    await interaction.reply({content: "No data available for the leaderboard.", ephemeral: true});
     return;
   }
 
@@ -19,7 +19,7 @@ export const handleLeaderboard = async (
     .filter(entry => entry.count > 0);
 
   if (entries.length === 0) {
-    await interaction.reply("No users have responded to surveys yet.");
+    await interaction.reply({content: "No users have responded to surveys yet.", ephemeral: true});
     return;
   }
 
@@ -43,9 +43,19 @@ export const handleLeaderboard = async (
 
     const rankStr = rank <= trophyEmojis.length ? trophyEmojis[rank - 1] : `${rank}.`;
 
-    const userMention = `<@${userId}>`;
+    let member = interaction.guild.members.cache.get(userId);
+    if (!member) {
+      try {
+        member = await interaction.guild.members.fetch(userId);
+      } catch (error) {
+        console.error(`Failed to fetch member with ID ${userId}:`, error);
+      }
+    }
 
-    leaderboardMessage += `${rankStr} **${userMention}** **|** ${contributions} contributions\n`;
+    const memberName = member ? member.displayName : `(${userId})`;
+    const userMention = member ? `<@${member.id}>` : `(${userId})`;
+
+    leaderboardMessage += `${rankStr} **${memberName}** ${userMention} **|** ${contributions} responds\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
