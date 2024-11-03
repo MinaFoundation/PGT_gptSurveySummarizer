@@ -20,6 +20,7 @@ import {
   handleSetStatus,
   handleSummary,
   handleEditSurveyCount,
+  handleEditSurveyCountModal,
 } from "@commands/index";
 
 import {
@@ -161,6 +162,8 @@ process.on("uncaughtException", (error) => {
         }
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
+      } else if (interaction.customId.startsWith("editSurveyCountModal")) {
+        await handleEditSurveyCountModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
         const [isDeleted, sn] = await handleDeleteModal(
           interaction,

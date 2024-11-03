@@ -258,8 +258,30 @@ export const handleEditSurveyCountModal = async (
   username: any,
   redisClient: any,
 ) => {
-  // get username
-  // get + or - number and increase decrease in db redis
+  const usernameInput = interaction.fields.getTextInputValue(`usernameInput`);
+  const countInput = interaction.fields.getTextInputValue(`countInput`);
+
+  const adjustment = parseInt(countInput, 10);
+
+  if (isNaN(adjustment)) {
+    await interaction.reply({
+      content: "Invalid count input. Please use a format like '+3' or '-2'.",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  await redisClient.hIncrBy("user:survey_counts", usernameInput, adjustment);
+
+  const updatedCount = await redisClient.hGet(
+    "user:survey_counts",
+    usernameInput,
+  );
+
+  await interaction.reply({
+    content: `Survey count for ${usernameInput} has been updated. New count: ${updatedCount}`,
+    ephemeral: true,
+  });
 };
 
 export function convertToTimestamp(dateString: string): number {

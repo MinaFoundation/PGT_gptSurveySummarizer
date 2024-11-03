@@ -35,8 +35,6 @@ const editSurveyCountModal = async (
   await interaction.showModal(modal);
 };
 
-export const handleEditSurveyCount = async (
-    interaction: any,
-  ) => {
-    await editSurveyCountModal(interaction)
-  };
+export const handleEditSurveyCount = async (interaction: any) => {
+  await editSurveyCountModal(interaction);
+};
