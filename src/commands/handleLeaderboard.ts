@@ -56,7 +56,7 @@ export const handleLeaderboard = async (
 
     const userDisplayName = member ? `<@${member.user.id}>` : username;
 
-    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions} responses\n`;
+    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions*10} Points\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
