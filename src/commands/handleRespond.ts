@@ -53,12 +53,14 @@ export const respond = async (
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.publish("survey-refresh", surveyName);
 
-  const surveyCreatedAt = await redisClient.get(`survey:${surveyName}:created-at`)
+  const surveyCreatedAt = await redisClient.get(
+    `survey:${surveyName}:created-at`,
+  );
   const surveyCreatedTimestamp = Number(surveyCreatedAt);
   const responseTimestamp = Date.now();
 
-  const ONE_DAY_MS = 24 * 60 * 60 * 1000;  // 24 hours
-  const ONE_WEEK_MS = 7 * ONE_DAY_MS;      // 7 days
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 hours
+  const ONE_WEEK_MS = 7 * ONE_DAY_MS; // 7 days
 
   const timeElapsed = responseTimestamp - surveyCreatedTimestamp;
 
