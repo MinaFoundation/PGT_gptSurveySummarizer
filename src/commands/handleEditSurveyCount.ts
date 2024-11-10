@@ -27,10 +27,19 @@ const editSurveyCountModal = async (
     .setMaxLength(10)
     .setRequired(true);
 
+  const pointsInput = new TextInputBuilder()
+    .setCustomId("pointsInput")
+    .setLabel("Edit Survey Points +/-POINTS")
+    .setStyle(TextInputStyle.Short)
+    .setMaxLength(10)
+    .setRequired(true)
+
   const firstActionRow = new ActionRowBuilder().addComponents(usernameInput);
   const secondActionRow = new ActionRowBuilder().addComponents(countInput);
+  const thirdActionRow = new ActionRowBuilder().addComponents(pointsInput);
 
-  modal.addComponents(firstActionRow, secondActionRow);
+
+  modal.addComponents(firstActionRow, secondActionRow, pointsInput);
 
   await interaction.showModal(modal);
 };

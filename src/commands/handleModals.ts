@@ -260,18 +260,22 @@ export const handleEditSurveyCountModal = async (
 ) => {
   const usernameInput = interaction.fields.getTextInputValue(`usernameInput`);
   const countInput = interaction.fields.getTextInputValue(`countInput`);
+  const pointsInput = interaction.fields.getTextInputValue(`pointsInput`);
 
   const adjustment = parseInt(countInput, 10);
+  const pointsAdjustment = parseInt(pointsInput, 10);
 
-  if (isNaN(adjustment)) {
+
+  if (isNaN(adjustment) || isNaN(pointsAdjustment)) {
     await interaction.reply({
-      content: "Invalid count input. Please use a format like '+3' or '-2'.",
+      content: "Invalid count or points input. Please use a format like '+3' or '-2' or '+10' or '-5'.",
       ephemeral: true,
     });
     return;
   }
 
   await redisClient.hIncrBy("user:survey_counts", usernameInput, adjustment);
+  await redisClient.hIncrBy("user:survey_points", usernameInput, pointsAdjustment);
 
   const updatedCount = await redisClient.hGet(
     "user:survey_counts",
