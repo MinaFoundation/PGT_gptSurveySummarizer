@@ -1,3 +1,4 @@
+import { isMeaningful } from "@lib/isMeaningful";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 export const handleRespond = async (
@@ -42,7 +43,8 @@ export const handleRespond = async (
 const evaluateResponseMeaningfulness = async (response: string): Promise<boolean> => {
   // Replace this with the actual call to your LLM function
   // Example: return await localLLM.isResponseMeaningful(response);
-  return response.trim().length > 0; // Placeholder logic for demonstration
+  const res = await isMeaningful(response)
+  return res
 };
 
 export const respond = async (
