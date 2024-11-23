@@ -38,6 +38,13 @@ export const handleRespond = async (
   });
 };
 
+// Mock of external LLM function
+const evaluateResponseMeaningfulness = async (response: string): Promise<boolean> => {
+  // Replace this with the actual call to your LLM function
+  // Example: return await localLLM.isResponseMeaningful(response);
+  return response.trim().length > 0; // Placeholder logic for demonstration
+};
+
 export const respond = async (
   redisClient: any,
   surveyName: any,
@@ -53,6 +60,8 @@ export const respond = async (
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.publish("survey-refresh", surveyName);
 
+  const isMeaningful = await evaluateResponseMeaningfulness(response);
+
   const surveyCreatedAt = await redisClient.get(
     `survey:${surveyName}:created-at`,
   );
@@ -64,14 +73,18 @@ export const respond = async (
 
   const timeElapsed = responseTimestamp - surveyCreatedTimestamp;
 
-  let points = 1;
-  if (timeElapsed <= ONE_DAY_MS) {
-    points = 10;
-  } else if (timeElapsed <= ONE_WEEK_MS) {
-    points = 5;
+  let points = 0;
+  if (isMeaningful) {
+    if (timeElapsed <= ONE_DAY_MS) {
+      points = 10;
+    } else if (timeElapsed <= ONE_WEEK_MS) {
+      points = 5;
+    } else {
+      points = 1;
+    }
   }
 
-  if (!hasResponded) {
+  if (!hasResponded && isMeaningful) {
     await redisClient.hIncrBy("user:survey_counts", username, 1);
     await redisClient.hIncrBy("user:survey_points", username, points);
   }
