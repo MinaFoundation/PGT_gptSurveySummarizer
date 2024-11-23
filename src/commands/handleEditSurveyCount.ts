@@ -38,7 +38,7 @@ const editSurveyCountModal = async (
   const secondActionRow = new ActionRowBuilder().addComponents(countInput);
   const thirdActionRow = new ActionRowBuilder().addComponents(pointsInput);
 
-  modal.addComponents(firstActionRow, secondActionRow, pointsInput);
+  modal.addComponents(firstActionRow, secondActionRow, thirdActionRow);
 
   await interaction.showModal(modal);
 };
