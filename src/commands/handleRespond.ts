@@ -39,10 +39,7 @@ export const handleRespond = async (
   });
 };
 
-// Mock of external LLM function
 const evaluateResponseMeaningfulness = async (response: string): Promise<boolean> => {
-  // Replace this with the actual call to your LLM function
-  // Example: return await localLLM.isResponseMeaningful(response);
   const res = await isMeaningful(response)
   return res
 };
