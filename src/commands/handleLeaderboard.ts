@@ -4,9 +4,9 @@ export const handleLeaderboard = async (
   interaction: ChatInputCommandInteraction,
   redisClient: any,
 ) => {
-  const userSurveyCounts = await redisClient.hGetAll("user:survey_counts");
+  const userSurveyPoints = await redisClient.hGetAll("user:survey_points");
 
-  if (!userSurveyCounts || Object.keys(userSurveyCounts).length === 0) {
+  if (!userSurveyPoints || Object.keys(userSurveyPoints).length === 0) {
     await interaction.reply({
       content: "No data available for the leaderboard.",
       ephemeral: true,
@@ -14,22 +14,22 @@ export const handleLeaderboard = async (
     return;
   }
 
-  const entries = Object.entries(userSurveyCounts)
-    .map(([username, countStr]) => ({
+  const entries = Object.entries(userSurveyPoints)
+    .map(([username, pointsStr]) => ({
       username,
-      count: parseInt(countStr, 10),
+      points: parseInt(pointsStr, 10),
     }))
-    .filter((entry) => entry.count > 0);
+    .filter((entry) => entry.points > 0);
 
   if (entries.length === 0) {
     await interaction.reply({
-      content: "No users have responded to surveys yet.",
+      content: "No users have earned survey points yet.",
       ephemeral: true,
     });
     return;
   }
 
-  entries.sort((a, b) => b.count - a.count);
+  entries.sort((a, b) => b.points - a.points);
 
   const topEntries = entries;
 
@@ -52,7 +52,7 @@ export const handleLeaderboard = async (
   for (const [index, entry] of topEntries.entries()) {
     const rank = index + 1;
     const username = entry.username;
-    const contributions = entry.count;
+    const points = entry.points;
 
     const rankStr =
       rank <= trophyEmojis.length ? trophyEmojis[rank - 1] : `${rank}.`;
@@ -64,7 +64,7 @@ export const handleLeaderboard = async (
 
     const userDisplayName = member ? `<@${member.user.id}>` : username;
 
-    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${contributions * 10} Points\n`;
+    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${points} Points\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
