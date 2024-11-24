@@ -39,9 +39,11 @@ export const handleRespond = async (
   });
 };
 
-const evaluateResponseMeaningfulness = async (response: string): Promise<boolean> => {
-  const res = await isMeaningful(response)
-  return res
+const evaluateResponseMeaningfulness = async (
+  response: string,
+): Promise<boolean> => {
+  const res = await isMeaningful(response);
+  return res;
 };
 
 export const respond = async (

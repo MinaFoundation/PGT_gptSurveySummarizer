@@ -50,27 +50,29 @@ export const startAutoPosting = async (client, redisClient) => {
           if (!botUserId) {
             throw new Error("Bot user ID not available.");
           }
-      
+
           const threadStarterMessage = await channel.fetchStarterMessage();
           const starterMessageId = threadStarterMessage?.id;
-      
+
           const messages = await channel.messages.fetch({ limit: 100 });
-      
-          const botMessages = messages.filter((msg) => 
-            msg.author.id === botUserId && msg.id !== starterMessageId
+
+          const botMessages = messages.filter(
+            (msg) => msg.author.id === botUserId && msg.id !== starterMessageId,
           );
-      
+
           if (botMessages.size > 0) {
             for (const [messageId, message] of botMessages) {
-              const hasButtons = message.components.some(row => 
-                row.components.some(component => component.type === 2)
+              const hasButtons = message.components.some((row) =>
+                row.components.some((component) => component.type === 2),
               );
-      
+
               if (!hasButtons) {
                 await message.delete();
                 log.debug(`Deleted bot message: ${messageId}`);
               } else {
-                log.debug(`Skipped deleting bot message with buttons: ${messageId}`);
+                log.debug(
+                  `Skipped deleting bot message with buttons: ${messageId}`,
+                );
               }
             }
           } else {
@@ -80,7 +82,6 @@ export const startAutoPosting = async (client, redisClient) => {
       } catch (error) {
         log.error(`Error deleting bot messages: ${error.message}`);
       }
-      
 
       for (const [i, toSend] of Object.entries(messagesToSend)) {
         if (i == 0) {

@@ -21,5 +21,5 @@ export {
   threadPost,
   updateThreadPost,
   deleteThreadPost,
-  isMeaningful
+  isMeaningful,
 };

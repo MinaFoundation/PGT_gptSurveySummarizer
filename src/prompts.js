@@ -95,7 +95,6 @@ And here is the summary.
 Summary: ${summary}
 `;
 
-
 export const responseMeaningfullnessPrompt = (response) => `
 
 You are an AI tasked with evaluating survey responses based on their meaningfulness. 
