@@ -1,3 +1,6 @@
+import { apikey } from "@config";
+import { responseMeaningfullnessPrompt } from "src/prompts";
+
 export async function isMeaningful(response) {
     if (!response || !response.trim()) {
         return false;
@@ -62,5 +65,6 @@ export async function isMeaningful(response) {
         return false;
     }
 
-    return true;
+
+    
 }
