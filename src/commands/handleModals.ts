@@ -186,6 +186,8 @@ export const handleRespondModal = async (
   username: any,
   redisClient: any,
 ) => {
+  await interaction.deferReply({ ephemeral: true });
+
   const surveyName = interaction.customId.split("-").slice(1).join("-");
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";
@@ -222,7 +224,7 @@ export const handleRespondModal = async (
   );
   await respond(redisClient, surveyName, username, response);
 
-  await interaction.reply({
+  await interaction.editReply({
     content: `Your Response was ${hadResponse ? "updated" : "added"} successfully!`,
     ephemeral: true,
   });
