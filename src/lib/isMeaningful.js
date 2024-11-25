@@ -20,7 +20,10 @@ export async function isMeaningful(response) {
       response_format: { type: "json_object" },
     });
 
-    log.debug("Is meaningful: ", JSON.parse(completion.choices[0].message.content).isMeaningful)
+    log.debug(
+      "Is meaningful: ",
+      JSON.parse(completion.choices[0].message.content).isMeaningful,
+    );
     return JSON.parse(completion.choices[0].message.content).isMeaningful;
   } catch (error) {
     log.error(`Error while evaulating the response is meaningful: ${error}`);
