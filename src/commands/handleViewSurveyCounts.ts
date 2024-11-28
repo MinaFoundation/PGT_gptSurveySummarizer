@@ -1,10 +1,10 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 
-export const handleLeaderboard = async (
+export const handleViewSurveyCounts = async (
   interaction: ChatInputCommandInteraction,
   redisClient: any,
 ) => {
-  const userSurveyPoints = await redisClient.hGetAll("user:survey_points");
+  const userSurveyPoints = await redisClient.hGetAll("user:survey_counts");
 
   if (!userSurveyPoints || Object.keys(userSurveyPoints).length === 0) {
     await interaction.reply({
@@ -40,7 +40,7 @@ export const handleLeaderboard = async (
     year: "numeric",
   });
 
-  let leaderboardMessage = `🏆 **Survey Leaderboard | ${currentDate}** 🏆\n\n`;
+  let leaderboardMessage = `🏆 **Leaderboard | ${currentDate}** 🏆\n\n`;
 
   const members = interaction.guild?.members.cache;
   

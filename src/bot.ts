@@ -111,6 +111,9 @@ process.on("uncaughtException", (error) => {
         case "create-survey-leaderboard":
           await handleLeaderboard(interaction, redisClient);
           break;
+        case "view-survey-counts":
+          await handleViewSurveyCounts(interaction, redisClient);
+          break;
         case "edit-survey-count":
           await handleEditSurveyCount(interaction);
           break;

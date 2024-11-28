@@ -21,6 +21,7 @@ import { editSurvey } from "./handleEdit";
 import { handleSetStatus } from "./handleSetStatus";
 import { handleSummary } from "./handleSummary";
 import { handleLeaderboard } from "./handleLeaderboard";
+import { handleViewSurveyCounts } from "./handleViewSurveyCounts";
 
 export {
   command,
@@ -42,5 +43,6 @@ export {
   editSurvey,
   handleView,
   handleLeaderboard,
+  handleViewSurveyCounts,
   handleSummary,
 };
