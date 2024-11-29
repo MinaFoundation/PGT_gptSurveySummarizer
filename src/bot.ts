@@ -22,6 +22,7 @@ import {
   handleEditSurveyCount,
   handleEditSurveyCountModal,
   handleLeaderboard,
+  handleViewSurveyCounts,
 } from "@commands/index";
 
 import {

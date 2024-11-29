@@ -40,7 +40,7 @@ export const handleViewSurveyCounts = async (
     year: "numeric",
   });
 
-  let leaderboardMessage = `🏆 **Leaderboard | ${currentDate}** 🏆\n\n`;
+  let leaderboardMessage = `🏆 **Survey Counts | ${currentDate}** 🏆\n\n`;
 
   const members = interaction.guild?.members.cache;
   
@@ -65,7 +65,7 @@ export const handleViewSurveyCounts = async (
 
     const userDisplayName = member ? `<@${member.user.id}>` : username;
 
-    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${points} Points\n`;
+    leaderboardMessage += `${rankStr} **${userDisplayName}** **|** ${points} surveys\n`;
   }
 
   if (leaderboardMessage.length > 2000) {
