@@ -160,6 +160,12 @@ Creates leaderboard by calculating respond counts of the users per survey.
 
 To edit survey respond count of users. Username is the discord username, count is + or - count. For example: "+4", "-1", "0"
 
+### /gptsurvey view-survey-counts 
+Views survey counts of users which may be edited.
+
+### /gptsurvey view-discord-survey-counts
+View survey counts of users responded only by Discord.
+
 ## Docker Image
 
 ### Build It
