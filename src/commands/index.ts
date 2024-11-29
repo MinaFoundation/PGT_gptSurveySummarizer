@@ -22,6 +22,7 @@ import { handleSetStatus } from "./handleSetStatus";
 import { handleSummary } from "./handleSummary";
 import { handleLeaderboard } from "./handleLeaderboard";
 import { handleViewSurveyCounts } from "./handleViewSurveyCounts";
+import { handleViewDiscordSurveyCounts } from "./handleViewDiscordSurveyCounts";
 
 export {
   command,
@@ -44,5 +45,6 @@ export {
   handleView,
   handleLeaderboard,
   handleViewSurveyCounts,
+  handleViewDiscordSurveyCounts,
   handleSummary,
 };

@@ -87,6 +87,7 @@ export const respond = async (
 
   if (!hasResponded && isMeaningful) {
     await redisClient.hIncrBy("user:survey_counts", username, 1);
+    await redisClient.hIncrBy("user:survey_counts_discord", username, 1);
     await redisClient.hIncrBy("user:survey_points", username, points);
   }
 };

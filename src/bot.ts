@@ -23,6 +23,7 @@ import {
   handleEditSurveyCountModal,
   handleLeaderboard,
   handleViewSurveyCounts,
+  handleViewDiscordSurveyCounts,
 } from "@commands/index";
 
 import {
@@ -114,6 +115,9 @@ process.on("uncaughtException", (error) => {
           break;
         case "view-survey-counts":
           await handleViewSurveyCounts(interaction, redisClient);
+          break;
+        case "view-discord-survey-counts":
+          await handleViewDiscordSurveyCounts(interaction, redisClient);
           break;
         case "edit-survey-count":
           await handleEditSurveyCount(interaction);
