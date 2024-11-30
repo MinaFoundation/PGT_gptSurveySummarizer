@@ -88,7 +88,10 @@ export const command = new SlashCommandBuilder()
     createSubcommand("view-survey-counts", "View survey counts of users"),
   )
   .addSubcommand(
-    createSubcommand("view-discord-survey-counts", "View survey counts of users responded by Discord"),
+    createSubcommand(
+      "view-discord-survey-counts",
+      "View survey counts of users responded by Discord",
+    ),
   )
   .addSubcommand(
     createSubcommand(

@@ -43,7 +43,7 @@ export const handleViewSurveyCounts = async (
   let leaderboardMessage = `🏆 **Survey Counts | ${currentDate}** 🏆\n\n`;
 
   const members = interaction.guild?.members.cache;
-  
+
   if (members) {
     const memberList = members.map((member: GuildMember) => ({
       [member.user.username]: member.user.id,

@@ -4,7 +4,9 @@ export const handleViewDiscordSurveyCounts = async (
   interaction: ChatInputCommandInteraction,
   redisClient: any,
 ) => {
-  const userSurveyPoints = await redisClient.hGetAll("user:survey_counts_discord");
+  const userSurveyPoints = await redisClient.hGetAll(
+    "user:survey_counts_discord",
+  );
 
   if (!userSurveyPoints || Object.keys(userSurveyPoints).length === 0) {
     await interaction.reply({
@@ -43,7 +45,7 @@ export const handleViewDiscordSurveyCounts = async (
   let leaderboardMessage = `🏆 **Discord Survey Counts | ${currentDate}** 🏆\n\n`;
 
   const members = interaction.guild?.members.cache;
-  
+
   if (members) {
     const memberList = members.map((member: GuildMember) => ({
       [member.user.username]: member.user.id,
