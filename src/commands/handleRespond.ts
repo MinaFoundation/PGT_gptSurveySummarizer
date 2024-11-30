@@ -1,3 +1,4 @@
+import { isMeaningful } from "@lib/isMeaningful";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 export const handleRespond = async (
@@ -38,13 +39,55 @@ export const handleRespond = async (
   });
 };
 
+const evaluateResponseMeaningfulness = async (
+  response: string,
+): Promise<boolean> => {
+  const res = await isMeaningful(response);
+  return res;
+};
+
 export const respond = async (
   redisClient: any,
   surveyName: any,
   username: any,
   response: any,
 ) => {
+  const hasResponded = await redisClient.hExists(
+    `survey:${surveyName}:responses`,
+    username,
+  );
+
   await redisClient.hSet(`survey:${surveyName}:responses`, username, response);
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.publish("survey-refresh", surveyName);
+
+  const isMeaningful = await evaluateResponseMeaningfulness(response);
+
+  const surveyCreatedAt = await redisClient.get(
+    `survey:${surveyName}:created-at`,
+  );
+  const surveyCreatedTimestamp = Number(surveyCreatedAt);
+  const responseTimestamp = Date.now();
+
+  const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 hours
+  const ONE_WEEK_MS = 7 * ONE_DAY_MS; // 7 days
+
+  const timeElapsed = responseTimestamp - surveyCreatedTimestamp;
+
+  let points = 0;
+  if (isMeaningful) {
+    if (timeElapsed <= ONE_DAY_MS) {
+      points = 10;
+    } else if (timeElapsed <= ONE_WEEK_MS) {
+      points = 5;
+    } else {
+      points = 1;
+    }
+  }
+
+  if (!hasResponded && isMeaningful) {
+    await redisClient.hIncrBy("user:survey_counts", username, 1);
+    await redisClient.hIncrBy("user:survey_counts_discord", username, 1);
+    await redisClient.hIncrBy("user:survey_points", username, points);
+  }
 };

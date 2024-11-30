@@ -19,6 +19,11 @@ import {
   handleEditModal,
   handleSetStatus,
   handleSummary,
+  handleEditSurveyCount,
+  handleEditSurveyCountModal,
+  handleLeaderboard,
+  handleViewSurveyCounts,
+  handleViewDiscordSurveyCounts,
 } from "@commands/index";
 
 import {
@@ -105,6 +110,18 @@ process.on("uncaughtException", (error) => {
         case "view":
           await handleView(interaction, surveyName, redisClient);
           break;
+        case "create-survey-leaderboard":
+          await handleLeaderboard(interaction, redisClient);
+          break;
+        case "view-survey-counts":
+          await handleViewSurveyCounts(interaction, redisClient);
+          break;
+        case "view-discord-survey-counts":
+          await handleViewDiscordSurveyCounts(interaction, redisClient);
+          break;
+        case "edit-survey-count":
+          await handleEditSurveyCount(interaction);
+          break;
         case "summary":
           const summaryType = options.getString("summarytype");
           await handleSummary(
@@ -157,6 +174,8 @@ process.on("uncaughtException", (error) => {
         }
       } else if (interaction.customId.startsWith("respondModal")) {
         await handleRespondModal(interaction, username, redisClient);
+      } else if (interaction.customId.startsWith("editSurveyCountModal")) {
+        await handleEditSurveyCountModal(interaction, username, redisClient);
       } else if (interaction.customId.startsWith("deleteModal")) {
         const [isDeleted, sn] = await handleDeleteModal(
           interaction,

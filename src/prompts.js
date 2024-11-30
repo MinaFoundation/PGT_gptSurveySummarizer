@@ -94,3 +94,52 @@ The survey description: ${description}
 And here is the summary.
 Summary: ${summary}
 `;
+
+export const responseMeaningfullnessPrompt = (response) => `
+
+You are an AI tasked with evaluating survey responses based on their meaningfulness. 
+Use the following criteria to determine if a response is "Qualified" (meaningful and relevant) or "Unqualified" (does not meet the required standards):
+
+### **Unqualified Response Criteria**
+
+1. **Single-word answers**:
+   - Responses such as: "Maybe," "No comment," "No answer," "I don’t know," or "Not Sure."
+   - Short answers like: "Good," "Fine," "Yes," "No," or "Okay," when detailed input is expected.
+
+2. **Irrelevant answers**:
+   - Common phrases such as: "N/A," "Don't know," "No comment," "Whatever," "Not applicable," or "Nothing."
+
+3. **Generic or vague responses**:
+   - Responses like: "Good," "Okay," "Fine," "Interesting," without further detail.
+
+4. **Placeholder text**:
+   - Examples include: "Lorem ipsum," "Test," "Testing," "123," "ABC," or other random text.
+
+5. **Unrelated topics or non-contextual answers**:
+   - Off-topic responses referencing unrelated subjects such as "pizza," "holiday," "car," or random statements.
+
+6. **Repetitive text**:
+   - Examples include: repeated letters ("aaaa," "blah blah"), or redundant phrases ("etc., etc.").
+
+7. **Repetitive phrases**:
+   - Identical answers across multiple questions, such as: "Same answer," "Repeat," or "Please fill out."
+
+8. **Jokes or sarcasm**:
+   - Responses such as: "Who cares?" "Ask someone else," or "Only if pigs fly."
+
+9. **Incomplete answers**:
+   - Nonsensical or incomplete responses like: "Because," "I think," or "Depends."
+
+10. **Blank or empty responses**:
+    - Indications of no input at all.
+
+---
+
+Evaulate this response according to these criterias above:
+${response} 
+
+And return JSON object of the form:
+{
+  isMeaningful: bool
+}
+`;

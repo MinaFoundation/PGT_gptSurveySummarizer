@@ -186,6 +186,8 @@ export const handleRespondModal = async (
   username: any,
   redisClient: any,
 ) => {
+  await interaction.deferReply({ ephemeral: true });
+
   const surveyName = interaction.customId.split("-").slice(1).join("-");
   const surveyType = await redisClient.get(`survey:${surveyName}:type`);
   const plural = surveyType === "single" ? "" : "s";
@@ -222,7 +224,7 @@ export const handleRespondModal = async (
   );
   await respond(redisClient, surveyName, username, response);
 
-  await interaction.reply({
+  await interaction.editReply({
     content: `Your Response was ${hadResponse ? "updated" : "added"} successfully!`,
     ephemeral: true,
   });
@@ -251,6 +253,45 @@ export const handleDeleteModal = async (
       ephemeral: true,
     });
   }
+};
+
+export const handleEditSurveyCountModal = async (
+  interaction: any,
+  username: any,
+  redisClient: any,
+) => {
+  const usernameInput = interaction.fields.getTextInputValue(`usernameInput`);
+  const countInput = interaction.fields.getTextInputValue(`countInput`);
+  const pointsInput = interaction.fields.getTextInputValue(`pointsInput`);
+
+  const adjustment = parseInt(countInput, 10);
+  const pointsAdjustment = parseInt(pointsInput, 10);
+
+  if (isNaN(adjustment) || isNaN(pointsAdjustment)) {
+    await interaction.reply({
+      content:
+        "Invalid count or points input. Please use a format like '+3' or '-2' or '+10' or '-5'.",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  await redisClient.hIncrBy("user:survey_counts", usernameInput, adjustment);
+  await redisClient.hIncrBy(
+    "user:survey_points",
+    usernameInput,
+    pointsAdjustment,
+  );
+
+  const updatedCount = await redisClient.hGet(
+    "user:survey_counts",
+    usernameInput,
+  );
+
+  await interaction.reply({
+    content: `Survey count for ${usernameInput} has been updated. New count: ${updatedCount}`,
+    ephemeral: true,
+  });
 };
 
 export function convertToTimestamp(dateString: string): number {

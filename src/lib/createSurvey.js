@@ -20,6 +20,7 @@ export const createSurvey = async (
   await redisClient.set(`survey:${surveyName}:description`, description);
   await redisClient.set(`survey:${surveyName}:fields`, fields);
   await redisClient.set(`survey:${surveyName}:username`, username);
+  await redisClient.set(`survey:${surveyName}:created-at`, Date.now());
   await redisClient.set(`survey:${surveyName}:last-edit-time`, Date.now());
   await redisClient.set(`survey:${surveyName}:last-summary-time`, Date.now());
   await redisClient.set(`survey:${surveyName}:endtime`, endTime);
