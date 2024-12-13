@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { hello } from "../controllers/govbotController";
+import { hello, consumeProposal, consumeDeliberation } from "../controllers/govbotController";
 
 const router: Router = Router();
 
 router.get("/", hello);
+router.post("/proposal", consumeProposal);
+router.post("/deliberation", consumeDeliberation);
 
 export default router;

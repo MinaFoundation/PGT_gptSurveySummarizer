@@ -60,7 +60,7 @@ export const consumeProposal = async (
     }
 
   } catch (error) {
-    log.error("Error processing deliberation", error);
+    log.error("Error processing proposal", error);
     res.status(500).json({ error: "Internal server error." });
   } finally {
     await redisClient.disconnect();
