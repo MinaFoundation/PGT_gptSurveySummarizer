@@ -2,12 +2,46 @@ import { Request, Response } from "express";
 import { isMeaningful } from "@lib/isMeaningful";
 import { redisConfig } from "@config";
 import { createClient } from "redis";
-import { Deliberation } from "src/models/govbotModel";
+import { Deliberation, Proposal } from "src/models/govbotModel";
 
 import log from "../logger";
 
 export const hello = (req: Request, res: Response): void => {
   res.json({ message: "Hello Govbot!" });
+};
+
+export const consumeProposal = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const redisClient = createClient(redisConfig);
+
+  try {
+    redisClient.on("error", (err) => log.error("Redis Client Error", err));
+    await redisClient.connect();
+    redisClient.on("connect", () => log.info("Connected to Redis server"));
+
+    const proposal: Proposal = req.body;
+
+    if (
+      !proposal ||
+      !proposal.proposalName ||
+      !proposal.proposalDescription ||
+      !proposal.proposalAuthor
+    ) {
+      res.status(400).json({ error: "Invalid deliberation data." });
+      return;
+    }
+
+    // CREATE PROPOSAL AS SURVEY
+    
+
+  } catch (error) {
+    log.error("Error processing deliberation", error);
+    res.status(500).json({ error: "Internal server error." });
+  } finally {
+    await redisClient.disconnect();
+  }
 };
 
 export const consumeDeliberation = async (

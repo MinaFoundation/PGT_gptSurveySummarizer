@@ -1,8 +1,7 @@
 export interface Proposal {
-    proposalName: string;
-    proposalDescription: string;
-    proposalAuthor: string;
-    lastEditTime: Date;
+  proposalName: string;
+  proposalDescription: string;
+  proposalAuthor: string;
 }
 
 export interface Deliberation {
