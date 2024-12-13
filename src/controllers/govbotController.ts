@@ -33,8 +33,31 @@ export const consumeProposal = async (
       return;
     }
 
+    const endTime = proposal.endTime.toString();
+
     // CREATE PROPOSAL AS SURVEY
-    
+    await redisClient.sAdd("surveys", proposal.proposalName);
+    const initialSummaryJSON = JSON.stringify({});
+    await redisClient.set(`survey:${proposal.proposalName}:summary`, initialSummaryJSON);
+    await redisClient.set(
+      `survey:${proposal.proposalName}:executive-summary`,
+      initialSummaryJSON,
+    );
+  
+    await redisClient.set(`survey:${proposal.proposalName}:type`, 'proposal');
+    await redisClient.set(`survey:${proposal.proposalName}:title`, proposal.proposalName);
+    await redisClient.set(`survey:${proposal.proposalName}:description`, proposal.proposalDescription);
+    await redisClient.set(`survey:${proposal.proposalName}:username`, proposal.proposalAuthor);
+    await redisClient.set(`survey:${proposal.proposalName}:created-at`, Date.now());
+    await redisClient.set(`survey:${proposal.proposalName}:last-edit-time`, Date.now());
+    await redisClient.set(`survey:${proposal.proposalName}:last-summary-time`, Date.now());
+    await redisClient.set(`survey:${proposal.proposalName}:endtime`, endTime);
+  
+    if (proposal.endTime.getTime() >= Date.now()) {
+      await redisClient.set(`survey:${proposal.proposalName}:is-active`, "true");
+    } else {
+      await redisClient.set(`survey:${proposal.proposalName}:is-active`, "false");
+    }
 
   } catch (error) {
     log.error("Error processing deliberation", error);
