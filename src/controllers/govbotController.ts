@@ -27,14 +27,15 @@ export const consumeProposal = async (
       !proposal ||
       !proposal.proposalName ||
       !proposal.proposalDescription ||
-      !proposal.proposalAuthor
+      !proposal.proposalAuthor ||
+      !proposal.endTime
     ) {
       res.status(400).json({ error: "Invalid deliberation data." });
       return;
     }
 
     const endTime: string = proposal.endTime.toString();
-    const endTimeDate: Date = new Date(endTime);
+    const endTimeDate: Date = new Date(proposal.endTime);
 
     // CREATE PROPOSAL AS SURVEY
     await redisClient.sAdd("surveys", proposal.proposalName);
@@ -59,6 +60,8 @@ export const consumeProposal = async (
     } else {
       await redisClient.set(`survey:${proposal.proposalName}:is-active`, "false");
     }
+
+    res.status(200).json({ message: "Proposal saved successfully." });
 
   } catch (error) {
     log.error("Error processing proposal", error);
