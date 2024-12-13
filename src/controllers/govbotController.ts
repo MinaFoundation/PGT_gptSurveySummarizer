@@ -33,7 +33,8 @@ export const consumeProposal = async (
       return;
     }
 
-    const endTime = proposal.endTime.toString();
+    const endTime: string = proposal.endTime.toString();
+    const endTimeDate: Date = new Date(endTime);
 
     // CREATE PROPOSAL AS SURVEY
     await redisClient.sAdd("surveys", proposal.proposalName);
@@ -53,7 +54,7 @@ export const consumeProposal = async (
     await redisClient.set(`survey:${proposal.proposalName}:last-summary-time`, Date.now());
     await redisClient.set(`survey:${proposal.proposalName}:endtime`, endTime);
   
-    if (proposal.endTime.getTime() >= Date.now()) {
+    if (endTimeDate.getTime() >= Date.now()) {
       await redisClient.set(`survey:${proposal.proposalName}:is-active`, "true");
     } else {
       await redisClient.set(`survey:${proposal.proposalName}:is-active`, "false");
