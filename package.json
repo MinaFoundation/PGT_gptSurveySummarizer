@@ -25,6 +25,7 @@
     "dotenv": "^16.4.5",
     "eslint-import-resolver-typescript": "^3.6.1",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "loglevel": "^1.9.1",
     "loglevel-plugin-prefix": "^0.8.4",
     "mocha": "^10.4.0",
