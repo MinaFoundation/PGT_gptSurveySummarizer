@@ -1,5 +1,5 @@
-export interface Feedback {
-    proposalName: string,
-    username: string,
-    feedbackContent: string,
+export interface Deliberation {
+  proposalName: string;
+  username: string;
+  feedbackContent: string;
 }
