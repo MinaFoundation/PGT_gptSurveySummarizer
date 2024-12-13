@@ -46,7 +46,7 @@ export const consumeProposal = async (
       initialSummaryJSON,
     );
   
-    await redisClient.set(`survey:${proposal.proposalName}:type`, 'proposal');
+    await redisClient.set(`survey:${proposal.proposalName}:type`, 'single');
     await redisClient.set(`survey:${proposal.proposalName}:title`, proposal.proposalName);
     await redisClient.set(`survey:${proposal.proposalName}:description`, proposal.proposalDescription);
     await redisClient.set(`survey:${proposal.proposalName}:username`, proposal.proposalAuthor);
