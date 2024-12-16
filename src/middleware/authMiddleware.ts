@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AUTH_SECRET } from "@config";
 
+import log from "../logger";
+
 interface AuthRequest extends Request {
   user?: string | JwtPayload;
 }
@@ -28,7 +30,7 @@ export const authMiddleware = (
   const secret = AUTH_SECRET;
 
   if (!secret) {
-    console.error("AUTH_SECRET is not defined in .env");
+    log.error("AUTH_SECRET is not defined in .env");
     res.status(500).json({ error: "Internal server error" });
     return;
   }
