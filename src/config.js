@@ -37,3 +37,5 @@ export const POST_CHANNEL_ID = process.env.POST_CHANNEL_ID
   ? process.env.POST_CHANNEL_ID.toString()
   : "";
 export const GSS_LOG_LEVEL = process.env.GSS_LOG_LEVEL || "INFO";
+
+export const AUTH_SECRET = process.env.AUTH_SECRET || ""
