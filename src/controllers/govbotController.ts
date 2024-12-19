@@ -40,29 +40,55 @@ export const consumeProposal = async (
     // CREATE PROPOSAL AS SURVEY
     await redisClient.sAdd("surveys", proposal.proposalName);
     const initialSummaryJSON = JSON.stringify({});
-    await redisClient.set(`survey:${proposal.proposalName}:summary`, initialSummaryJSON);
+    await redisClient.set(
+      `survey:${proposal.proposalName}:summary`,
+      initialSummaryJSON,
+    );
     await redisClient.set(
       `survey:${proposal.proposalName}:executive-summary`,
       initialSummaryJSON,
     );
-  
-    await redisClient.set(`survey:${proposal.proposalName}:type`, 'single');
-    await redisClient.set(`survey:${proposal.proposalName}:title`, proposal.proposalName);
-    await redisClient.set(`survey:${proposal.proposalName}:description`, proposal.proposalDescription);
-    await redisClient.set(`survey:${proposal.proposalName}:username`, proposal.proposalAuthor);
-    await redisClient.set(`survey:${proposal.proposalName}:created-at`, Date.now());
-    await redisClient.set(`survey:${proposal.proposalName}:last-edit-time`, Date.now());
-    await redisClient.set(`survey:${proposal.proposalName}:last-summary-time`, Date.now());
+
+    await redisClient.set(`survey:${proposal.proposalName}:type`, "proposal");
+    await redisClient.set(
+      `survey:${proposal.proposalName}:title`,
+      proposal.proposalName,
+    );
+    await redisClient.set(
+      `survey:${proposal.proposalName}:description`,
+      proposal.proposalDescription,
+    );
+    await redisClient.set(
+      `survey:${proposal.proposalName}:username`,
+      proposal.proposalAuthor,
+    );
+    await redisClient.set(
+      `survey:${proposal.proposalName}:created-at`,
+      Date.now(),
+    );
+    await redisClient.set(
+      `survey:${proposal.proposalName}:last-edit-time`,
+      Date.now(),
+    );
+    await redisClient.set(
+      `survey:${proposal.proposalName}:last-summary-time`,
+      Date.now(),
+    );
     await redisClient.set(`survey:${proposal.proposalName}:endtime`, endTime);
-  
+
     if (endTimeDate.getTime() >= Date.now()) {
-      await redisClient.set(`survey:${proposal.proposalName}:is-active`, "true");
+      await redisClient.set(
+        `survey:${proposal.proposalName}:is-active`,
+        "true",
+      );
     } else {
-      await redisClient.set(`survey:${proposal.proposalName}:is-active`, "false");
+      await redisClient.set(
+        `survey:${proposal.proposalName}:is-active`,
+        "false",
+      );
     }
 
     res.status(200).json({ message: "Proposal saved successfully." });
-
   } catch (error) {
     log.error("Error processing proposal", error);
     res.status(500).json({ error: "Internal server error." });

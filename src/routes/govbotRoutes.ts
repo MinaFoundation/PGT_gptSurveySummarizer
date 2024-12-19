@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { hello, consumeProposal, consumeDeliberation } from "../controllers/govbotController";
+import {
+  hello,
+  consumeProposal,
+  consumeDeliberation,
+} from "../controllers/govbotController";
 import { authMiddleware } from "src/middleware/authMiddleware";
 
 const router: Router = Router();

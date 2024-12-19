@@ -23,6 +23,15 @@ export const handleRespond = async (
     return;
   }
 
+  if ((await redisClient.get(`survey:${surveyName}:type`)) == "proposal") {
+    await interaction.reply({
+      content:
+        "The survey is actually a proposal in Govbot. You cannot respond it in discord.",
+      ephemeral: true,
+    });
+    return;
+  }
+
   const surveyDescription = await redisClient.get(
     `survey:${surveyName}:description`,
   );
