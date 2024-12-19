@@ -246,7 +246,7 @@ process.on("uncaughtException", (error) => {
         const types = await redisClient.mGet(typeKeys);
 
         surveys.forEach((survey, index) => {
-          if (types[index] !== "proposal" && survey.startsWith(focusedValue)) {
+          if (survey.startsWith(focusedValue)) {
             filtered.push(survey);
           }
         });
