@@ -107,7 +107,6 @@ process.on("uncaughtException", (error) => {
 
     // 1 - Create Buttons UI in a different file.
     // 2 - Use them here
-
   });
 
   const startSurveyStatusChecker = (redisClient) => {
