@@ -34,7 +34,7 @@ import {
 
 import { discordConfig, redisConfig, version } from "@config";
 import { createClient } from "redis";
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, PermissionsBitField } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { threadPost } from "@lib/threadPost.js";
@@ -102,6 +102,14 @@ process.on("uncaughtException", (error) => {
     log.info("Admin channel setup complete.");
   });
 
+  client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isButton()) return;
+
+    // 1 - Create Buttons UI in a different file.
+    // 2 - Use them here
+
+  });
+
   const startSurveyStatusChecker = (redisClient) => {
     setIntervalAsync(
       async () => {
@@ -111,7 +119,7 @@ process.on("uncaughtException", (error) => {
     ); // 60 * 1000 ms = 1 minute
   };
 
-  client.login(discordConfig.token);
+  await client.login(discordConfig.token);
 })();
 
 const checkAndUpdateSurveyStatus = async (redisClient: any) => {
