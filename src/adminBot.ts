@@ -62,57 +62,57 @@ process.on("uncaughtException", (error) => {
   const rest = new REST({ version: "10" }).setToken(discordConfig.token);
 
   try {
-      await rest.put(
-        Routes.applicationGuildCommands(
-          discordConfig.clientId,
-          discordConfig.guildId,
-        ),
-        { body: [command.toJSON()] },
-      );
-      log.info("Successfully registered commands.");
-    } catch (error) {
-      log.error("Error registering commands", error);
+    await rest.put(
+      Routes.applicationGuildCommands(
+        discordConfig.clientId,
+        discordConfig.guildId,
+      ),
+      { body: [command.toJSON()] },
+    );
+    log.info("Successfully registered commands.");
+  } catch (error) {
+    log.error("Error registering commands", error);
+  }
+
+  client.once("ready", async () => {
+    log.info("Ready as ", client.user.username);
+    startAutoPosting(client, redisClient);
+    startSurveyStatusChecker(redisClient);
+
+    const adminChannelId = discordConfig.adminChannelId;
+    let adminChannel;
+
+    try {
+      adminChannel = await client.channels.fetch(adminChannelId);
+    } catch (err) {
+      log.error("Error fetching admin channel:", err);
     }
-  
-    client.once("ready", async () => {
-      log.info("Ready as ", client.user.username);
-      startAutoPosting(client, redisClient);
-      startSurveyStatusChecker(redisClient);
 
-      const adminChannelId = discordConfig.adminChannelId;
-      let adminChannel;
+    if (!adminChannel) {
+      log.error(
+        "Admin channel not found. Please ensure the adminChannelId is correct.",
+      );
+      return;
+    }
 
-      try {
-        adminChannel = await client.channels.fetch(adminChannelId);
-      } catch (err) {
-        log.error("Error fetching admin channel:", err);
-      }
-
-      if (!adminChannel) {
-        log.error("Admin channel not found. Please ensure the adminChannelId is correct.");
-        return;
-      }
-
-      await adminChannel.send({
-        content: "Admin channel connected. Authorized users only.",
-      });
-
-      log.info("Admin channel setup complete.");
+    await adminChannel.send({
+      content: "Admin channel connected. Authorized users only.",
     });
 
+    log.info("Admin channel setup complete.");
+  });
 
-    const startSurveyStatusChecker = (redisClient) => {
-        setIntervalAsync(
-          async () => {
-            await checkAndUpdateSurveyStatus(redisClient);
-          },
-          60 * 1000 * EXPIRE_STATUS_LOOP_MINUTE,
-        ); // 60 * 1000 ms = 1 minute
-      };
-    
-      client.login(discordConfig.token);
+  const startSurveyStatusChecker = (redisClient) => {
+    setIntervalAsync(
+      async () => {
+        await checkAndUpdateSurveyStatus(redisClient);
+      },
+      60 * 1000 * EXPIRE_STATUS_LOOP_MINUTE,
+    ); // 60 * 1000 ms = 1 minute
+  };
+
+  client.login(discordConfig.token);
 })();
-
 
 const checkAndUpdateSurveyStatus = async (redisClient: any) => {
   try {
