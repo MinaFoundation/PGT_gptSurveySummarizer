@@ -18,3 +18,22 @@ export const adminActionRow = new ActionRowBuilder().addComponents(
     .setLabel('Create Survey')
     .setStyle(ButtonStyle.Secondary)
 );
+
+export const secondAdminActionRow = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+    .setCustomId('edit_survey')
+    .setLabel('Edit Survey')
+    .setStyle(ButtonStyle.Success),
+  new ButtonBuilder()
+    .setCustomId('delete_survey')
+    .setLabel('Delete Survey')
+    .setStyle(ButtonStyle.Danger),
+  new ButtonBuilder()
+    .setCustomId('info')
+    .setLabel('Info')
+    .setStyle(ButtonStyle.Primary),
+  new ButtonBuilder()
+    .setCustomId('create_multi_survey')
+    .setLabel('Create Multi Choice Survey')
+    .setStyle(ButtonStyle.Secondary)
+)

@@ -24,7 +24,7 @@ import { handleLeaderboard } from "./handleLeaderboard";
 import { handleViewSurveyCounts } from "./handleViewSurveyCounts";
 import { handleViewDiscordSurveyCounts } from "./handleViewDiscordSurveyCounts";
 
-import { adminActionRow } from "./buttonBuilder";
+import { adminActionRow, secondAdminActionRow } from "./buttonBuilder";
 
 export {
   command,
@@ -50,4 +50,5 @@ export {
   handleViewDiscordSurveyCounts,
   handleSummary,
   adminActionRow,
+  secondAdminActionRow,
 };
