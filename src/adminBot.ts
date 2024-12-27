@@ -24,6 +24,7 @@ import {
   handleLeaderboard,
   handleViewSurveyCounts,
   handleViewDiscordSurveyCounts,
+  adminActionRow,
 } from "@commands/index";
 
 import {
@@ -96,7 +97,8 @@ process.on("uncaughtException", (error) => {
     }
 
     await adminChannel.send({
-      content: "Admin channel connected. Authorized users only.",
+      content: "Admin Panel: Choose an action",
+      components: [adminActionRow],
     });
 
     log.info("Admin channel setup complete.");
@@ -105,8 +107,24 @@ process.on("uncaughtException", (error) => {
   client.on("interactionCreate", async (interaction) => {
     if (!interaction.isButton()) return;
 
-    // 1 - Create Buttons UI in a different file.
-    // 2 - Use them here
+    const customId = interaction.customId;
+    switch (customId) {
+      case 'start_auto_post':
+        await handleAutoPost(interaction, 'start', client, redisClient);
+        break;
+      case 'stop_auto_post':
+        await handleAutoPost(interaction, 'stop', client, redisClient);
+        break;
+      case 'view_leaderboard':
+        await handleLeaderboard(interaction, redisClient);
+        break;
+      case 'create_survey':
+        await handleCreate(interaction, 'create', '');
+        break;
+      default:
+        await interaction.reply({ content: "Unknown action", ephemeral: true });
+        break;
+    }
   });
 
   const startSurveyStatusChecker = (redisClient) => {

@@ -5,6 +5,7 @@ import {
   ActionRowBuilder,
   TextInputStyle,
   ChatInputCommandInteraction,
+  ButtonInteraction,
 } from "discord.js";
 
 const createModal = async (
@@ -82,7 +83,7 @@ const createModal = async (
 };
 
 export const handleCreate = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   subcommand: string,
   createMultiCmd: string,
 ) => {

@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Client } from "discord.js";
 
 export const handleAutoPost = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   action: string,
   client: Client,
   redisClient: any,
