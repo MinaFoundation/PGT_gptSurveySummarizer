@@ -1,9 +1,6 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 
-export const handleLeaderboard = async (
-  interaction: any,
-  redisClient: any,
-) => {
+export const handleLeaderboard = async (interaction: any, redisClient: any) => {
   const userSurveyPoints = await redisClient.hGetAll("user:survey_points");
 
   if (!userSurveyPoints || Object.keys(userSurveyPoints).length === 0) {

@@ -25,6 +25,7 @@ import {
   handleViewSurveyCounts,
   handleViewDiscordSurveyCounts,
   adminActionRow,
+  adminEmbed,
 } from "@commands/index";
 
 import {
@@ -97,7 +98,7 @@ process.on("uncaughtException", (error) => {
     }
 
     await adminChannel.send({
-      content: "Admin Panel: Choose an action",
+      embeds: [adminEmbed],
       components: [adminActionRow],
     });
 
@@ -109,17 +110,17 @@ process.on("uncaughtException", (error) => {
 
     const customId = interaction.customId;
     switch (customId) {
-      case 'start_auto_post':
-        await handleAutoPost(interaction, 'start', client, redisClient);
+      case "start_auto_post":
+        await handleAutoPost(interaction, "start", client, redisClient);
         break;
-      case 'stop_auto_post':
-        await handleAutoPost(interaction, 'stop', client, redisClient);
+      case "stop_auto_post":
+        await handleAutoPost(interaction, "stop", client, redisClient);
         break;
-      case 'view_leaderboard':
+      case "view_leaderboard":
         await handleLeaderboard(interaction, redisClient);
         break;
-      case 'create_survey':
-        await handleCreate(interaction, 'create', '');
+      case "create_survey":
+        await handleCreate(interaction, "create", "");
         break;
       default:
         await interaction.reply({ content: "Unknown action", ephemeral: true });
