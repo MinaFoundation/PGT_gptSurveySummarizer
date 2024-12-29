@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 
 export const handleViewDiscordSurveyCounts = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   redisClient: any,
 ) => {
   const userSurveyPoints = await redisClient.hGetAll(

@@ -26,6 +26,12 @@ import {
   handleViewDiscordSurveyCounts,
   adminActionRow,
   adminEmbed,
+  publicResultsDropdown,
+  createSurveyActionRow,
+  surveyManagementActionRow,
+  viewResultsActionRow1,
+  viewResultsActionRow2,
+  surveyLeaderboardActionRow,
 } from "@commands/index";
 
 import {
@@ -106,25 +112,138 @@ process.on("uncaughtException", (error) => {
   });
 
   client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isButton()) return;
+    if (!interaction.isButton() && !interaction.isSelectMenu()) return;
 
     const customId = interaction.customId;
-    switch (customId) {
-      case "start_auto_post":
-        await handleAutoPost(interaction, "start", client, redisClient);
-        break;
-      case "stop_auto_post":
-        await handleAutoPost(interaction, "stop", client, redisClient);
-        break;
-      case "view_leaderboard":
-        await handleLeaderboard(interaction, redisClient);
-        break;
-      case "create_survey":
-        await handleCreate(interaction, "create", "");
-        break;
-      default:
-        await interaction.reply({ content: "Unknown action", ephemeral: true });
-        break;
+
+    if (interaction.isButton()) {
+      switch (customId) {
+        case "create_survey":
+          await interaction.update({
+            content: "Create Survey Options:",
+            embeds: [],
+            components: [createSurveyActionRow],
+          });
+          break;
+
+        case "survey_management":
+          await interaction.update({
+            content: "Survey Management Options:",
+            embeds: [],
+            components: [surveyManagementActionRow],
+          });
+          break;
+
+        case "view_results":
+          await interaction.update({
+            content: "View Results Options:",
+            embeds: [],
+            components: [
+              viewResultsActionRow1,
+              publicResultsDropdown,
+              viewResultsActionRow2,
+            ],
+          });
+          break;
+
+        case "survey_leaderboard":
+          await interaction.update({
+            content: "Survey Leaderboard Options:",
+            embeds: [],
+            components: [surveyLeaderboardActionRow],
+          });
+          break;
+
+        // Sub-buttons for Create Survey
+        case "single_response":
+          await handleCreate(interaction, "create", "");
+          break;
+        case "multiple_response":
+          await handleCreate(interaction, "create-multi-response",create_multi_cmd);
+          break;
+
+        // Sub-buttons for Survey Management
+        case "edit_survey":
+          await handleEdit(interaction, redisClient);
+          break;
+        case "survey_status":
+          await handleSetStatus(interaction, redisClient);
+          break;
+        case "delete_survey":
+          await handleDelete(redisClient, interaction);
+          break;
+        case "survey_info":
+          await handleInfo(interaction, version);
+          break;
+        case "post_survey":
+          await handleRespond(interaction);
+          break;
+
+        // Sub-buttons for View Results
+        case "public_results":
+          await interaction.reply({
+            content: "Please select a summary type.",
+            components: [publicResultsDropdown],
+            ephemeral: true,
+          });
+          break;
+        case "mf_data":
+          await handleView(interaction, "mf_data", redisClient);
+          break;
+
+        // Dropdowns
+        case "start_auto_post":
+          await handleAutoPost(interaction, "start", client, redisClient);
+          break;
+        case "stop_auto_post":
+          await handleAutoPost(interaction, "stop", client, redisClient);
+          break;
+
+        // Sub-buttons for Survey Leaderboard
+        case "create_leaderboard":
+          await handleLeaderboard(interaction, redisClient);
+          break;
+        case "edit_survey_count":
+          await handleEditSurveyCount(interaction);
+          break;
+        case "view_general_counts":
+          await handleViewSurveyCounts(interaction, redisClient);
+          break;
+        case "view_discord_counts":
+          await handleViewDiscordSurveyCounts(interaction, redisClient);
+          break;
+
+        default:
+          await interaction.reply({
+            content: "Unknown action",
+            ephemeral: true,
+          });
+          break;
+      }
+    } else if (interaction.isSelectMenu()) {
+      const values = interaction.values;
+      switch (interaction.customId) {
+        case "public_results_dropdown":
+          if (values.includes("high_level_summary")) {
+            await handleSummary(interaction, "high_level");
+          } else if (values.includes("detailed_summary")) {
+            await handleSummary(interaction, "detailed");
+          }
+          break;
+        case "auto_post_dropdown":
+          if (values.includes("start_auto_post")) {
+            await handleAutoPost(interaction, "start", client, redisClient);
+          } else if (values.includes("stop_auto_post")) {
+            await handleAutoPost(interaction, "stop", client, redisClient);
+          }
+          break;
+        default:
+          await interaction.reply({
+            content: "Unknown menu action",
+            ephemeral: true,
+          });
+          break;
+      }
     }
   });
 

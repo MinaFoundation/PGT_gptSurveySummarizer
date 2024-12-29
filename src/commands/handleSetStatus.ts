@@ -2,7 +2,7 @@ import log from "../logger";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const handleSetStatus = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   surveyName: any,
   status: string,
   redisClient: any,

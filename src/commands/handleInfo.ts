@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const handleInfo = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   version: any,
 ) => {
   const github = "https://github.com/MinaFoundation/gptSurveySummarizer";
