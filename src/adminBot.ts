@@ -159,7 +159,11 @@ process.on("uncaughtException", (error) => {
           await handleCreate(interaction, "create", "");
           break;
         case "multiple_response":
-          await handleCreate(interaction, "create-multi-response",create_multi_cmd);
+          await handleCreate(
+            interaction,
+            "create-multi-response",
+            create_multi_cmd,
+          );
           break;
 
         // Sub-buttons for Survey Management
