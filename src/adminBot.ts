@@ -103,9 +103,22 @@ process.on("uncaughtException", (error) => {
       return;
     }
 
+    try {
+      const messages = await adminChannel.messages.fetch({ limit: 100 });
+      const botMessages = messages.filter((message) => message.author.id === client.user.id);
+  
+      for (const message of botMessages.values()) {
+        await message.delete().catch((err) => log.error("Error deleting message:", err));
+      }
+      log.info("Previous bot messages cleared in admin channel.");
+    } catch (error) {
+      log.error("Error fetching or deleting bot messages:", error);
+    }
+
     await adminChannel.send({
       embeds: [adminEmbed],
       components: [adminActionRow],
+      ephemeral: true,
     });
 
     log.info("Admin channel setup complete.");
