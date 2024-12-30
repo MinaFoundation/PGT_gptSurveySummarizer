@@ -82,13 +82,13 @@ process.on("uncaughtException", (error) => {
     log.error("Error registering commands", error);
   }
 
+  const adminChannelId = discordConfig.adminChannelId;
+  let adminChannel;
+
   client.once("ready", async () => {
     log.info("Ready as ", client.user.username);
     startAutoPosting(client, redisClient);
     startSurveyStatusChecker(redisClient);
-
-    const adminChannelId = discordConfig.adminChannelId;
-    let adminChannel;
 
     try {
       adminChannel = await client.channels.fetch(adminChannelId);
@@ -125,17 +125,18 @@ process.on("uncaughtException", (error) => {
   });
 
   client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isButton() && !interaction.isSelectMenu()) return;
+    if (!interaction.isButton() && !interaction.isStringSelectMenu()) return;
 
     const customId = interaction.customId;
 
     if (interaction.isButton()) {
       switch (customId) {
         case "create_survey":
-          await interaction.update({
+          await adminChannel.send({
             content: "Create Survey Options:",
             embeds: [],
             components: [createSurveyActionRow],
+            ephemeral: true,
           });
           break;
 
