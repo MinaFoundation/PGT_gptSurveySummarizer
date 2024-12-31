@@ -5,6 +5,7 @@ import {
   ButtonStyle,
   StringSelectMenuOptionBuilder,
   EmbedBuilder,
+  AnyComponentBuilder,
 } from "discord.js";
 
 export const adminActionRow = new ActionRowBuilder().addComponents(
@@ -49,7 +50,7 @@ export const adminEmbed = new EmbedBuilder()
 
 // SUB BUTTONS
 // Sub-buttons for "Create Survey"
-export const createSurveyActionRow = new ActionRowBuilder().addComponents(
+export const createSurveyActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
   new ButtonBuilder()
     .setCustomId("single_response")
     .setLabel("Single-response")
@@ -61,7 +62,7 @@ export const createSurveyActionRow = new ActionRowBuilder().addComponents(
 );
 
 // Sub-buttons for "Survey Management"
-export const surveyManagementActionRow = new ActionRowBuilder().addComponents(
+export const surveyManagementActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
   new ButtonBuilder()
     .setCustomId("edit_survey")
     .setLabel("Edit Survey")
@@ -85,14 +86,14 @@ export const surveyManagementActionRow = new ActionRowBuilder().addComponents(
 );
 
 // Sub-buttons for "View Results"
-export const viewResultsActionRow1 = new ActionRowBuilder().addComponents(
+export const viewResultsActionRow1 = new ActionRowBuilder<ButtonBuilder>().addComponents(
   new ButtonBuilder()
     .setCustomId("public_results")
     .setLabel("Public Results")
     .setStyle(ButtonStyle.Primary),
 );
 
-export const publicResultsDropdown = new ActionRowBuilder().addComponents(
+export const publicResultsDropdown = new ActionRowBuilder<any>().addComponents(
   new StringSelectMenuBuilder()
     .setCustomId("public_results_dropdown")
     .setPlaceholder("Select summary type")
@@ -106,7 +107,7 @@ export const publicResultsDropdown = new ActionRowBuilder().addComponents(
     ),
 );
 
-export const viewResultsActionRow2 = new ActionRowBuilder().addComponents(
+export const viewResultsActionRow2 = new ActionRowBuilder<ButtonBuilder>().addComponents(
   new ButtonBuilder()
     .setCustomId("mf_data")
     .setLabel("MF Data")
@@ -132,7 +133,7 @@ export const autoPostDropdown = new ActionRowBuilder().addComponents(
 );
 
 // Sub-buttons for "Survey Leaderboard"
-export const surveyLeaderboardActionRow = new ActionRowBuilder().addComponents(
+export const surveyLeaderboardActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
   new ButtonBuilder()
     .setCustomId("create_leaderboard")
     .setLabel("Create Leaderboard")

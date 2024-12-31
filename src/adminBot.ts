@@ -132,24 +132,26 @@ process.on("uncaughtException", (error) => {
     if (interaction.isButton()) {
       switch (customId) {
         case "create_survey":
-          await adminChannel.send({
-            content: "Create Survey Options:",
-            embeds: [],
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.followUp({
+            content: "** Create Survey Options: ** ",
             components: [createSurveyActionRow],
             ephemeral: true,
           });
           break;
 
         case "survey_management":
-          await interaction.update({
-            content: "Survey Management Options:",
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.followUp({
+            content: "**Survey Management Options:**",
             embeds: [],
             components: [surveyManagementActionRow],
           });
           break;
 
         case "view_results":
-          await interaction.update({
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.followUp({
             content: "View Results Options:",
             embeds: [],
             components: [
@@ -161,7 +163,8 @@ process.on("uncaughtException", (error) => {
           break;
 
         case "survey_leaderboard":
-          await interaction.update({
+          await interaction.deferReply({ ephemeral: true });
+          await interaction.followUp({
             content: "Survey Leaderboard Options:",
             embeds: [],
             components: [surveyLeaderboardActionRow],
