@@ -140,9 +140,40 @@ export const handleButtons = async (interaction, client, redisClient) => {
       );
       break;
 
-    // Sub-buttons for Survey Management
     case "edit_survey":
-      await handleEdit(interaction, redisClient);
+      await interaction.deferReply({ ephemeral: true });
+      const surveys = await redisClient.sMembers("surveys");
+
+      const options = surveys.map((survey) => ({
+        label: survey,
+        value: survey,
+      }));
+
+      if (options.length === 0) {
+        await interaction.followUp({
+          content: "No surveys available to edit.",
+          ephemeral: true,
+        });
+        break;
+      }
+
+      const selectMenu = {
+        type: 1,
+        components: [
+          {
+            type: 3,
+            custom_id: "edit_survey_dropdown",
+            placeholder: "Select a survey to edit",
+            options,
+          },
+        ],
+      };
+
+      await interaction.followUp({
+        content: "Please select a survey to edit:",
+        components: [selectMenu],
+        ephemeral: true,
+      });
       break;
     case "survey_status":
       await handleSetStatus(interaction, redisClient);
@@ -202,6 +233,7 @@ export const handleButtons = async (interaction, client, redisClient) => {
 
 export const handleSelectMenus = async (interaction, client, redisClient) => {
   const customId = interaction.customId;
+
   switch (customId) {
     case "public_results_dropdown":
       const values = interaction.values;
@@ -209,6 +241,13 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
         await interaction.reply({ content: "High-Level Summary selected." });
       }
       break;
+
+    case "edit_survey_dropdown":
+      const selectedSurvey = interaction.values[0]; // Get the selected survey
+    
+      await handleEdit(interaction, redisClient, selectedSurvey);
+      break;
+
     default:
       await interaction.reply({
         content: "Unknown menu action.",
@@ -216,6 +255,7 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
       });
   }
 };
+
 
 export const handleModals = async (interaction, client, redisClient) => {
   const { user } = interaction;
