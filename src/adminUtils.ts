@@ -36,6 +36,7 @@ import {
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { discordConfig } from "@config";
+import { create_multi_cmd } from "@constants";
 
 export const handleInteraction = async (interaction, client, redisClient) => {
   if (interaction.isButton()) {
