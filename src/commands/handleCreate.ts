@@ -88,7 +88,6 @@ export const handleCreate = async (
   createMultiCmd: string,
 ) => {
   const type = subcommand === createMultiCmd ? "multi" : "single";
-  const surveyName = interaction.options.getString("survey");
 
-  await createModal(interaction, type, surveyName);
+  await createModal(interaction, type, null);
 };

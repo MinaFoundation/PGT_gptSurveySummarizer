@@ -37,6 +37,9 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { discordConfig } from "@config";
 import { create_multi_cmd } from "@constants";
+import { threadPost } from "@lib/threadPost";
+import { deleteThreadPost } from "@lib/deleteThreadPost";
+import { updateThreadPost } from "@lib/updateThreadPost";
 
 export const handleInteraction = async (interaction, client, redisClient) => {
   if (interaction.isButton()) {
@@ -215,14 +218,60 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
 };
 
 export const handleModals = async (interaction, client, redisClient) => {
-  const customId = interaction.customId;
-  if (customId.startsWith("createModal")) {
-    await interaction.reply({ content: "Modal submitted successfully!" });
-  } else {
-    await interaction.reply({
-      content: "Unknown modal action.",
-      ephemeral: true,
-    });
+  const { user } = interaction;
+  const username = user.username;
+
+  if (interaction.customId.startsWith("createModal")) {
+    const [sn, desc, fields, isPosted] = await handleCreateModal(
+      interaction,
+      username,
+      redisClient,
+    );
+    log.debug(sn);
+    if (isPosted) {
+      await threadPost(client, redisClient, sn, desc, fields);
+    }
+  } else if (interaction.customId.startsWith("respondModal")) {
+    await handleRespondModal(interaction, username, redisClient);
+  } else if (interaction.customId.startsWith("editSurveyCountModal")) {
+    await handleEditSurveyCountModal(interaction, username, redisClient);
+  } else if (interaction.customId.startsWith("deleteModal")) {
+    const [isDeleted, sn] = await handleDeleteModal(
+      interaction,
+      username,
+      redisClient,
+    );
+    if (isDeleted) {
+      await deleteThreadPost(client, sn);
+    }
+  } else if (interaction.customId.startsWith("editModal")) {
+    const [sn, upSn, desc, fields, shouldPosted, isUpdated] =
+      await handleEditModal(interaction, username, redisClient);
+
+    if (isUpdated && shouldPosted) {
+      await updateThreadPost(
+        interaction,
+        client,
+        redisClient,
+        sn,
+        upSn,
+        desc,
+        fields,
+      );
+    } else if (isUpdated && !shouldPosted) {
+      await updateThreadPost(
+        interaction,
+        client,
+        redisClient,
+        sn,
+        upSn,
+        desc,
+        fields,
+      );
+    } else if (!isUpdated && shouldPosted) {
+      await deleteThreadPost(client, sn);
+      await threadPost(client, redisClient, sn, desc, fields);
+    }
   }
 };
 
