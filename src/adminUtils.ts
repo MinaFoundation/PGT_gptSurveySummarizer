@@ -35,7 +35,7 @@ import {
 
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
-import { discordConfig } from "@config";
+import { discordConfig, version } from "@config";
 import { create_multi_cmd } from "@constants";
 import { threadPost } from "@lib/threadPost";
 import { deleteThreadPost } from "@lib/deleteThreadPost";
@@ -87,6 +87,8 @@ export const setupAdminChannel = async (adminChannel, client) => {
 
 export const handleButtons = async (interaction, client, redisClient) => {
   const customId = interaction.customId;
+  const surveyName = customId.split("-").slice(1).join("-");
+
   switch (customId) {
     case "create_survey":
       await interaction.deferReply({ ephemeral: true });
@@ -141,45 +143,17 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
 
     case "edit_survey":
-      await interaction.deferReply({ ephemeral: true });
-      const surveys = await redisClient.sMembers("surveys");
-
-      const options = surveys.map((survey) => ({
-        label: survey,
-        value: survey,
-      }));
-
-      if (options.length === 0) {
-        await interaction.followUp({
-          content: "No surveys available to edit.",
-          ephemeral: true,
-        });
-        break;
-      }
-
-      const selectMenu = {
-        type: 1,
-        components: [
-          {
-            type: 3,
-            custom_id: "edit_survey_dropdown",
-            placeholder: "Select a survey to edit",
-            options,
-          },
-        ],
-      };
-
-      await interaction.followUp({
-        content: "Please select a survey to edit:",
-        components: [selectMenu],
-        ephemeral: true,
-      });
+      await handleSurveyDropdown(interaction, client, redisClient, "edit");
       break;
+
     case "survey_status":
       await handleSetStatus(interaction, redisClient);
       break;
     case "delete_survey":
-      await handleDelete(redisClient, interaction);
+      await handleSurveyDropdown(interaction, client, redisClient, "delete");
+      break;
+    case `deleteButton-${surveyName}`:
+      await handleDeleteButton(interaction, surveyName);
       break;
     case "survey_info":
       await handleInfo(interaction, version);
@@ -231,6 +205,46 @@ export const handleButtons = async (interaction, client, redisClient) => {
   }
 };
 
+const handleSurveyDropdown = async (
+  interaction,
+  client,
+  redisClient,
+  command,
+) => {
+  await interaction.deferReply({ ephemeral: true });
+  const surveys = await redisClient.sMembers("surveys");
+
+  const options = surveys.map((survey) => ({
+    label: survey,
+    value: survey,
+  }));
+
+  if (options.length === 0) {
+    await interaction.followUp({
+      content: `No surveys available to ${command}.`,
+      ephemeral: true,
+    });
+  }
+
+  const selectMenu = {
+    type: 1,
+    components: [
+      {
+        type: 3,
+        custom_id: `${command}_survey_dropdown`,
+        placeholder: `Select a survey to ${command}`,
+        options,
+      },
+    ],
+  };
+
+  await interaction.followUp({
+    content: `Please select a survey to ${command}:`,
+    components: [selectMenu],
+    ephemeral: true,
+  });
+};
+
 export const handleSelectMenus = async (interaction, client, redisClient) => {
   const customId = interaction.customId;
 
@@ -244,8 +258,14 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
 
     case "edit_survey_dropdown":
       const selectedSurvey = interaction.values[0]; // Get the selected survey
-    
+
       await handleEdit(interaction, redisClient, selectedSurvey);
+      break;
+
+    case "delete_survey_dropdown":
+      const selectedSurveyToDelete = interaction.values[0]; // Get the selected survey
+
+      await handleDelete(interaction, redisClient, selectedSurveyToDelete);
       break;
 
     default:
@@ -255,7 +275,6 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
       });
   }
 };
-
 
 export const handleModals = async (interaction, client, redisClient) => {
   const { user } = interaction;

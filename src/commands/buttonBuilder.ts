@@ -19,7 +19,7 @@ export const adminActionRow = new ActionRowBuilder().addComponents(
     .setStyle(ButtonStyle.Primary),
   new ButtonBuilder()
     .setCustomId("view_results")
-    .setLabel("View Leaderboard")
+    .setLabel("View")
     .setStyle(ButtonStyle.Primary),
   new ButtonBuilder()
     .setCustomId("survey_leaderboard")
