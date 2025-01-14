@@ -94,32 +94,14 @@ export const viewResultsActionRow1 =
       .setCustomId("public_results")
       .setLabel("Public Results")
       .setStyle(ButtonStyle.Primary),
-  );
-
-export const publicResultsDropdown = new ActionRowBuilder<any>().addComponents(
-  new StringSelectMenuBuilder()
-    .setCustomId("public_results_dropdown")
-    .setPlaceholder("Select summary type")
-    .addOptions(
-      new StringSelectMenuOptionBuilder()
-        .setLabel("High-level Summary")
-        .setValue("high_level_summary"),
-      new StringSelectMenuOptionBuilder()
-        .setLabel("Detailed Level Summary")
-        .setValue("detailed_summary"),
-    ),
-);
-
-export const viewResultsActionRow2 =
-  new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId("high_level_results")
+      .setLabel("High Level Results")
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId("mf_data")
       .setLabel("MF Data")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("auto_post")
-      .setLabel("Auto Post")
-      .setStyle(ButtonStyle.Primary),
+      .setStyle(ButtonStyle.Danger),
   );
 
 export const autoPostDropdown = new ActionRowBuilder().addComponents(

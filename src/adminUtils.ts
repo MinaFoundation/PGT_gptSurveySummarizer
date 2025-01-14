@@ -109,16 +109,57 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
 
     case "view_results":
+      let command = "view";
       await interaction.deferReply({ ephemeral: true });
-      await interaction.followUp({
-        content: "View Results Options:",
-        embeds: [],
+      const surveys = await redisClient.sMembers("surveys");
+
+      const options = surveys.map((survey) => ({
+        label: survey,
+        value: survey,
+      }));
+
+      if (options.length === 0) {
+        await interaction.followUp({
+          content: `No surveys available to ${command}.`,
+          ephemeral: true,
+        });
+      }
+
+      const selectMenu = {
+        type: 1,
         components: [
-          viewResultsActionRow1,
-          publicResultsDropdown,
-          viewResultsActionRow2,
+          {
+            type: 3,
+            custom_id: `${command}_survey_dropdown`,
+            placeholder: `Select a survey to ${command}`,
+            options,
+          },
         ],
+      };
+
+      await interaction.followUp({
+        content: "View Results",
+        embeds: [],
+        components: [selectMenu],
       });
+
+      break;
+
+    case `view_public_results-${surveyName}`:
+      await handleSummary(interaction, surveyName, redisClient, "no");
+
+      break;
+
+    case `view_high_level_results-${surveyName}`:
+      await interaction.deferReply({ ephemeral: true });
+      await handleSummary(interaction, surveyName, redisClient, "yes");
+
+      break;
+
+    case `view_mf_data-${surveyName}`:
+      await interaction.deferReply({ ephemeral: true });
+      await handleView(interaction, surveyName, redisClient);
+
       break;
 
     case "survey_leaderboard":
@@ -141,11 +182,9 @@ export const handleButtons = async (interaction, client, redisClient) => {
         create_multi_cmd,
       );
       break;
-
     case "edit_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "edit");
       break;
-
     case "survey_status":
       await handleSetStatus(interaction, redisClient);
       break;
@@ -160,18 +199,6 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
     case "post_survey":
       await handleRespond(interaction);
-      break;
-
-    // Sub-buttons for View Results
-    case "public_results":
-      await interaction.reply({
-        content: "Please select a summary type.",
-        components: [publicResultsDropdown],
-        ephemeral: true,
-      });
-      break;
-    case "mf_data":
-      await handleView(interaction, "mf_data", redisClient);
       break;
 
     // Dropdowns
@@ -257,15 +284,51 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
       break;
 
     case "edit_survey_dropdown":
-      const selectedSurvey = interaction.values[0]; // Get the selected survey
+      const selectedSurveyToEdit = interaction.values[0]; // Get the selected survey
 
-      await handleEdit(interaction, redisClient, selectedSurvey);
+      await handleEdit(interaction, redisClient, selectedSurveyToEdit);
       break;
 
     case "delete_survey_dropdown":
       const selectedSurveyToDelete = interaction.values[0]; // Get the selected survey
 
       await handleDelete(interaction, redisClient, selectedSurveyToDelete);
+      break;
+
+    case "view_survey_dropdown":
+      const selectedSurvey = interaction.values[0]; // Get the selected survey
+      await interaction.deferReply({ ephemeral: true });
+
+      await interaction.followUp({
+        content: `What results would you like to see for the survey: ${selectedSurvey}?`,
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                label: "Public Results",
+                style: 1,
+                custom_id: `view_public_results-${selectedSurvey}`,
+              },
+              {
+                type: 2,
+                label: "High-Level Results",
+                style: 1,
+                custom_id: `view_high_level_results-${selectedSurvey}`,
+              },
+              {
+                type: 2,
+                label: "MF Data",
+                style: 1,
+                custom_id: `view_mf_data-${selectedSurvey}`,
+              },
+            ],
+          },
+        ],
+        ephemeral: true,
+      });
+
       break;
 
     default:

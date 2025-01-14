@@ -30,8 +30,6 @@ import {
   createSurveyActionRow,
   surveyManagementActionRow,
   viewResultsActionRow1,
-  viewResultsActionRow2,
-  publicResultsDropdown,
   autoPostDropdown,
   surveyLeaderboardActionRow,
 } from "./buttonBuilder";
@@ -64,8 +62,6 @@ export {
   createSurveyActionRow,
   surveyManagementActionRow,
   viewResultsActionRow1,
-  viewResultsActionRow2,
-  publicResultsDropdown,
   autoPostDropdown,
   surveyLeaderboardActionRow,
 };
