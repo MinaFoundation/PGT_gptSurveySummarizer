@@ -151,13 +151,11 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
 
     case `view_high_level_results-${surveyName}`:
-      await interaction.deferReply({ ephemeral: true });
       await handleSummary(interaction, surveyName, redisClient, "yes");
 
       break;
 
     case `view_mf_data-${surveyName}`:
-      await interaction.deferReply({ ephemeral: true });
       await handleView(interaction, surveyName, redisClient);
 
       break;
