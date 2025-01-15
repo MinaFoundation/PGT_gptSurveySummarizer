@@ -355,7 +355,6 @@ It has also node server for Govbot. Here is the API documentation
 - The API requires a JWT Bearer token for authorization.
 - Algorithm: **HS256**
 - Example Secret Key: `123456` *(Use environment variables to store sensitive data).*
-- The JWT token is added to the `Authorization` header automatically.
 
 ## Endpoints
 
