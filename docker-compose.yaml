@@ -24,5 +24,15 @@ services:
       REDIS_PASSWORD: ""
       GSS_LOG_LEVEL: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
+  api:
+    image: gpt-survey-summarizer
+    build: .
+    command: server
+    environment: 
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      AUTH_SECRET: ""
+      GSS_LOG_LEVEL: ""
   redis:
     image: redis
