@@ -74,13 +74,13 @@ export const surveyManagementActionRow =
       .setLabel("Edit Survey")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId("survey_status")
-      .setLabel("Survey Status")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
       .setCustomId("delete_survey")
       .setLabel("Delete Survey")
       .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId("survey_status")
+      .setLabel("Set Status")
+      .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId("post_survey")
       .setLabel("Post Survey to Channel")
