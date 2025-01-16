@@ -25,11 +25,8 @@ import {
   handleViewDiscordSurveyCounts,
   adminActionRow,
   adminEmbed,
-  publicResultsDropdown,
   createSurveyActionRow,
   surveyManagementActionRow,
-  viewResultsActionRow1,
-  viewResultsActionRow2,
   surveyLeaderboardActionRow,
 } from "@commands/index";
 
@@ -147,17 +144,14 @@ export const handleButtons = async (interaction, client, redisClient) => {
 
     case `view_public_results-${surveyName}`:
       await handleSummary(interaction, surveyName, redisClient, "no");
-
       break;
 
     case `view_high_level_results-${surveyName}`:
       await handleSummary(interaction, surveyName, redisClient, "yes");
-
       break;
 
     case `view_mf_data-${surveyName}`:
       await handleView(interaction, surveyName, redisClient);
-
       break;
 
     case "survey_leaderboard":
@@ -184,8 +178,42 @@ export const handleButtons = async (interaction, client, redisClient) => {
       await handleSurveyDropdown(interaction, client, redisClient, "edit");
       break;
     case "survey_status":
-      await handleSetStatus(interaction, redisClient);
+      await interaction.deferReply({ ephemeral: true });
+
+      const surveysForStatus = await redisClient.sMembers("surveys");
+
+      const statusOptions = surveysForStatus.map((survey) => ({
+        label: survey,
+        value: survey,
+      }));
+
+      if (statusOptions.length === 0) {
+        await interaction.followUp({
+          content: "No surveys available to update status.",
+          ephemeral: true,
+        });
+        break;
+      }
+
+      const statusDropdownMenu = {
+        type: 1,
+        components: [
+          {
+            type: 3,
+            custom_id: `status_survey_dropdown`,
+            placeholder: "Select a survey to update its status",
+            options: statusOptions,
+          },
+        ],
+      };
+
+      await interaction.followUp({
+        content: "Select a survey to update its status:",
+        components: [statusDropdownMenu],
+        ephemeral: true,
+      });
       break;
+
     case "delete_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "delete");
       break;
@@ -222,10 +250,30 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
 
     default:
-      await interaction.reply({
-        content: "Unknown action",
-        ephemeral: true,
-      });
+      if (customId.startsWith("statusToggle")) {
+        const [_, surveyToToggle, action] = customId.split("-");
+        const newStatus = action === "activate" ? "activate" : "deactivate";
+
+        await handleSetStatus(
+          interaction,
+          surveyToToggle,
+          newStatus,
+          redisClient,
+        );
+
+        await interaction.reply({
+          content: `Survey **${surveyToToggle}** has been successfully ${
+            action === "activate" ? "activated" : "deactivated"
+          }.`,
+          ephemeral: true,
+        });
+        log.info(`Survey ${surveyToToggle} status updated to ${newStatus}.`);
+      } else {
+        await interaction.reply({
+          content: "Unknown action",
+          ephemeral: true,
+        });
+      }
       break;
   }
 };
@@ -249,6 +297,8 @@ const handleSurveyDropdown = async (
       content: `No surveys available to ${command}.`,
       ephemeral: true,
     });
+
+    return;
   }
 
   const selectMenu = {
@@ -327,6 +377,37 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
         ephemeral: true,
       });
 
+      break;
+    case "status_survey_dropdown":
+      await interaction.deferReply({ ephemeral: true });
+      const selectedSurveyForStatus = interaction.values[0];
+
+      const currentStatus = await redisClient.get(
+        `survey:${selectedSurveyForStatus}:is-active`,
+      );
+
+      const toggleStatus = currentStatus === "true" ? "deactivate" : "activate";
+
+      await interaction.followUp({
+        content: `The current status of **${selectedSurveyForStatus}** is **${
+          currentStatus === "true" ? "Active" : "Inactive"
+        }**. Would you like to ${toggleStatus} it?`,
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                label:
+                  toggleStatus.charAt(0).toUpperCase() + toggleStatus.slice(1),
+                style: toggleStatus === "activate" ? 3 : 4,
+                custom_id: `statusToggle-${selectedSurveyForStatus}-${toggleStatus}`,
+              },
+            ],
+          },
+        ],
+        ephemeral: true,
+      });
       break;
 
     default:
