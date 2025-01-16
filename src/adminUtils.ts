@@ -33,7 +33,10 @@ import {
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
 import { discordConfig, version } from "@config";
-import { create_multi_cmd } from "@constants";
+import {
+  create_multi_cmd,
+  maxResponsesForMultiResponsePerUser,
+} from "@constants";
 import { threadPost } from "@lib/threadPost";
 import { deleteThreadPost } from "@lib/deleteThreadPost";
 import { updateThreadPost } from "@lib/updateThreadPost";
@@ -174,6 +177,18 @@ export const handleButtons = async (interaction, client, redisClient) => {
         create_multi_cmd,
       );
       break;
+    case `respondButton-${surveyName}`:
+      const { user } = interaction;
+      const username = user.username;
+
+      await handleRespondButton(
+        interaction,
+        surveyName,
+        redisClient,
+        username,
+        maxResponsesForMultiResponsePerUser,
+      );
+      break;
     case "edit_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "edit");
       break;
@@ -223,8 +238,8 @@ export const handleButtons = async (interaction, client, redisClient) => {
     case "survey_info":
       await handleInfo(interaction, version);
       break;
-    case "post_survey":
-      await handleRespond(interaction);
+    case "respond_survey":
+      await handleSurveyDropdown(interaction, client, redisClient, "respond");
       break;
 
     // Dropdowns
@@ -408,6 +423,11 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
         ],
         ephemeral: true,
       });
+      break;
+
+    case "respond_survey_dropdown":
+      const selectedSurveyToPost = interaction.values[0];
+      await handleRespond(redisClient, interaction, selectedSurveyToPost);
       break;
 
     default:

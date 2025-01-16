@@ -25,6 +25,10 @@ export const adminActionRow = new ActionRowBuilder().addComponents(
     .setCustomId("survey_leaderboard")
     .setLabel("Survey Leaderboard")
     .setStyle(ButtonStyle.Primary),
+  new ButtonBuilder()
+    .setCustomId("survey_info")
+    .setLabel("Bot Info")
+    .setStyle(ButtonStyle.Secondary),
 );
 
 export const adminEmbed = new EmbedBuilder()
@@ -78,12 +82,12 @@ export const surveyManagementActionRow =
       .setLabel("Delete Survey")
       .setStyle(ButtonStyle.Danger),
     new ButtonBuilder()
-      .setCustomId("survey_info")
-      .setLabel("Survey Info")
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
       .setCustomId("post_survey")
       .setLabel("Post Survey to Channel")
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId("respond_survey")
+      .setLabel("Respond Survey")
       .setStyle(ButtonStyle.Primary),
   );
 
