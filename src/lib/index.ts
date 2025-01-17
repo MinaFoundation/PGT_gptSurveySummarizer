@@ -9,6 +9,7 @@ import { threadPost } from "./threadPost";
 import { updateThreadPost } from "./updateThreadPost";
 import { deleteThreadPost } from "./deleteThreadPost";
 import { isMeaningful } from "./isMeaningful";
+import { postSurvey } from "./postSurvey";
 
 export {
   checkUpdateSurveys,
@@ -22,4 +23,5 @@ export {
   updateThreadPost,
   deleteThreadPost,
   isMeaningful,
+  postSurvey,
 };

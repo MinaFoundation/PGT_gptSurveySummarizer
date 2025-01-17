@@ -32,7 +32,7 @@ import {
 
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v10";
-import { discordConfig, version } from "@config";
+import { discordConfig, POST_CHANNEL_ID, version } from "@config";
 import {
   create_multi_cmd,
   maxResponsesForMultiResponsePerUser,
@@ -40,6 +40,7 @@ import {
 import { threadPost } from "@lib/threadPost";
 import { deleteThreadPost } from "@lib/deleteThreadPost";
 import { updateThreadPost } from "@lib/updateThreadPost";
+import { postSurvey } from "@lib/postSurvey";
 
 export const handleInteraction = async (interaction, client, redisClient) => {
   if (interaction.isButton()) {
@@ -98,7 +99,6 @@ export const handleButtons = async (interaction, client, redisClient) => {
         ephemeral: true,
       });
       break;
-
     case "survey_management":
       await interaction.deferReply({ ephemeral: true });
       await interaction.followUp({
@@ -107,7 +107,6 @@ export const handleButtons = async (interaction, client, redisClient) => {
         components: [surveyManagementActionRow],
       });
       break;
-
     case "view_results":
       let command = "view";
       await interaction.deferReply({ ephemeral: true });
@@ -144,19 +143,15 @@ export const handleButtons = async (interaction, client, redisClient) => {
       });
 
       break;
-
     case `view_public_results-${surveyName}`:
       await handleSummary(interaction, surveyName, redisClient, "no");
       break;
-
     case `view_high_level_results-${surveyName}`:
       await handleSummary(interaction, surveyName, redisClient, "yes");
       break;
-
     case `view_mf_data-${surveyName}`:
       await handleView(interaction, surveyName, redisClient);
       break;
-
     case "survey_leaderboard":
       await interaction.deferReply({ ephemeral: true });
       await interaction.followUp({
@@ -165,8 +160,6 @@ export const handleButtons = async (interaction, client, redisClient) => {
         components: [surveyLeaderboardActionRow],
       });
       break;
-
-    // Sub-buttons for Create Survey
     case "single_response":
       await handleCreate(interaction, "create", "");
       break;
@@ -241,15 +234,8 @@ export const handleButtons = async (interaction, client, redisClient) => {
     case "respond_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "respond");
       break;
-
-    // Dropdowns
-    case "start_auto_post":
-      await handleAutoPost(interaction, "start", client, redisClient);
-      break;
-    case "stop_auto_post":
-      await handleAutoPost(interaction, "stop", client, redisClient);
-      break;
-
+    case "post_survey":
+      await handleSurveyDropdown(interaction, client, redisClient, "post");
     // Sub-buttons for Survey Leaderboard
     case "create_leaderboard":
       await handleLeaderboard(interaction, redisClient);
@@ -426,8 +412,18 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
       break;
 
     case "respond_survey_dropdown":
+      const selectedSurveyToRespond = interaction.values[0];
+      await handleRespond(redisClient, interaction, selectedSurveyToRespond);
+      break;
+
+    case "post_survey_dropdown":
       const selectedSurveyToPost = interaction.values[0];
-      await handleRespond(redisClient, interaction, selectedSurveyToPost);
+      await postSurvey(
+        client,
+        redisClient,
+        selectedSurveyToPost,
+        POST_CHANNEL_ID,
+      );
       break;
 
     default:

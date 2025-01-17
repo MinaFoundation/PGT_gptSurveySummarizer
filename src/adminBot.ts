@@ -96,12 +96,6 @@ process.on("uncaughtException", (error) => {
       await handleInteraction(interaction, client, redisClient);
     } catch (error) {
       log.error("Error handling interaction:", error);
-      if (interaction.isRepliable()) {
-        await interaction.reply({
-          content: "An error occurred while processing your interaction.",
-          ephemeral: true,
-        });
-      }
     }
   });
 
