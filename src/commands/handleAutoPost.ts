@@ -5,9 +5,12 @@ export const handleAutoPost = async (
   action: string,
   client: Client,
   redisClient: any,
+  surveyName?: any,
 ) => {
   const channel = client.channels.cache.get(interaction.channelId);
-  const surveyName = interaction.options.getString("survey");
+  if (!surveyName) {
+    const surveyName = interaction.options.getString("survey");
+  }
   const key = "auto-post-surveys";
   const method = action === "start" ? "sAdd" : "sRem";
   await redisClient[method](key, `${channel}:${surveyName}`);

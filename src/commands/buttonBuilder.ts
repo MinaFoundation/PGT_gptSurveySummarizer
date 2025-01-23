@@ -106,6 +106,14 @@ export const viewResultsActionRow1 =
       .setCustomId("mf_data")
       .setLabel("MF Data")
       .setStyle(ButtonStyle.Danger),
+    new ButtonBuilder()
+      .setCustomId("start_auto_post")
+      .setLabel("Start Auto Post")
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId("stop_auto_post")
+      .setLabel("Stop Auto Post")
+      .setStyle(ButtonStyle.Secondary),
   );
 
 export const autoPostDropdown = new ActionRowBuilder().addComponents(

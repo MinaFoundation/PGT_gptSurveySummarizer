@@ -152,6 +152,24 @@ export const handleButtons = async (interaction, client, redisClient) => {
     case `view_mf_data-${surveyName}`:
       await handleView(interaction, surveyName, redisClient);
       break;
+    case `start_auto_post-${surveyName}`:
+      await handleAutoPost(
+        interaction,
+        "start",
+        client,
+        redisClient,
+        surveyName,
+      );
+      break;
+    case `stop_auto_post-${surveyName}`:
+      await handleAutoPost(
+        interaction,
+        "stop",
+        client,
+        redisClient,
+        surveyName,
+      );
+      break;
     case "survey_leaderboard":
       await interaction.deferReply({ ephemeral: true });
       await interaction.followUp({
@@ -371,6 +389,18 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
                 label: "MF Data",
                 style: 1,
                 custom_id: `view_mf_data-${selectedSurvey}`,
+              },
+              {
+                type: 2,
+                label: "Start Auto Post",
+                style: 1,
+                custom_id: `start_auto_post-${selectedSurvey}`,
+              },
+              {
+                type: 2,
+                label: "Stop Auto Post",
+                style: 2,
+                custom_id: `stop_auto_post-${selectedSurvey}`,
               },
             ],
           },
