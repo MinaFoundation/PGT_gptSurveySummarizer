@@ -6,8 +6,12 @@ export const handleAutoPost = async (
   client: Client,
   redisClient: any,
   surveyName?: any,
+  channelId?: any,
 ) => {
-  const channel = client.channels.cache.get(interaction.channelId);
+  let channel: any;
+  if (!channelId) {
+    const channel = client.channels.cache.get(interaction.channelId);
+  }
   if (!surveyName) {
     const surveyName = interaction.options.getString("survey");
   }
