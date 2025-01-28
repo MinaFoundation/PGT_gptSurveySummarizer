@@ -2,6 +2,12 @@ import log from "./logger";
 import { setIntervalAsync } from "set-interval-async/dynamic";
 import { startAutoPosting } from "./lib/startAutoPosting.js";
 import {
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder,
+} from "discord.js";
+import {
   command,
   handleAutoPost,
   handleCreate,
@@ -152,24 +158,45 @@ export const handleButtons = async (interaction, client, redisClient) => {
     case `view_mf_data-${surveyName}`:
       await handleView(interaction, surveyName, redisClient);
       break;
-    case `start_auto_post-${surveyName}`:
-      await handleAutoPost(
-        interaction,
-        "start",
-        client,
-        redisClient,
-        surveyName,
+    case `start_auto_post-${surveyName}`: {
+      const modal = new ModalBuilder()
+        .setCustomId(`startAutoPostModal-${surveyName}`)
+        .setTitle("Start Auto Post");
+
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to start auto-posting")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+
+      const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
       );
+      modal.addComponents(row);
+
+      await interaction.showModal(modal);
       break;
-    case `stop_auto_post-${surveyName}`:
-      await handleAutoPost(
-        interaction,
-        "stop",
-        client,
-        redisClient,
-        surveyName,
+    }
+
+    case `stop_auto_post-${surveyName}`: {
+      const modal = new ModalBuilder()
+        .setCustomId(`stopAutoPostModal-${surveyName}`)
+        .setTitle("Stop Auto Post");
+
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to stop auto-posting")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+
+      const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
       );
+      modal.addComponents(row);
+
+      await interaction.showModal(modal);
       break;
+    }
     case "survey_leaderboard":
       await interaction.deferReply({ ephemeral: true });
       await interaction.followUp({
@@ -519,6 +546,31 @@ export const handleModals = async (interaction, client, redisClient) => {
       await deleteThreadPost(client, sn);
       await threadPost(client, redisClient, sn, desc, fields);
     }
+  } else if (interaction.customId.startsWith("startAutoPostModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleAutoPost(
+      interaction,
+      "start",
+      client,
+      redisClient,
+      surveyName,
+      channelId,
+    );
+  } else if (interaction.customId.startsWith("stopAutoPostModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleAutoPost(
+      interaction,
+      "stop",
+      client,
+      redisClient,
+      surveyName,
+      channelId,
+    );
   }
 };
 
