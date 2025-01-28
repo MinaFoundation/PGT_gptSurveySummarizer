@@ -7,10 +7,13 @@ export const handleAutoPost = async (
   client: any,
   redisClient: any,
   surveyName: string,
-  channelId: any
+  channelId: any,
 ) => {
   if (!channelId) {
-    await interaction.reply({ content: "No channel ID provided.", ephemeral: true });
+    await interaction.reply({
+      content: "No channel ID provided.",
+      ephemeral: true,
+    });
     return;
   }
 
