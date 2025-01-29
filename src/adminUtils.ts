@@ -281,7 +281,6 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
     case "post_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "post");
-    // Sub-buttons for Survey Leaderboard
     case "create_leaderboard":
       await handleLeaderboard(interaction, redisClient);
       break;
@@ -470,9 +469,24 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
 
     case "respond_survey_dropdown":
       const selectedSurveyToRespond = interaction.values[0];
-      await handleRespond(redisClient, interaction, selectedSurveyToRespond);
-      break;
+      const modal = new ModalBuilder()
+        .setCustomId(`postRespondModal-${selectedSurveyToRespond}`)
+        .setTitle("Post Respond Survey Button");
 
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to post the respond button")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(true);
+
+      const firstRow = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
+      );
+
+      modal.addComponents(firstRow);
+
+      await interaction.showModal(modal);
+      break;
     case "post_survey_dropdown":
       const selectedSurveyToPost = interaction.values[0];
       await postSurvey(
@@ -570,6 +584,17 @@ export const handleModals = async (interaction, client, redisClient) => {
       redisClient,
       surveyName,
       channelId,
+    );
+  } else if (interaction.customId.startsWith("postRespondModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleRespond(
+      redisClient,
+      interaction,
+      surveyName,
+      channelId,
+      client,
     );
   }
 };
