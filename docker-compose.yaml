@@ -28,11 +28,12 @@ services:
     image: gpt-survey-summarizer
     build: .
     command: server
-    environment: 
+    environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
       AUTH_SECRET: ""
       GSS_LOG_LEVEL: ""
+      PORT: 3001
   redis:
     image: redis

@@ -25,6 +25,9 @@ Join the Discord server for discussing and developing this tool [here](https://d
 
    # Discord forum channel id for posting channels.
    POST_CHANNEL_ID=XXXXX
+
+    # Server PORT
+   PORT=3000
    ```
 
 2. Run `npm install`
@@ -351,28 +354,33 @@ To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Di
 It has also node server for Govbot. Here is the API documentation
 
 ## Authorization
+
 ### JWT Bearer
+
 - The API requires a JWT Bearer token for authorization.
 - Algorithm: **HS256**
-- Example Secret Key: `123456` *(Use environment variables to store sensitive data).*
+- Example Secret Key: `123456` _(Use environment variables to store sensitive data)._
 
 ## Endpoints
 
 ### 1. Create a Proposal
+
 **URL**:  
 `POST /api/govbot/proposal`
 
-**Headers**:  
+**Headers**:
+
 - Content-Type: `application/json`
 - Authorization: `Bearer <AUTH_SECRET>`
 
 **Request Body (JSON)**:
+
 ```json
 {
-    "proposalName": "Proposal Name",
-    "proposalAuthor": "eylulgurcan",
-    "proposalDescription": "Long Description",
-    "endTime": "2025-12-13T14:30:00.000Z"
+  "proposalName": "Proposal Name",
+  "proposalAuthor": "eylulgurcan",
+  "proposalDescription": "Long Description",
+  "endTime": "2025-12-13T14:30:00.000Z"
 }
 ```
 
@@ -381,15 +389,16 @@ It has also node server for Govbot. Here is the API documentation
 **URL**:  
 `POST /api/govbot/proposal`
 
-**Headers**:  
+**Headers**:
+
 - Content-Type: `application/json`
 - Authorization: `Bearer <AUTH_SECRET>`
 
 ```json
 {
-    "proposalName": "Proposal Name",
-    "username": "berkinggurcan",
-    "feedbackContent": "I think this plan is not well thought out, but we dont need more focus on renewable energy. and created suprising results."
+  "proposalName": "Proposal Name",
+  "username": "berkinggurcan",
+  "feedbackContent": "I think this plan is not well thought out, but we dont need more focus on renewable energy. and created suprising results."
 }
 ```
 
@@ -402,6 +411,7 @@ It has also node server for Govbot. Here is the API documentation
 No header.
 
 **Example Response**
+
 ```
 {
     "message": "Hello Govbot!"
