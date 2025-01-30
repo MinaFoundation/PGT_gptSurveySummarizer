@@ -10,6 +10,6 @@ const router: Router = Router();
 
 router.get("/", hello);
 router.post("/proposal", authMiddleware, consumeProposal);
-router.post("/deliberation", consumeDeliberation);
+router.post("/deliberation", authMiddleware, consumeDeliberation);
 
 export default router;
