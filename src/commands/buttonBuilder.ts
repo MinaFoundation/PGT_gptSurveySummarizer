@@ -83,7 +83,7 @@ export const surveyManagementActionRow =
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId("post_survey")
-      .setLabel("Post Survey to Channel")
+      .setLabel("Post Survey to Forum")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setCustomId("respond_survey")

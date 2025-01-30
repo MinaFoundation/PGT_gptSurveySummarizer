@@ -281,6 +281,7 @@ export const handleButtons = async (interaction, client, redisClient) => {
       break;
     case "post_survey":
       await handleSurveyDropdown(interaction, client, redisClient, "post");
+      break;
     case "create_leaderboard":
       await handleLeaderboard(interaction, redisClient);
       break;
@@ -477,7 +478,7 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
         .setCustomId("channelId")
         .setLabel("Channel ID to post the respond button")
         .setStyle(TextInputStyle.Short)
-        .setRequired(true);
+        .setRequired(false);
 
       const firstRow = new ActionRowBuilder<TextInputBuilder>().addComponents(
         channelIdInput,
@@ -488,13 +489,16 @@ export const handleSelectMenus = async (interaction, client, redisClient) => {
       await interaction.showModal(modal);
       break;
     case "post_survey_dropdown":
+      await interaction.deferReply({ ephemeral: true });
       const selectedSurveyToPost = interaction.values[0];
+
       await postSurvey(
         client,
         redisClient,
         selectedSurveyToPost,
         POST_CHANNEL_ID,
       );
+      await interaction.editReply({ content: "Survey posted successfully!" });
       break;
 
     default:
