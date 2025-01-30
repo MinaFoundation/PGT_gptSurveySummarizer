@@ -167,7 +167,7 @@ export const handleButtons = async (interaction, client, redisClient) => {
         .setCustomId("channelId")
         .setLabel("Channel ID to start auto-posting")
         .setStyle(TextInputStyle.Short)
-        .setRequired(true);
+        .setRequired(false);
 
       const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
         channelIdInput,
@@ -187,7 +187,7 @@ export const handleButtons = async (interaction, client, redisClient) => {
         .setCustomId("channelId")
         .setLabel("Channel ID to stop auto-posting")
         .setStyle(TextInputStyle.Short)
-        .setRequired(true);
+        .setRequired(false);
 
       const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
         channelIdInput,
