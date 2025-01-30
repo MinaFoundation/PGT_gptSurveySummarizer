@@ -85,8 +85,6 @@ export const setupAdminChannel = async (adminChannel, client) => {
       components: [adminActionRow],
       ephemeral: true,
     });
-
-    log.info("Admin channel setup complete.");
   } catch (error) {
     log.error("Error setting up admin channel:", error);
   }
@@ -149,15 +147,63 @@ export const handleButtons = async (interaction, client, redisClient) => {
       });
 
       break;
-    case `view_public_results-${surveyName}`:
-      await handleSummary(interaction, surveyName, redisClient, "no");
+    case `view_public_results-${surveyName}`: {
+      const modal = new ModalBuilder()
+        .setCustomId(`viewPublicModal-${surveyName}`)
+        .setTitle("View Public Results");
+
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to post the results")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false);
+
+      const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
+      );
+      modal.addComponents(row);
+
+      await interaction.showModal(modal);
       break;
-    case `view_high_level_results-${surveyName}`:
-      await handleSummary(interaction, surveyName, redisClient, "yes");
+    }
+    case `view_high_level_results-${surveyName}`: {
+      const modal = new ModalBuilder()
+        .setCustomId(`viewHighLevelModal-${surveyName}`)
+        .setTitle("View High-Level Results");
+
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to post the results")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false);
+
+      const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
+      );
+      modal.addComponents(row);
+
+      await interaction.showModal(modal);
       break;
-    case `view_mf_data-${surveyName}`:
-      await handleView(interaction, surveyName, redisClient);
+    }
+    case `view_mf_data-${surveyName}`: {
+      const modal = new ModalBuilder()
+        .setCustomId(`viewMFModal-${surveyName}`)
+        .setTitle("View MF Data");
+
+      const channelIdInput = new TextInputBuilder()
+        .setCustomId("channelId")
+        .setLabel("Channel ID to post the results")
+        .setStyle(TextInputStyle.Short)
+        .setRequired(false);
+
+      const row = new ActionRowBuilder<TextInputBuilder>().addComponents(
+        channelIdInput,
+      );
+      modal.addComponents(row);
+
+      await interaction.showModal(modal);
       break;
+    }
     case `start_auto_post-${surveyName}`: {
       const modal = new ModalBuilder()
         .setCustomId(`startAutoPostModal-${surveyName}`)
@@ -600,6 +646,21 @@ export const handleModals = async (interaction, client, redisClient) => {
       channelId,
       client,
     );
+  } else if (interaction.customId.startsWith("viewPublicModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleSummary(interaction, surveyName, redisClient, "no", channelId);
+  } else if (interaction.customId.startsWith("viewHighLevelModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleSummary(interaction, surveyName, redisClient, "yes", channelId);
+  } else if (interaction.customId.startsWith("viewMFModal-")) {
+    const surveyName = interaction.customId.split("-").slice(1).join("-");
+    const channelId = interaction.fields.getTextInputValue("channelId");
+
+    await handleView(interaction, surveyName, redisClient, channelId);
   }
 };
 
