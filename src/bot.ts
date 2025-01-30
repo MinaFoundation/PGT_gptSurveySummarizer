@@ -53,9 +53,9 @@ process.on("uncaughtException", (error) => {
       ),
       { body: [command.toJSON()] },
     );
-    log.info("Successfully registered commands.");
+    log.info("Successfully registered the bot.");
   } catch (error) {
-    log.error("Error registering commands", error);
+    log.error("Error registering bot", error);
   }
 
   const adminChannelId = discordConfig.adminChannelId;
