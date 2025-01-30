@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "commandbot": "npx tsx src/commandBot.ts",
     "bot": "npx tsx src/bot.ts",
-    "adminbot": "npx tsx src/adminBot.ts",
     "server": "npx tsx src/server.ts",
     "dev": "nodemon --exec npx tsx src/bot.ts",
     "summarizer": "node src/summarizer.js",
