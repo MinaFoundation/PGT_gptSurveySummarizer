@@ -6,10 +6,13 @@ import {
 } from "../controllers/govbotController";
 import { authMiddleware } from "src/middleware/authMiddleware";
 import {
+  getProposalsFeedbacksSummaryById,
+  getProposalsSummariesInFundingRound,
   getProposalSummaryById,
   healthCheck,
   postFeedback,
   postProposal,
+  summarizeFeedbacks,
   summarizeProposal,
 } from "src/controllers/controllers";
 
