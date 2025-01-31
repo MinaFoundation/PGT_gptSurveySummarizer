@@ -1,4 +1,5 @@
-import redisClient from "./redisClient";
+import redisClient from "../helpers/redisClient";
+import { PROPOSAL_SUMMARIZE_PROMPT, FEEDBACK_SUMMARIZE_PROMPT } from "src/helpers/prompts";
 
 import { Request, Response } from "express";
 
@@ -9,9 +10,12 @@ import {
   ProposalFeedbacksSummary,
 } from "src/models/govbotModel";
 
+import OpenAI from "openai";
+const openai = new OpenAI();
+
 import log from "../logger";
 
-function proposalSummarizer(text: string): string {
+async function proposalSummarizer(text: string): Promise<string> {
   if (!text) return "No content to summarize.";
   return `DUMMY SUMMARY: ${text.slice(0, 100)}...`;
 }
@@ -154,7 +158,7 @@ export const summarizeProposal = async (
 
     const proposal: GovbotProposal = JSON.parse(proposalData);
 
-    const summaryText = proposalSummarizer(proposal.proposalDescription);
+    const summaryText = await proposalSummarizer(proposal.proposalDescription);
 
     const proposalSummary: ProposalSummary = {
       proposalId: proposal.proposalId,
