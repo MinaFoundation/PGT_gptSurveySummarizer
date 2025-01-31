@@ -1,5 +1,4 @@
-import { createClient } from "redis";
-import { redisConfig } from "@config";
+import redisClient from "./redisClient";
 
 import { Request, Response } from "express";
 
@@ -11,8 +10,6 @@ import {
 } from "src/models/govbotModel";
 
 import log from "../logger";
-
-const redisClient = createClient(redisConfig);
 
 function proposalSummarizer(text: string): string {
   if (!text) return "No content to summarize.";
@@ -26,7 +23,15 @@ export const healthCheck = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  res.status(200).json({ status: "ok" });
+  try {
+    await redisClient.ping();
+    res.status(200).json({ status: "ok", redis: "connected" });
+  } catch (error) {
+    log.error("Redis ping failed:", error);
+    res
+      .status(503)
+      .json({ status: "unavailable", error: "Cannot connect to Redis" });
+  }
 };
 
 // ------------------------------------------------------------------
