@@ -351,7 +351,7 @@ To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Di
 
 # API Documentation for Govbot Endpoints
 
-It has also node server for Govbot. Here is the API documentation
+It has also node server for Govbot. First 3 endpoint is used for to integrate discord Survey Summarizer. Here is the API documentation:
 
 ## Authorization
 
@@ -415,6 +415,101 @@ No header.
 ```
 {
     "message": "Hello Govbot!"
+}
+```
+
+### 4. Health Check for Redis Integration and API
+
+**URL**:  
+`GET /api/govbot/health`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "status": "ok",
+  "redis": "connected"
+}
+```
+
+### 5. Add Proposal to DB
+
+**URL**:  
+`POST /api/govbot/proposals`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Request Body (JSON)**:
+
+```json
+{
+  "proposalId": "12",
+  "proposalName": "My Proposal",
+  "proposalDescription": "Proposal details here...",
+  "proposalAuthor": "Alice",
+  "endTime": "2025-12-31T23:59:59.999Z",
+  "fundingRoundId": 123
+}
+```
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalName": "My Proposal",
+  "proposalDescription": "Proposal details here...",
+  "proposalAuthor": "Alice",
+  "endTime": "2025-12-31T23:59:59.999Z",
+  "fundingRoundId": 123
+}
+```
+
+### 6. Summarize Proposal by ID
+
+**URL**:  
+`POST /api/govbot/proposals/:id/summarize`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalSummary": "DUMMY SUMMARY: Proposal details here......",
+  "fundingRoundId": 123
+}
+```
+
+### 7. Get Proposal Summary by Proposal ID
+
+**URL**:  
+`GET /api/govbot/proposals/:id/summary`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalSummary": "DUMMY SUMMARY: Proposal details here......",
+  "fundingRoundId": 123
 }
 ```
 

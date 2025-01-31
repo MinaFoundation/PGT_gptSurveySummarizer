@@ -31,7 +31,7 @@ router.get(
 );
 router.post("/proposals", authMiddleware, postProposal);
 router.post(
-  "/proposals/:proposalId/summary",
+  "/proposals/:proposalId/summarize",
   authMiddleware,
   summarizeProposal,
 );
