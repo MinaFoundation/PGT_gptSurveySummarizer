@@ -291,7 +291,6 @@ export const getProposalsSummariesInFundingRound = async (
 ): Promise<void> => {
   try {
     const { fundingRoundId } = req.params;
-    // This key should map to a list or set of proposal IDs
     const fundingRoundKey = `funding_round_proposals:${fundingRoundId}`;
 
     const proposalIdsData = await redisClient.get(fundingRoundKey);
