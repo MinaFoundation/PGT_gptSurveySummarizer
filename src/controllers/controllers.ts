@@ -1,5 +1,8 @@
 import redisClient from "../helpers/redisClient";
-import { PROPOSAL_SUMMARIZE_PROMPT, FEEDBACK_SUMMARIZE_PROMPT } from "src/helpers/prompts";
+import {
+  PROPOSAL_SUMMARIZE_PROMPT,
+  FEEDBACK_SUMMARIZE_PROMPT,
+} from "src/helpers/prompts";
 
 import { Request, Response } from "express";
 
@@ -15,9 +18,32 @@ const openai = new OpenAI();
 
 import log from "../logger";
 
-async function proposalSummarizer(text: string): Promise<string> {
-  if (!text) return "No content to summarize.";
-  return `DUMMY SUMMARY: ${text.slice(0, 100)}...`;
+async function proposalSummarizer(
+  proposalName: string,
+  proposalDescription: string,
+  proposalAuthor: string,
+  fundingRoundId: string,
+): Promise<string> {
+  const PROMPT = PROPOSAL_SUMMARIZE_PROMPT(
+    proposalName,
+    proposalDescription,
+    proposalAuthor,
+    fundingRoundId,
+  );
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "user",
+        content: PROMPT,
+      },
+    ],
+  });
+
+  const summary = completion.choices[0].message.content;
+  log.debug(summary);
+
+  return summary;
 }
 
 function feedbackSummarizer(text: string): string {
@@ -158,7 +184,12 @@ export const summarizeProposal = async (
 
     const proposal: GovbotProposal = JSON.parse(proposalData);
 
-    const summaryText = await proposalSummarizer(proposal.proposalDescription);
+    const summaryText = await proposalSummarizer(
+      proposal.proposalName,
+      proposal.proposalDescription,
+      proposal.proposalAuthor,
+      proposal.proposalId.toString(),
+    );
 
     const proposalSummary: ProposalSummary = {
       proposalId: proposal.proposalId,
