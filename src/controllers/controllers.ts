@@ -13,8 +13,10 @@ import {
   ProposalFeedbacksSummary,
 } from "src/models/govbotModel";
 
+import { apikey } from "@config";
+
 import OpenAI from "openai";
-const openai = new OpenAI();
+const openai = new OpenAI({apiKey: apikey});
 
 import log from "../logger";
 
