@@ -42,10 +42,6 @@ export const getProposalSummaryById = async (
   res: Response,
 ): Promise<void> => {
   try {
-    redisClient.on("error", (err) => log.error("Redis Client Error", err));
-    await redisClient.connect();
-    redisClient.on("connect", () => log.info("Connected to Redis server"));
-
     const { proposalId } = req.params;
     const key = `proposal_summary:${proposalId}`;
 
@@ -106,10 +102,6 @@ export const postProposal = async (
       });
     }
 
-    redisClient.on("error", (err) => log.error("Redis Client Error", err));
-    await redisClient.connect();
-    redisClient.on("connect", () => log.info("Connected to Redis server"));
-
     const newProposal: GovbotProposal = {
       proposalId,
       proposalName,
@@ -147,10 +139,6 @@ export const summarizeProposal = async (
   res: Response,
 ): Promise<void> => {
   try {
-    redisClient.on("error", (err) => log.error("Redis Client Error", err));
-    await redisClient.connect();
-    redisClient.on("connect", () => log.info("Connected to Redis server"));
-
     const { proposalId } = req.params;
 
     const proposalKey = `proposal:${proposalId}`;
