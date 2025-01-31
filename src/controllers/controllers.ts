@@ -73,65 +73,79 @@ export const getProposalSummaryById = async (
  *   "fundingRoundId": 123
  * }
  */
-export const postProposal = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const {
-        proposalId,
-        proposalName,
-        proposalDescription,
-        proposalAuthor,
-        endTime,
-        fundingRoundId,
-      } = req.body;
-  
-      if (
-        !proposalId ||
-        !proposalName ||
-        !proposalDescription ||
-        !proposalAuthor ||
-        !endTime ||
-        !fundingRoundId
-      ) {
-        res.status(400).json({
-          error:
-            "Required fields: proposalName, proposalDescription, proposalAuthor, endTime, and fundingRoundId.",
-        });
-      }
-  
-      const newProposal: GovbotProposal = {
-        proposalId,
-        proposalName,
-        proposalDescription,
-        proposalAuthor,
-        endTime: new Date(endTime),
-        fundingRoundId,
-      };
-  
-      const proposalKey = `proposal:${proposalId}`;
-      await redisClient.set(proposalKey, JSON.stringify(newProposal));
-  
-      const fundingRoundKey = `funding_round_proposals:${fundingRoundId}`;
-      const existingProposalsData = await redisClient.get(fundingRoundKey);
-      const proposalIds = existingProposalsData
-        ? JSON.parse(existingProposalsData)
-        : [];
-      proposalIds.push(proposalId);
-  
-      await redisClient.set(fundingRoundKey, JSON.stringify(proposalIds));
-  
-      res.status(201).json(newProposal);
-    } catch (error) {
-      log.error(error);
-      res.status(500).json({ error: "Internal server error." });
+export const postProposal = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const {
+      proposalId,
+      proposalName,
+      proposalDescription,
+      proposalAuthor,
+      endTime,
+      fundingRoundId,
+    } = req.body;
+
+    if (
+      !proposalId ||
+      !proposalName ||
+      !proposalDescription ||
+      !proposalAuthor ||
+      !endTime ||
+      !fundingRoundId
+    ) {
+      res.status(400).json({
+        error:
+          "Required fields: proposalName, proposalDescription, proposalAuthor, endTime, and fundingRoundId.",
+      });
     }
-  };
+
+    redisClient.on("error", (err) => log.error("Redis Client Error", err));
+    await redisClient.connect();
+    redisClient.on("connect", () => log.info("Connected to Redis server"));
+
+    const newProposal: GovbotProposal = {
+      proposalId,
+      proposalName,
+      proposalDescription,
+      proposalAuthor,
+      endTime: new Date(endTime),
+      fundingRoundId,
+    };
+
+    const proposalKey = `proposal:${proposalId}`;
+    await redisClient.set(proposalKey, JSON.stringify(newProposal));
+
+    const fundingRoundKey = `funding_round_proposals:${fundingRoundId}`;
+    const existingProposalsData = await redisClient.get(fundingRoundKey);
+    const proposalIds = existingProposalsData
+      ? JSON.parse(existingProposalsData)
+      : [];
+    proposalIds.push(proposalId);
+
+    await redisClient.set(fundingRoundKey, JSON.stringify(proposalIds));
+
+    res.status(201).json(newProposal);
+  } catch (error) {
+    log.error(error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
 
 // ------------------------------------------------------------------
 // POST /proposals/:proposalId/summary
 // Summarizes the proposal and stores the summary
 // ------------------------------------------------------------------
-export const summarizeProposal = async (req: Request, res: Response): Promise<void> => {
+export const summarizeProposal = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
+    redisClient.on("error", (err) => log.error("Redis Client Error", err));
+    await redisClient.connect();
+    redisClient.on("connect", () => log.info("Connected to Redis server"));
+
     const { proposalId } = req.params;
 
     const proposalKey = `proposal:${proposalId}`;
