@@ -166,3 +166,47 @@ export const summarizeProposal = async (
     res.status(500).json({ error: "Internal server error." });
   }
 };
+
+// ------------------------------------------------------------------
+// POST /proposals/:proposalId/feedbacks
+// Adds a feedback entry for a given proposal
+// ------------------------------------------------------------------
+export const postFeedback = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { proposalId } = req.params;
+
+    const proposalKey = `proposal:${proposalId}`;
+    const proposalData = await redisClient.get(proposalKey);
+    if (!proposalData) {
+      res.status(404).json({ error: "Proposal not found." });
+    }
+
+    const { username, feedbackContent } = req.body;
+    if (!username || !feedbackContent) {
+      res.status(400).json({ error: "Missing username or feedbackContent." });
+    }
+
+    const feedback: ProposalFeedback = {
+      proposalId,
+      username,
+      feedbackContent,
+    };
+
+    const feedbackKey = `proposal_feedbacks:${proposalId}`;
+    const existingFeedbackData = await redisClient.get(feedbackKey);
+    const feedbacks: ProposalFeedback[] = existingFeedbackData
+      ? JSON.parse(existingFeedbackData)
+      : [];
+
+    feedbacks.push(feedback);
+    await redisClient.set(feedbackKey, JSON.stringify(feedbacks));
+
+    res.status(201).json(feedback);
+  } catch (error) {
+    log.error(error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};

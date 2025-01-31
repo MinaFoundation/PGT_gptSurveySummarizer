@@ -8,6 +8,7 @@ import { authMiddleware } from "src/middleware/authMiddleware";
 import {
   getProposalSummaryById,
   healthCheck,
+  postFeedback,
   postProposal,
   summarizeProposal,
 } from "src/controllers/controllers";
@@ -33,7 +34,7 @@ router.post(
 );
 
 // Feedback for a proposal
-/* router.post("/proposals/:proposalId/feedbacks", authMiddleware, postFeedback);
+router.post("/proposals/:proposalId/feedbacks", authMiddleware, postFeedback);
 router.get(
   "/proposals/:proposalId/feedbacks/summary",
   authMiddleware,
@@ -43,14 +44,14 @@ router.post(
   "/proposals/:proposalId/feedbacks/summary",
   authMiddleware,
   summarizeFeedbacks,
-); */
+);
 
 // Funding rounds
-/* router.get(
+router.get(
   "/funding-rounds/:fundingRoundId/proposals/summaries",
   authMiddleware,
   getProposalsSummariesInFundingRound,
-); */
+);
 
 // For discord
 router.post("/proposal", authMiddleware, consumeProposal);
