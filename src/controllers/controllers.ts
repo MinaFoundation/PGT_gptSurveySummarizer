@@ -16,7 +16,7 @@ import {
 import { apikey } from "@config";
 
 import OpenAI from "openai";
-const openai = new OpenAI({apiKey: apikey});
+const openai = new OpenAI({ apiKey: apikey });
 
 import log from "../logger";
 
