@@ -48,9 +48,36 @@ async function proposalSummarizer(
   return summary;
 }
 
-function feedbackSummarizer(text: string): string {
-  if (!text) return "No content to summarize.";
-  return `DUMMY SUMMARY: ${text.slice(0, 100)}...`;
+type FeedbackDictionary = { [username: string]: string };
+
+async function feedbackSummarizer(
+  proposalName: string,
+  proposalDescription: string,
+  proposalAuthor: string,
+  fundingRoundId: string,
+  feedbacks: FeedbackDictionary,
+): Promise<string> {
+  const FEEDBACK_PROMPT = FEEDBACK_SUMMARIZE_PROMPT(
+    proposalName,
+    proposalDescription,
+    proposalAuthor,
+    fundingRoundId,
+    feedbacks,
+  );
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "user",
+        content: FEEDBACK_PROMPT,
+      },
+    ],
+  });
+
+  const summary = completion.choices[0].message.content;
+  log.debug(summary);
+
+  return summary;
 }
 
 // ------------------------------------------------------------------
