@@ -29,7 +29,7 @@ export const discordConfig = {
   token: process.env.DISCORD_TOKEN,
   clientId: process.env.CLIENT_ID,
   guildId: process.env.GUILD_ID,
-  adminChannelId: process.env.ADMIN_CHANNEL_ID,
+  adminChannelId: process.env.GSS_BOT_ADMIN_CHANNEL_ID,
 };
 
 export const version = package_json.version;
