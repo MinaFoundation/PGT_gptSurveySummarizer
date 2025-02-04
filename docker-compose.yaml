@@ -14,7 +14,7 @@ services:
       POST_CHANNEL_ID: ""
       GSS_LOG_LEVEL: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
-      ADMIN_CHANNEL_ID: ""
+      GSS_BOT_ADMIN_CHANNEL_ID: ""
   summarizer:
     image: gpt-survey-summarizer
     build: .
