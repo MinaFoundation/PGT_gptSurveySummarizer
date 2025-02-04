@@ -516,7 +516,7 @@ No header.
 ### 8. Add Feedback
 
 **ENDPOINT**:
-`POST /proposals/:proposalId/feedbacks`
+`POST /api/govbot/proposals/:proposalId/feedbacks`
 
 **Headers**:
 
@@ -545,7 +545,7 @@ No header.
 ### 9. Summarize Feedbacks for Proposal
 
 **ENDPOINT**:
-`POST /proposals/:proposalId/feedbacks/summary`
+`POST /api/govbot/proposals/:proposalId/feedbacks/summary`
 
 **Headers**:
 
@@ -566,7 +566,7 @@ No request body required.
 ### 10. Get Feedback Summary
 
 **ENDPOINT**:
-`GET /proposals/:proposalId/feedbacks/summary`
+`GET /api/govbot/proposals/:proposalId/feedbacks/summary`
 
 **Headers**:
 
