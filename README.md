@@ -26,6 +26,9 @@ Join the Discord server for discussing and developing this tool [here](https://d
    # Discord forum channel id for posting channels.
    POST_CHANNEL_ID=XXXXX
    ADMIN_CHANNEL_ID=XXXXX
+
+    # Server PORT
+   GSS_SERVER_PORT=3000
    ```
 
 2. Run `npm install`
@@ -343,6 +346,170 @@ To get the Guild ID, you must ensure that "Developer Mode" is enabled in your Di
         └── bot.test.js
         └── summarizer.test.js
     └── tsconfig.json
+```
+
+# API Documentation for Govbot Endpoints
+
+It has also node server for Govbot. First 3 endpoint is used for to integrate discord Survey Summarizer. Here is the API documentation:
+
+## Authorization
+
+### JWT Bearer
+
+- The API requires a JWT Bearer token for authorization.
+- Algorithm: **HS256**
+- Example Secret Key: `123456` _(Use environment variables to store sensitive data)._
+
+## Endpoints
+
+### 1. Create a Proposal
+
+**URL**:  
+`POST /api/govbot/proposal`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Request Body (JSON)**:
+
+```json
+{
+  "proposalName": "Proposal Name",
+  "proposalAuthor": "eylulgurcan",
+  "proposalDescription": "Long Description",
+  "endTime": "2025-12-13T14:30:00.000Z"
+}
+```
+
+### 2. Add Feedback to a Proposal
+
+**URL**:  
+`POST /api/govbot/proposal`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+```json
+{
+  "proposalName": "Proposal Name",
+  "username": "berkinggurcan",
+  "feedbackContent": "I think this plan is not well thought out, but we dont need more focus on renewable energy. and created suprising results."
+}
+```
+
+### 3. Health Check
+
+**URL**:  
+`GET /api/govbot/`
+
+**Headers**:  
+No header.
+
+**Example Response**
+
+```
+{
+    "message": "Hello Govbot!"
+}
+```
+
+### 4. Health Check for Redis Integration and API
+
+**URL**:  
+`GET /api/govbot/health`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "status": "ok",
+  "redis": "connected"
+}
+```
+
+### 5. Add Proposal to DB
+
+**URL**:  
+`POST /api/govbot/proposals`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Request Body (JSON)**:
+
+```json
+{
+  "proposalId": "12",
+  "proposalName": "My Proposal",
+  "proposalDescription": "Proposal details here...",
+  "proposalAuthor": "Alice",
+  "endTime": "2025-12-31T23:59:59.999Z",
+  "fundingRoundId": 123
+}
+```
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalName": "My Proposal",
+  "proposalDescription": "Proposal details here...",
+  "proposalAuthor": "Alice",
+  "endTime": "2025-12-31T23:59:59.999Z",
+  "fundingRoundId": 123
+}
+```
+
+### 6. Summarize Proposal by ID
+
+**URL**:  
+`POST /api/govbot/proposals/:id/summarize`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalSummary": "DUMMY SUMMARY: Proposal details here......",
+  "fundingRoundId": 123
+}
+```
+
+### 7. Get Proposal Summary by Proposal ID
+
+**URL**:  
+`GET /api/govbot/proposals/:id/summary`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "proposalId": "12",
+  "proposalSummary": "DUMMY SUMMARY: Proposal details here......",
+  "fundingRoundId": 123
+}
 ```
 
 ## Contributions

@@ -20,5 +20,5 @@ COPY ./src ./src/
 
 ENTRYPOINT ["npm", "run"]
 
-# Possible modes: [ bot (default), summarizer ]
+# Possible modes: [ bot (default), summarizer, server ]
 CMD ["bot"]

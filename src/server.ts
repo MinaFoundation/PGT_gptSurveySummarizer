@@ -5,8 +5,8 @@ import log from "./logger";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const GSS_SERVER_PORT = process.env.GSS_SERVER_PORT || 3000;
 
-app.listen(PORT, () => {
-  log.info(`Server is running on port ${PORT}`);
+app.listen(GSS_SERVER_PORT, () => {
+  log.info(`Server is running on port ${GSS_SERVER_PORT}`);
 });
