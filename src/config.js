@@ -41,4 +41,4 @@ export const GSS_LOG_LEVEL = process.env.GSS_LOG_LEVEL || "INFO";
 
 export const AUTH_SECRET = process.env.AUTH_SECRET || "";
 
-export const ADMIN_CHANNEL_ID = process.env.ADMIN_CHANNEL_ID || "";
+export const ADMIN_CHANNEL_ID = process.env.GSS_BOT_ADMIN_CHANNEL_ID || "";

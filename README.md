@@ -29,6 +29,7 @@ Join the Discord server for discussing and developing this tool [here](https://d
 
     # Server PORT
    GSS_SERVER_PORT=3000
+   GSS_BOT_ADMIN_CHANNEL_ID=XXXXX
    ```
 
 2. Run `npm install`
