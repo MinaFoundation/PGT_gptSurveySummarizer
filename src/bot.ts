@@ -224,18 +224,28 @@ process.on("uncaughtException", (error) => {
         const activeKeys = surveys.map(
           (survey) => `survey:${survey}:is-active`,
         );
-        const activeStatuses = await redisClient.mGet(activeKeys);
+
+        const typeKeys = surveys.map((survey) => `survey:${survey}:type`);
+
+        const [activeStatuses, types] = await Promise.all([
+          redisClient.mGet(activeKeys),
+          redisClient.mGet(typeKeys),
+        ]);
 
         surveys.forEach((survey, index) => {
           if (
             activeStatuses[index] === "true" &&
+            types[index] !== "proposal" &&
             survey.startsWith(focusedValue)
           ) {
             filtered.push(survey);
           }
         });
       } else {
-        surveys.forEach((survey) => {
+        const typeKeys = surveys.map((survey) => `survey:${survey}:type`);
+        const types = await redisClient.mGet(typeKeys);
+
+        surveys.forEach((survey, index) => {
           if (survey.startsWith(focusedValue)) {
             filtered.push(survey);
           }

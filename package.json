@@ -1,12 +1,13 @@
 {
   "name": "discord-bot",
   "type": "module",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "bot": "npx tsx src/bot.ts",
+    "server": "npx tsx src/server.ts",
     "dev": "nodemon --exec npx tsx src/bot.ts",
     "summarizer": "node src/summarizer.js",
     "prettier": "npx prettier . --write",
@@ -17,10 +18,14 @@
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "@discordjs/rest": "^2.2.0",
+    "body-parser": "^1.20.3",
     "chai": "^5.1.1",
+    "cors": "^2.8.5",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "eslint-import-resolver-typescript": "^3.6.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "loglevel": "^1.9.1",
     "loglevel-plugin-prefix": "^0.8.4",
     "mocha": "^10.4.0",
@@ -30,6 +35,10 @@
     "set-interval-async": "^3.0.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.1",
     "nodemon": "^3.1.0",
     "prettier": "3.2.5",
     "ts-loader": "^9.5.1",
