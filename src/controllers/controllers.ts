@@ -292,18 +292,41 @@ export const summarizeFeedbacks = async (
     const { proposalId } = req.params;
     const feedbackKey = `proposal_feedbacks:${proposalId}`;
 
+    // Retrieve feedbacks for the proposal
     const feedbackData = await redisClient.get(feedbackKey);
     if (!feedbackData) {
       res.status(404).json({ error: "No feedbacks found for this proposal." });
+      return;
     }
-
     const feedbacks: ProposalFeedback[] = JSON.parse(feedbackData);
 
-    // TODO: makes this AI process friendly :D
-    // Combine all feedback text into one string
-    const combinedText = feedbacks.map((f) => f.feedbackContent).join("\n");
+    const proposalKey = `proposal:${proposalId}`;
+    const proposalData = await redisClient.get(proposalKey);
+    if (!proposalData) {
+      res.status(404).json({ error: "Proposal not found." });
+      return;
+    }
+    const proposal: GovbotProposal = JSON.parse(proposalData);
 
-    const summaryText = feedbackSummarizer(combinedText);
+    const feedbacksDictionary: FeedbackDictionary = feedbacks.reduce(
+      (dict, feedback) => {
+        if (dict[feedback.username]) {
+          dict[feedback.username] += "\n" + feedback.feedbackContent;
+        } else {
+          dict[feedback.username] = feedback.feedbackContent;
+        }
+        return dict;
+      },
+      {} as FeedbackDictionary,
+    );
+
+    const summaryText = await feedbackSummarizer(
+      proposal.proposalName,
+      proposal.proposalDescription,
+      proposal.proposalAuthor,
+      proposal.fundingRoundId.toString(), // Ensure fundingRoundId is a string.
+      feedbacksDictionary,
+    );
 
     const feedbacksSummary: ProposalFeedbacksSummary = {
       proposalId: parseInt(proposalId, 10),
