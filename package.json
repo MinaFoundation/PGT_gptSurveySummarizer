@@ -1,7 +1,7 @@
 {
   "name": "discord-bot",
   "type": "module",
-  "version": "0.4.2",
+  "version": "0.4.6",
   "description": "",
   "main": "index.js",
   "scripts": {

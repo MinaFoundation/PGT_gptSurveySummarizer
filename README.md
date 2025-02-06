@@ -365,7 +365,7 @@ It has also node server for Govbot. First 3 endpoint is used for to integrate di
 
 ### 1. Create a Proposal
 
-**URL**:  
+**ENDPOINT**:  
 `POST /api/govbot/proposal`
 
 **Headers**:
@@ -386,7 +386,7 @@ It has also node server for Govbot. First 3 endpoint is used for to integrate di
 
 ### 2. Add Feedback to a Proposal
 
-**URL**:  
+**ENDPOINT**:  
 `POST /api/govbot/proposal`
 
 **Headers**:
@@ -404,7 +404,7 @@ It has also node server for Govbot. First 3 endpoint is used for to integrate di
 
 ### 3. Health Check
 
-**URL**:  
+**ENDPOINT**:  
 `GET /api/govbot/`
 
 **Headers**:  
@@ -420,7 +420,7 @@ No header.
 
 ### 4. Health Check for Redis Integration and API
 
-**URL**:  
+**ENDPOINT**:  
 `GET /api/govbot/health`
 
 **Headers**:
@@ -439,7 +439,7 @@ No header.
 
 ### 5. Add Proposal to DB
 
-**URL**:  
+**ENDPOINT**:  
 `POST /api/govbot/proposals`
 
 **Headers**:
@@ -475,7 +475,7 @@ No header.
 
 ### 6. Summarize Proposal by ID
 
-**URL**:  
+**ENDPOINT**:  
 `POST /api/govbot/proposals/:id/summarize`
 
 **Headers**:
@@ -495,7 +495,7 @@ No header.
 
 ### 7. Get Proposal Summary by Proposal ID
 
-**URL**:  
+**ENDPOINT**:  
 `GET /api/govbot/proposals/:id/summary`
 
 **Headers**:
@@ -510,6 +510,75 @@ No header.
   "proposalId": "12",
   "proposalSummary": "DUMMY SUMMARY: Proposal details here......",
   "fundingRoundId": 123
+}
+```
+
+### 8. Add Feedback
+
+**ENDPOINT**:
+`POST /api/govbot/proposals/:proposalId/feedbacks`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Request Body (JSON)**:
+
+```json
+{
+  "username": "Alice",
+  "feedbackContent": "This is a great proposal!"
+}
+```
+
+**Example Response**
+
+```json
+{
+  "proposalId": "1234",
+  "username": "Alice",
+  "feedbackContent": "This is a great proposal!"
+}
+```
+
+### 9. Summarize Feedbacks for Proposal
+
+**ENDPOINT**:
+`POST /api/govbot/proposals/:proposalId/feedbacks/summary`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+No request body required.
+
+**Example Response**
+
+```json
+{
+  "proposalId": 1234,
+  "feedbackSummary": "Generated feedback summary text..."
+}
+```
+
+### 10. Get Feedback Summary
+
+**ENDPOINT**:
+`GET /api/govbot/proposals/:proposalId/feedbacks/summary`
+
+**Headers**:
+
+- Content-Type: `application/json`
+- Authorization: `Bearer <AUTH_SECRET>`
+
+**Example Response**
+
+```json
+{
+  "proposalId": 1234,
+  "feedbackSummary": "Generated feedback summary text..."
 }
 ```
 
