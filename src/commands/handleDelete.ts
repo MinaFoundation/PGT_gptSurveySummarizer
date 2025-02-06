@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 export const handleDelete = async (
-  redisClient: any,
   interaction: any,
+  redisClient: any,
   surveyName: any,
 ) => {
   if (!(await redisClient.sIsMember("surveys", surveyName))) {

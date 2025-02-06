@@ -5,6 +5,8 @@ export const handleRespond = async (
   redisClient: any,
   interaction: any,
   surveyName: any,
+  channelId?: any,
+  client?: any,
 ) => {
   if (!(await redisClient.sIsMember("surveys", surveyName))) {
     await interaction.reply({
@@ -42,10 +44,19 @@ export const handleRespond = async (
     .setLabel("Respond")
     .setStyle(ButtonStyle.Primary);
 
-  await interaction.reply({
-    content: msg,
-    components: [new ActionRowBuilder().addComponents(reply)],
-  });
+  if (channelId) {
+    const channel = client.channels.cache.get(channelId);
+
+    await channel.send({
+      content: msg,
+      components: [new ActionRowBuilder().addComponents(reply)],
+    });
+  } else {
+    await interaction.reply({
+      content: msg,
+      components: [new ActionRowBuilder().addComponents(reply)],
+    });
+  }
 };
 
 const evaluateResponseMeaningfulness = async (

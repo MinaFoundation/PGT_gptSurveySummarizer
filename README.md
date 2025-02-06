@@ -25,9 +25,11 @@ Join the Discord server for discussing and developing this tool [here](https://d
 
    # Discord forum channel id for posting channels.
    POST_CHANNEL_ID=XXXXX
+   ADMIN_CHANNEL_ID=XXXXX
 
     # Server PORT
    GSS_SERVER_PORT=3000
+   GSS_BOT_ADMIN_CHANNEL_ID=XXXXX
    ```
 
 2. Run `npm install`
@@ -93,7 +95,9 @@ Resets the Redis database.
 npm run reset
 ```
 
-## Commands
+## Commands *(Deprecated)*
+
+It still can be run with ```npm run commandBot```but no we have buttons UI for smooth user experience.
 
 ### /gptsurvey create
 
@@ -196,10 +200,6 @@ The `--env-file` flag takes a filename as an argument and expects each line to b
 ```shell
 docker-compose up --build
 ```
-
-## Example Survey
-
-TODO
 
 # Environment Setup
 

@@ -5,6 +5,7 @@ import {
   ActionRowBuilder,
   TextInputStyle,
   ChatInputCommandInteraction,
+  ButtonInteraction,
 } from "discord.js";
 
 const createModal = async (
@@ -82,12 +83,11 @@ const createModal = async (
 };
 
 export const handleCreate = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   subcommand: string,
   createMultiCmd: string,
 ) => {
   const type = subcommand === createMultiCmd ? "multi" : "single";
-  const surveyName = interaction.options.getString("survey");
 
-  await createModal(interaction, type, surveyName);
+  await createModal(interaction, type, null);
 };

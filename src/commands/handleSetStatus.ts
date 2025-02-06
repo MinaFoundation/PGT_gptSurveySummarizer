@@ -2,16 +2,16 @@ import log from "../logger";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const handleSetStatus = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   surveyName: any,
   status: string,
   redisClient: any,
 ) => {
   try {
-    const validStatuses = ["active", "deactivate"];
+    const validStatuses = ["activate", "deactivate"];
     if (!validStatuses.includes(status)) {
       await interaction.reply({
-        content: "Invalid status. Please choose 'active' or 'deactivate'.",
+        content: "Invalid status. Please choose 'activate' or 'deactivate'.",
         ephemeral: true,
       });
       return;
@@ -19,7 +19,7 @@ export const handleSetStatus = async (
 
     await redisClient.set(
       `survey:${surveyName}:is-active`,
-      status === "active" ? "true" : "false",
+      status === "activate" ? "true" : "false",
     );
 
     log.info(`Survey "${surveyName}" status has been set to ${status}.`);

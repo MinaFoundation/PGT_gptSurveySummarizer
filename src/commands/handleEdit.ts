@@ -98,7 +98,7 @@ const editModal = async (
 };
 
 export const handleEdit = async (
-  interaction: ChatInputCommandInteraction,
+  interaction: any,
   redisClient: any,
   surveyName: any,
 ) => {

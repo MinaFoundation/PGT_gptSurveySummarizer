@@ -5,6 +5,7 @@ services:
     command: bot
     environment:
       DISCORD_TOKEN: ""
+      OPENAI_API_KEY: ""
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
@@ -13,6 +14,7 @@ services:
       POST_CHANNEL_ID: ""
       GSS_LOG_LEVEL: ""
       SUMMARIZE_FREQUENCY_SECONDS: ""
+      GSS_BOT_ADMIN_CHANNEL_ID: ""
   summarizer:
     image: gpt-survey-summarizer
     build: .
