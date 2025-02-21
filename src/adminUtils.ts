@@ -636,8 +636,8 @@ export const handleModals = async (interaction, client, redisClient) => {
       channelId,
     );
   } else if (interaction.customId.startsWith("postRespondModal-")) {
-    await interaction.deferReply({ ephemeral: true }); 
-    
+    await interaction.deferReply({ ephemeral: true });
+
     const surveyName = interaction.customId.split("-").slice(1).join("-");
     const channelId = interaction.fields.getTextInputValue("channelId");
 
@@ -649,7 +649,9 @@ export const handleModals = async (interaction, client, redisClient) => {
       client,
     );
 
-    await interaction.editReply("Done if there is no problem about the survey :)");
+    await interaction.editReply(
+      "Done if there is no problem about the survey :)",
+    );
   } else if (interaction.customId.startsWith("viewPublicModal-")) {
     const surveyName = interaction.customId.split("-").slice(1).join("-");
     const channelId = interaction.fields.getTextInputValue("channelId");
