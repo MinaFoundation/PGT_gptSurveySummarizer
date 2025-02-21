@@ -95,9 +95,9 @@ Resets the Redis database.
 npm run reset
 ```
 
-## Commands *(Deprecated)*
+## Commands _(Deprecated)_
 
-It still can be run with ```npm run commandBot```but no we have buttons UI for smooth user experience.
+It still can be run with `npm run commandBot`but no we have buttons UI for smooth user experience.
 
 ### /gptsurvey create
 
